@@ -10,7 +10,7 @@ public class DirtinessManager : MonoBehaviour
     private int _maxDirtiness;
 
     [SerializeField,Tooltip("The dirtiness bar of the player")]
-    private GameObject _healthBar;
+    private GameObject _dirtinessBar;
 
     private float _percentOfDirtiness;
     //This function should be called from either the player script or the garbage script
@@ -36,7 +36,7 @@ public class DirtinessManager : MonoBehaviour
     }
     private void AdjustHealthBar()
     {
-        Transform bar = _healthBar.transform;
-        _healthBar.transform.localScale = new Vector3(bar.localScale.x - (bar.localScale.x * _percentOfDirtiness), bar.localScale.y, bar.localScale.z);
+        Transform bar = _dirtinessBar.transform;
+        _dirtinessBar.transform.localScale = new Vector3(bar.localScale.x - (bar.localScale.x * _percentOfDirtiness), bar.localScale.y, bar.localScale.z);
     }
 }
