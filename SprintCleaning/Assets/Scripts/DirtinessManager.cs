@@ -32,7 +32,7 @@ public class DirtinessManager : MonoBehaviour
     private void GameOver()
     {
         Debug.Log("Game Over");
-        //SceneManager.LoadScene("GameOver");
+        SceneManager.LoadScene("MainMenu");
     }
     private void AdjustHealthBar()
     {
