@@ -19,7 +19,7 @@ public class PlayerMovement : MonoBehaviour
     private TrackPositions _track;
 
 
-    private int _nextPointIndex = 0;
+    public int _nextPointIndex = 0;
     public int _lastPointIndex = -1;
     private float _targetLane;
 
@@ -128,10 +128,10 @@ public class PlayerMovement : MonoBehaviour
         if (Vector3.Dot(targetPoint - _rigidbody.position, targetPoint - newPosition) <= 0.0001f)
         {
             _nextPointIndex++;
-            // if (_nextPointIndex == _trackPoints.Length)
-            // {
-            //     StartOnTrack(); // for testing purposes (probably will add new track sections endlessly)
-            // }
+            if (_nextPointIndex == _trackPoints.Length)
+            {
+                _nextPointIndex = 1; // for testing purposes (probably will add new track sections endlessly)
+            }
         }
     }
 
@@ -206,7 +206,7 @@ public class PlayerMovement : MonoBehaviour
             if(_lastPointIndex > -1)
                 gameManager.InstantiateTrackSegment(_lastPointIndex);
                 _lastPointIndex ++;
-                if(_lastPointIndex > 3){
+                if(_lastPointIndex == _trackPoints.Length){
                     _lastPointIndex = 0;
                 }
         }

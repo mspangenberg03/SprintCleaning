@@ -28,6 +28,9 @@ public class TrackPositions
         for (int i = 1; i < _trackPoints.Length; i++)
         {
             Gizmos.color = Color.white;
+            Debug.Log( i + "central lane point 1: " + LanePoint(i - 1, 0) + "central lane point 2:" + LanePoint(i, 0));
+            Debug.Log(i + "right lane point 1: " + LanePoint(i - 1, 1) + "right lane point 2:" + LanePoint(i, 1));
+            Debug.Log(i + "left lane point 1: " + LanePoint(i - 1, -1) + "left lane point 2:" + LanePoint(i, -1));
             Gizmos.DrawLine(LanePoint(i - 1, 0), LanePoint(i, 0));
 
             Gizmos.color = Color.green;
@@ -82,6 +85,7 @@ public class TrackPositions
         }
 
         Vector2 lanePointA = (_trackPoints[pointIndex - 1].position + laneOffset).To2D();
+        Debug.Log("next lane offset" + lanePointA.ToString());
         Vector2 lanePointB = (_trackPoints[pointIndex].position + laneOffset).To2D();
 
         Vector2 nextLanePointA = (_trackPoints[pointIndex].position + nextLaneOffset).To2D();

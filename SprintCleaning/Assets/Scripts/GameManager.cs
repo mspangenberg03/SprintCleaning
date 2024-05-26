@@ -28,11 +28,6 @@ public class GameManager : MonoBehaviour
         _instance = this;
     }
 
-    void Update()
-    {
-        
-    }
-
     private int TrackRandomIndex()
     {
         return Random.Range(0, _trackPrefabs.Length);
@@ -41,7 +36,7 @@ public class GameManager : MonoBehaviour
     public void InstantiateTrackSegment(int lastTrackPointIndex)
     {
         //Destroys the trackPieces as the player gets to the checkPoint in the middle of the next
-        //GameObject.Destroy(_trackPieces[lastTrackPointIndex].GetComponentsInParent<Transform>()[1].gameObject);
+        GameObject.Destroy(_trackPieces[lastTrackPointIndex].GetComponentsInParent<Transform>()[1].gameObject);
         //Creates a trackPiece following the last created
         int indexToInstanciate = TrackRandomIndex();
         GameObject newTrackPiece = Instantiate(_trackPrefabs[indexToInstanciate], _trackPieces[_lastTrackPieceInstanciatedIndex].position + 
@@ -49,7 +44,7 @@ public class GameManager : MonoBehaviour
         //Inserts the trackPiece just created in the array of trackPoints the player is following
         _trackPieces[lastTrackPointIndex] = newTrackPiece.GetComponentInChildren<Transform>().GetChild(0);
         _lastTrackPieceInstanciatedIndex ++;
-        if(_lastTrackPieceInstanciatedIndex > 3){
+        if(_lastTrackPieceInstanciatedIndex == _trackPieces.Length){
             _lastTrackPieceInstanciatedIndex = 0;
         }
     }
