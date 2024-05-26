@@ -1254,10 +1254,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidbody: {fileID: 1791975035}
   _playerSpeed: 10
-  _laneChangeSpeed: 10
+  _laneChangeSpeed: 5
   _rotationSpeed: 300
   _playerOffset: {x: 0, y: 1.5, z: 0}
   _distanceBetweenLanes: 1.5
+  _discreteMovement: 0
   _trackPoints:
   - {fileID: 530776856}
   - {fileID: 734099991}

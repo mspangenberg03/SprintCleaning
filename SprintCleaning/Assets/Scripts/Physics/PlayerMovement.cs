@@ -8,9 +8,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private float _playerSpeed = 0f;
     [SerializeField] private float _laneChangeSpeed = 30f;
+    [SerializeField] private float _velocityRotationTowardsTargetLane = 30f;
     [SerializeField] private float _rotationSpeed = 300;
     [SerializeField] private Vector3 _playerOffset = new Vector3(0, 1.5f, 0);
     [SerializeField] private float _distanceBetweenLanes = 1.5f;
+    [SerializeField] private bool _discreteMovement = false;
     [SerializeField] private Transform[] _trackPoints;
 
     private TrackPositions _track;
@@ -25,6 +27,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool LeftKeyDown => Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow);
     private bool RightKeyDown => Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow);
+    private bool LeftKey => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
+    private bool RightKey => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
 
 
 
@@ -56,25 +60,37 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 directionToNextPoint = (TargetPoint() - _rigidbody.position).normalized;
         _rigidbody.velocity = directionToNextPoint * _playerSpeed;
-        IncludeVelocityTowardsTargetLane();
 
+        if (!_discreteMovement)
+        {
+            if (RightKey)
+                SwitchTrack(1f);
+            if (LeftKey)
+                SwitchTrack(-1f);
+            if (!RightKey && !LeftKey)
+                _targetLane = CurrentLane();
+        }
+
+        if (!_discreteMovement || LeftKey || RightKey)
+        {
+            IncludeVelocityTowardsTargetLane();
+        }
         _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_rotationSpeed, directionToNextPoint, _rigidbody.rotation));
 
         CheckIncrementTrackPointIndex();
 
-        // Don't check inputs if fixed update already ran this frame because it already checked inputs.
-        if (!_fixedUpdateHappenedThisFrame)
+        if (_discreteMovement)
         {
-            if (RightKeyDown || _rightKeyDownDuringFrameWithoutFixedUpdate)
+            // Don't check inputs if fixed update already ran this frame because it already checked inputs.
+            if (!_fixedUpdateHappenedThisFrame)
             {
-                SwitchTrack(1f);
+                if (RightKeyDown || _rightKeyDownDuringFrameWithoutFixedUpdate)
+                    SwitchTrack(1f);
+                if (LeftKeyDown || _leftKeyDownDuringFrameWithoutFixedUpdate)
+                    SwitchTrack(-1f);
+                _rightKeyDownDuringFrameWithoutFixedUpdate = false;
+                _leftKeyDownDuringFrameWithoutFixedUpdate = false;
             }
-            if (LeftKeyDown || _leftKeyDownDuringFrameWithoutFixedUpdate)
-            {
-                SwitchTrack(-1f);
-            }
-            _rightKeyDownDuringFrameWithoutFixedUpdate = false;
-            _leftKeyDownDuringFrameWithoutFixedUpdate = false;
         }
         
         _fixedUpdateHappenedThisFrame = true;
@@ -123,12 +139,8 @@ public class PlayerMovement : MonoBehaviour
     private void SwitchTrack(float laneChange)
     {
         float nextLane = Mathf.Clamp(_targetLane + laneChange, -1, 1);
-        if (nextLane == _targetLane)
-            return;
-        _targetLane = nextLane;
-
-        //StopAllCoroutines();
-        //StartCoroutine(SwitchLane());
+        if (nextLane != _targetLane)
+            _targetLane = nextLane;
     }
 
     private float CurrentLane()
@@ -140,27 +152,6 @@ public class PlayerMovement : MonoBehaviour
         float sign = toLeft ? -1f : 1f;
         return distance / _distanceBetweenLanes * sign;
     }
-
-    
-
-    //private IEnumerator SwitchLane()
-    //{
-    //    while (true)
-    //    {
-    //        Vector3 targetLanePoint = PositionToBeOnTargetLane();
-
-    //        Vector3 toTargetLanePoint = targetLanePoint - _rigidbody.position;
-
-    //        if (toTargetLanePoint.sqrMagnitude < .001f)
-    //        {
-    //            break;
-    //        }
-
-    //        _rigidbody.position += Vector3.MoveTowards(Vector3.zero, toTargetLanePoint, 1.5f * Time.deltaTime);
-
-    //        yield return new WaitForFixedUpdate();
-    //    }
-    //}
 
     private void IncludeVelocityTowardsTargetLane()
     {
