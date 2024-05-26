@@ -8,17 +8,19 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private float _playerSpeed = 0f;
     [SerializeField] private float _laneChangeSpeed = 30f;
-    [SerializeField] private float _velocityRotationTowardsTargetLane = 30f;
+    //[SerializeField] private float _velocityRotationTowardsTargetLane = 30f;
     [SerializeField] private float _rotationSpeed = 300;
     [SerializeField] private Vector3 _playerOffset = new Vector3(0, 1.5f, 0);
     [SerializeField] private float _distanceBetweenLanes = 1.5f;
     [SerializeField] private bool _discreteMovement = false;
-    [SerializeField] private Transform[] _trackPoints;
+    [SerializeField] public Transform[] _trackPoints = new Transform[4];
+    private GameManager gameManager;
 
     private TrackPositions _track;
 
 
     private int _nextPointIndex = 0;
+    public int _lastPointIndex = -1;
     private float _targetLane;
 
     private bool _fixedUpdateHappenedThisFrame;
@@ -31,9 +33,11 @@ public class PlayerMovement : MonoBehaviour
     private bool RightKey => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
 
 
+    private void Awake() {
+        gameManager = GameManager.Instance;
+    }
 
-
-    private void Awake()
+    private void Start()
     {
         _track = new TrackPositions(_trackPoints, _distanceBetweenLanes, _playerOffset);
         StartOnTrack();
@@ -124,10 +128,10 @@ public class PlayerMovement : MonoBehaviour
         if (Vector3.Dot(targetPoint - _rigidbody.position, targetPoint - newPosition) <= 0.0001f)
         {
             _nextPointIndex++;
-            if (_nextPointIndex == _trackPoints.Length)
-            {
-                StartOnTrack(); // for testing purposes (probably will add new track sections endlessly)
-            }
+            // if (_nextPointIndex == _trackPoints.Length)
+            // {
+            //     StartOnTrack(); // for testing purposes (probably will add new track sections endlessly)
+            // }
         }
     }
 
@@ -195,5 +199,16 @@ public class PlayerMovement : MonoBehaviour
         Vector3 result = VectorUtils.ClosestPointOnSegment2D(playerPoint, targetLaneStart, targetLaneEnd).To3D();
         result.y = _rigidbody.position.y;
         return result;
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        if(other.CompareTag("trackCheckpoint")){
+            if(_lastPointIndex > -1)
+                gameManager.InstantiateTrackSegment(_lastPointIndex);
+                _lastPointIndex ++;
+                if(_lastPointIndex > 3){
+                    _lastPointIndex = 0;
+                }
+        }
     }
 }
