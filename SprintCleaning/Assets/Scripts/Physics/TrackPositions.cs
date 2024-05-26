@@ -25,23 +25,30 @@ public class TrackPositions
 
     public void DrawGizmos(int nextPointIndex, float lane)
     {
-        for (int i = 1; i < _trackPoints.Length; i++)
-        {
-            Gizmos.color = Color.white;
-            Debug.Log( i + "central lane point 1: " + LanePoint(i - 1, 0) + "central lane point 2:" + LanePoint(i, 0));
-            Debug.Log(i + "right lane point 1: " + LanePoint(i - 1, 1) + "right lane point 2:" + LanePoint(i, 1));
-            Debug.Log(i + "left lane point 1: " + LanePoint(i - 1, -1) + "left lane point 2:" + LanePoint(i, -1));
-            Gizmos.DrawLine(LanePoint(i - 1, 0), LanePoint(i, 0));
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawSphere(LanePoint(1, -1, true), .5f);
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawSphere(LanePoint(1, 0), .5f);
+        Gizmos.color = Color.black;
+        Gizmos.DrawSphere(LanePoint(1, 1), .5f);
 
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(LanePoint(i - 1, 1), LanePoint(i, 1));
 
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(LanePoint(i - 1, -1), LanePoint(i, -1));
-        }
+        //for (int i = 1; i < _trackPoints.Length; i++)
+        //{
 
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(LanePoint(nextPointIndex, lane), .5f);
+        //    Gizmos.color = Color.white;
+        //    Debug.Log(i + "left lane point 1: " + LanePoint(i - 1, -1));
+        //    Gizmos.DrawLine(LanePoint(i - 1, 0), LanePoint(i, 0));
+
+        //    Gizmos.color = Color.green;
+        //    Gizmos.DrawLine(LanePoint(i - 1, 1), LanePoint(i, 1));
+
+        //    Gizmos.color = Color.blue;
+        //    Gizmos.DrawLine(LanePoint(i - 1, -1), LanePoint(i, -1));
+        //}
+
+        //Gizmos.color = Color.red;
+        //Gizmos.DrawSphere(LanePoint(nextPointIndex, lane), .5f);
     }
 
     public Vector3 ToNextPoint(Rigidbody rigidbody, int nextPointIndex, float lane)
@@ -60,13 +67,15 @@ public class TrackPositions
     /// <summary>
     /// A point along the track at a lane.
     /// </summary>
-    public Vector3 LanePoint(int pointIndex, float lane)
+    public Vector3 LanePoint(int pointIndex, float lane, bool test = false)
     {
         if (pointIndex == 0 || pointIndex == _trackPoints.Length - 1)
         {
             // At the end points of the track, there is only 1 segment of the track to consider, so just use an offset perpendicular to that lane segment.
             // Other points are on two segments so this wouldn't work for them.
-            return _trackPoints[pointIndex].position + LaneOffset(System.Math.Max(1, pointIndex), lane) + _playerOffset;
+            Vector3 result2 = _trackPoints[pointIndex].position + LaneOffset(System.Math.Max(1, pointIndex), lane) + _playerOffset;
+            //Debug.Log("first result2: " + result2);
+            return result2; 
         }
 
         // Find two line segments which are offset perpendicularly to the track's midline.
@@ -78,14 +87,17 @@ public class TrackPositions
         Vector3 difference = laneOffset - nextLaneOffset;
         difference.y = 0;
 
+
+
         if (difference.sqrMagnitude < .001f)
         {
             // Do this to deal with the cases in the stackoverflow link in LinesIntersectionPoint2D where the two lines are parallel or colinear
-            return _trackPoints[pointIndex].position + LaneOffset(pointIndex, lane) + _playerOffset;
+            Vector3 result2 = _trackPoints[pointIndex].position + LaneOffset(pointIndex, lane) + _playerOffset;
+            //Debug.Log("result2: " + result2);
+            return result2;
         }
 
         Vector2 lanePointA = (_trackPoints[pointIndex - 1].position + laneOffset).To2D();
-        Debug.Log("next lane offset" + lanePointA.ToString());
         Vector2 lanePointB = (_trackPoints[pointIndex].position + laneOffset).To2D();
 
         Vector2 nextLanePointA = (_trackPoints[pointIndex].position + nextLaneOffset).To2D();
@@ -94,6 +106,17 @@ public class TrackPositions
         Vector3 result = VectorUtils.LinesIntersectionPoint2D(lanePointA, lanePointB, nextLanePointA, nextLanePointB).To3D();
         result.y = _trackPoints[pointIndex].position.y;
         result += _playerOffset;
+
+        //if (float.IsNaN(result.x))
+        //{
+        //    // result is NaN. (1.50, 52.50) (1.50, 22.50) (-1.50, 22.50) (-1.50, 32.50)
+        //    Debug.Log("pointIndex: " + pointIndex + ". result is NaN. " + lanePointA + " " + lanePointB + " " + nextLanePointA + " " + nextLanePointB
+        //        + " difference: " + difference.sqrMagnitude);
+        //}
+        if (test)
+            Debug.Log($"intersection point: {result}, track point at start of segment: {pointIndex - 1}" +
+                $", track point at end of segment and start of next segment: {pointIndex}, track point at end of next segment: {pointIndex + 1}");
+
         return result;
     }
 
