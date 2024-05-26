@@ -14,16 +14,6 @@ public class CameraFollowPlayer : MonoBehaviour
         rotation.x = _xRotation;
         rotation.z = 0;
         transform.rotation = Quaternion.Euler(rotation);
-        transform.position = _player.transform.position + RotateVectorAroundYAxis(_offset, -_player.rotation.eulerAngles.y);
-    }
-
-    private Vector3 RotateVectorAroundYAxis(Vector3 direction, float angle)
-    {
-        float radians = angle * Mathf.Deg2Rad;
-        float cos = Mathf.Cos(radians);
-        float sin = Mathf.Sin(radians);
-        float x = cos * direction.x - sin * direction.z;
-        float z = sin * direction.x + cos * direction.z;
-        return new Vector3(x, direction.y, z);
+        transform.position = _player.transform.position + VectorUtils.RotateVectorAroundYAxis(_offset, -_player.rotation.eulerAngles.y);
     }
 }
