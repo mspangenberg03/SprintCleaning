@@ -35,6 +35,7 @@ public class DirtinessManager : MonoBehaviour
         Debug.Log("Game Over");
         SceneManager.LoadScene("MainMenu");
     }
+    //TODO: Create health bar
     private void AdjustHealthBar()
     {
         Transform bar = _dirtinessBar.transform;
