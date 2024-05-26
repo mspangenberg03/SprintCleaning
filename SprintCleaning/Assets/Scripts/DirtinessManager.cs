@@ -18,15 +18,16 @@ public class DirtinessManager : MonoBehaviour
     public void AddDirtiness(int addedDirtiness)
     {
         _currentDirtiness += addedDirtiness;
+        Debug.Log(_currentDirtiness);
         if(_currentDirtiness >= _maxDirtiness)
         {
             GameOver();
         }
-        else
-        {
-            _percentOfDirtiness = addedDirtiness/ _maxDirtiness;
-            AdjustHealthBar();
-        }
+        //else
+        //{
+            //_percentOfDirtiness = addedDirtiness / _maxDirtiness;
+            //AdjustHealthBar();
+        //}
     }
     
     private void GameOver()
