@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private float _playerSpeed = 0f;
+    [SerializeField] private float _laneChangeSpeed = 30f;
     [SerializeField] private float _rotationSpeed = 300;
     [SerializeField] private Vector3 _playerOffset = new Vector3(0, 1.5f, 0);
     [SerializeField] private float _distanceBetweenLanes = 1.5f;
@@ -44,7 +45,8 @@ public class PlayerMovement : MonoBehaviour
     private void StartOnTrack()
     {
         _targetLane = 0;
-        StopAllCoroutines();
+        //_laneChangeSpeed = 0;
+        //StopAllCoroutines();
         _rigidbody.position = _track.TrackPoint(0) + _playerOffset;
         _rigidbody.transform.position = _rigidbody.position;
         _nextPointIndex = 1;
@@ -54,6 +56,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 directionToNextPoint = (TargetPoint() - _rigidbody.position).normalized;
         _rigidbody.velocity = directionToNextPoint * _playerSpeed;
+        IncludeVelocityTowardsTargetLane();
 
         _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_rotationSpeed, directionToNextPoint, _rigidbody.rotation));
 
@@ -124,17 +127,8 @@ public class PlayerMovement : MonoBehaviour
             return;
         _targetLane = nextLane;
 
-        //Vector2 targetLaneStart = _track.LanePoint(_nextPointIndex - 1, _targetLane).To2D();
-        //Vector2 targetLaneEnd = _track.LanePoint(_nextPointIndex, _targetLane).To2D();
-        //Vector2 playerPoint = (_rigidbody.position - _playerOffset).To2D();
-
-        //Vector3 newPosition = VectorUtils.ClosestPointOnLineSegment2D(playerPoint, targetLaneStart, targetLaneEnd).To3D();
-        //newPosition.y = _rigidbody.position.y;
-
-        StopAllCoroutines();
-        StartCoroutine(SwitchLane());
-
-        //_rigidbody.position = PositionToBeOnTargetLane();
+        //StopAllCoroutines();
+        //StartCoroutine(SwitchLane());
     }
 
     private float CurrentLane()
@@ -149,23 +143,56 @@ public class PlayerMovement : MonoBehaviour
 
     
 
-    private IEnumerator SwitchLane()
+    //private IEnumerator SwitchLane()
+    //{
+    //    while (true)
+    //    {
+    //        Vector3 targetLanePoint = PositionToBeOnTargetLane();
+
+    //        Vector3 toTargetLanePoint = targetLanePoint - _rigidbody.position;
+
+    //        if (toTargetLanePoint.sqrMagnitude < .001f)
+    //        {
+    //            break;
+    //        }
+
+    //        _rigidbody.position += Vector3.MoveTowards(Vector3.zero, toTargetLanePoint, 1.5f * Time.deltaTime);
+
+    //        yield return new WaitForFixedUpdate();
+    //    }
+    //}
+
+    private void IncludeVelocityTowardsTargetLane()
     {
-        while (true)
+        float currentLane = CurrentLane();
+        if (currentLane == _targetLane)
+            return;
+
+
+        Vector3 targetLanePoint = PositionToBeOnTargetLane();
+        Vector3 toTargetLanePoint = targetLanePoint - _rigidbody.position;
+
+        Vector3 laneChangeVelocity = _laneChangeSpeed * toTargetLanePoint.normalized;
+        Vector3 nextPosition = _rigidbody.position + laneChangeVelocity * Time.deltaTime;
+
+        if (Vector3.Dot(toTargetLanePoint, targetLanePoint - nextPosition) <= 0.0001f)
         {
-            Vector3 targetLanePoint = PositionToBeOnTargetLane();
-
-            Vector3 toTargetLanePoint = targetLanePoint - _rigidbody.position;
-
-            if (toTargetLanePoint.sqrMagnitude < .001f)
-            {
-                break;
-            }
-
-            _rigidbody.position += Vector3.MoveTowards(Vector3.zero, toTargetLanePoint, 1.5f * Time.deltaTime);
-
-            yield return new WaitForFixedUpdate();
+            // don't overshoot
+            laneChangeVelocity = toTargetLanePoint / Time.deltaTime;
         }
+
+
+        // if (Vector3.Dot(targetPoint - _rigidbody.position, targetPoint - newPosition) <= 0.0001f)
+
+
+
+        //if (Vector3.Dot(targetLanePoint - _rigidbody.position, targetLanePoint - laneChangeVelocity * Time.deltaTime) <= 0.0001f)
+        //{
+        //    // don't overshoot
+        //    laneChangeVelocity = toTargetLanePoint / Time.deltaTime;
+        //}
+
+        _rigidbody.velocity += laneChangeVelocity;
     }
 
     private Vector3 PositionToBeOnTargetLane()
