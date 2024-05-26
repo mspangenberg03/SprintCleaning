@@ -12,11 +12,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _distanceBetweenLanes = 1.5f;
     [SerializeField] private Transform[] _trackPoints;
 
-    private PlayerMovementLanes _lanes;
+    private TrackPositions _track;
 
 
     private int _nextPointIndex = 0;
-    private int _currentLane;
+    private float _targetLane;
 
     private bool _fixedUpdateHappenedThisFrame;
     private bool _leftKeyDownDuringFrameWithoutFixedUpdate;
@@ -30,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
-        _lanes = new PlayerMovementLanes(_trackPoints, _distanceBetweenLanes, _playerOffset);
+        _track = new TrackPositions(_trackPoints, _distanceBetweenLanes, _playerOffset);
         StartOnTrack();
         PlayerMovementProcessor.SetFixedDeltaTime();
     }
@@ -43,13 +43,13 @@ public class PlayerMovement : MonoBehaviour
         for (int i = 1; i < _trackPoints.Length; i++)
         {
             Gizmos.color = Color.white;
-            Gizmos.DrawLine(_lanes.Point(i - 1, 0), _lanes.Point(i, 0));
+            Gizmos.DrawLine(_track.LanePoint(i - 1, 0), _track.LanePoint(i, 0));
 
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(_lanes.Point(i - 1, 1), _lanes.Point(i, 1));
+            Gizmos.DrawLine(_track.LanePoint(i - 1, 1), _track.LanePoint(i, 1));
 
             Gizmos.color = Color.blue;
-            Gizmos.DrawLine(_lanes.Point(i - 1, -1), _lanes.Point(i, -1));
+            Gizmos.DrawLine(_track.LanePoint(i - 1, -1), _track.LanePoint(i, -1));
         }
 
         Gizmos.color = Color.red;
@@ -58,9 +58,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void StartOnTrack()
     {
-        _currentLane = 0;
+        _targetLane = 0;
         StopAllCoroutines();
-        _rigidbody.position = _trackPoints[0].position + _playerOffset;
+        _rigidbody.position = _track.TrackPoint(0) + _playerOffset;
         _rigidbody.transform.position = _rigidbody.position;
         _nextPointIndex = 1;
     }
@@ -79,11 +79,11 @@ public class PlayerMovement : MonoBehaviour
         {
             if (RightKeyDown || _rightKeyDownDuringFrameWithoutFixedUpdate)
             {
-                SwitchTrack(1);
+                SwitchTrack(1f);
             }
             if (LeftKeyDown || _leftKeyDownDuringFrameWithoutFixedUpdate)
             {
-                SwitchTrack(-1);
+                SwitchTrack(-1f);
             }
             _rightKeyDownDuringFrameWithoutFixedUpdate = false;
             _leftKeyDownDuringFrameWithoutFixedUpdate = false;
@@ -127,21 +127,23 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 TargetPoint()
     {
-        return _lanes.Point(_nextPointIndex, _currentLane);
+        return _track.LanePoint(_nextPointIndex, _targetLane);
     }
 
-    private void SwitchTrack(int laneChange)
+    private void SwitchTrack(float laneChange)
     {
-        Vector3 priorLaneOffset = _lanes.LaneOffset(_nextPointIndex, _currentLane);
-
-        int nextLane = System.Math.Clamp(_currentLane + laneChange, -1, 1);
-        if (nextLane == _currentLane)
+        float nextLane = Mathf.Clamp(_targetLane + laneChange, -1, 1);
+        if (nextLane == _targetLane)
             return;
-        _currentLane = nextLane;
+        _targetLane = nextLane;
 
-        Vector3 newLaneOffset = _lanes.LaneOffset(_nextPointIndex, _currentLane);
+        Vector2 targetLaneStart = _track.LanePoint(_nextPointIndex - 1, _targetLane).To2D();
+        Vector2 targetLaneEnd = _track.LanePoint(_nextPointIndex, _targetLane).To2D();
+        Vector2 playerPoint = (_rigidbody.position - _playerOffset).To2D();
 
-        Vector3 shift = newLaneOffset - priorLaneOffset;
-        _rigidbody.position += shift;
+        Vector3 newPosition = VectorUtils.ClosestPointOnLineSegment2D(playerPoint, targetLaneStart, targetLaneEnd).To3D();
+        newPosition.y = _rigidbody.position.y;
+
+        _rigidbody.position = newPosition;
     }
 }

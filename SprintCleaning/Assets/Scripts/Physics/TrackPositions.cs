@@ -2,29 +2,44 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovementLanes
+// could make this a monobehavior if stuff besides PlayerMovement needs it
+
+/// <summary>
+/// Represents the track and has methods to get positions along the lanes.
+/// </summary>
+public class TrackPositions
 {
 
     private Transform[] _trackPoints;
     private float _distanceBetweenLanes;
     private Vector3 _playerOffset;
 
-    public PlayerMovementLanes(Transform[] trackPoints, float distanceBetweenLanes, Vector3 playerOffset)
+    public int NumPoints => _trackPoints.Length;
+
+    public TrackPositions(Transform[] trackPoints, float distanceBetweenLanes, Vector3 playerOffset)
     {
         _trackPoints = trackPoints;
         _distanceBetweenLanes = distanceBetweenLanes;
         _playerOffset = playerOffset;
     }
 
-    public Vector3 ToNextPoint(Rigidbody rigidbody, int nextPointIndex, int currentLane)
+    public Vector3 ToNextPoint(Rigidbody rigidbody, int nextPointIndex, float lane)
     {
-        return Point(nextPointIndex, currentLane) - rigidbody.position;
+        return LanePoint(nextPointIndex, lane) - rigidbody.position;
+    }
+
+    /// <summary>
+    /// A point along the track at its midline.
+    /// </summary>
+    public Vector3 TrackPoint(int pointIndex)
+    {
+        return _trackPoints[pointIndex].position;
     }
 
     /// <summary>
     /// A point along the track at a lane.
     /// </summary>
-    public Vector3 Point(int pointIndex, int lane)
+    public Vector3 LanePoint(int pointIndex, float lane)
     {
         if (pointIndex == 0 || pointIndex == _trackPoints.Length - 1)
         {
@@ -65,7 +80,7 @@ public class PlayerMovementLanes
     /// </summary>
     /// <param name="laneSegmentEndpointIndex">The higher index of two indexes which define a segment of the path (e.g. 4 for indexes 3 and 4).</param>
     /// <param name="lane">The lane, from -1 to 1.</param>
-    public Vector3 LaneOffset(int laneSegmentEndpointIndex, int lane)
+    public Vector3 LaneOffset(int laneSegmentEndpointIndex, float lane)
     {
         // Determine the vector from the middle lane to the a lane.
         Vector3 pathDirection = _trackPoints[laneSegmentEndpointIndex].position - _trackPoints[laneSegmentEndpointIndex - 1].position;
@@ -74,4 +89,49 @@ public class PlayerMovementLanes
         Vector3 laneOffset = lane * _distanceBetweenLanes * Vector3.right; // the offset if the track isn't rotated
         return VectorUtils.RotateVectorAroundYAxis(laneOffset, trackAngle);
     }
+
+    //public Vector3 ClosestPositionAlongTrackIgnoringVertical(Vector3 position, int nextPointIndex, out int closestSegmentEndpointIndex)
+    //{
+    //    Vector2 closestOnPriorSegment, closestOnCurrentSegment, closestOnNextSegment;
+
+    //    if (nextPointIndex < 2)
+    //        closestOnPriorSegment = Vector2.positiveInfinity;
+    //    else
+    //        closestOnPriorSegment = ClosestPointAlongTrackSegment(nextPointIndex - 1, position);
+
+    //    closestOnCurrentSegment = ClosestPointAlongTrackSegment(nextPointIndex, position);
+
+
+    //    if (nextPointIndex == NumPoints - 1)
+    //        closestOnNextSegment = Vector2.positiveInfinity;
+    //    else
+    //        closestOnNextSegment = ClosestPointAlongTrackSegment(nextPointIndex + 1, position);
+
+    //    Debug.Log("closest points: " + closestOnPriorSegment + " " + closestOnCurrentSegment + " " + closestOnNextSegment);
+
+    //    float sqrDistanceToPriorSegment = (closestOnPriorSegment - position.To2D()).magnitude;
+    //    float sqrDistanceToCurrentSegment = (closestOnCurrentSegment - position.To2D()).magnitude;
+    //    float sqrDistanceToNextSegment = (closestOnNextSegment - position.To2D()).magnitude;
+
+    //    if (sqrDistanceToPriorSegment < Mathf.Min(sqrDistanceToCurrentSegment, sqrDistanceToNextSegment))
+    //    {
+    //        closestSegmentEndpointIndex = nextPointIndex - 1;
+    //        return closestOnPriorSegment.To3D();
+    //    }
+    //    else if (sqrDistanceToCurrentSegment < Mathf.Min(sqrDistanceToPriorSegment, sqrDistanceToNextSegment))
+    //    {
+    //        closestSegmentEndpointIndex = nextPointIndex;
+    //        return closestOnCurrentSegment.To3D();
+    //    }
+    //    else
+    //    {
+    //        closestSegmentEndpointIndex = nextPointIndex + 1;
+    //        return closestOnNextSegment.To3D();
+    //    }
+    //}
+
+    //public Vector2 ClosestPointAlongTrackSegment(int segmentEndpointIndex, Vector3 position)
+    //{
+    //    return VectorUtils.ClosestPointOnLineSegment2D(position.To2D(), TrackPoint(segmentEndpointIndex - 1).To2D(), TrackPoint(segmentEndpointIndex).To2D());
+    //}
 }
