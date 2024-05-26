@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    private const int TARGET_POINT_INDEX = 1;
+    // ^ every time the player reaches the next point, it creates the next track segment and deletes the oldest one
+
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private float _playerSpeed = 0f;
     [SerializeField] private float _laneChangeSpeed = 30f;
@@ -14,11 +17,8 @@ public class PlayerMovement : MonoBehaviour
 
 
     private GameManager gameManager;
+    
 
-
-
-    public int _nextPointIndex = 0;
-    public int _lastPointIndex = -1;
     private float _targetLane;
 
     private bool _fixedUpdateHappenedThisFrame;
@@ -47,7 +47,6 @@ public class PlayerMovement : MonoBehaviour
         _targetLane = 0;
         _rigidbody.position = _track.TrackPoint(0);
         _rigidbody.transform.position = _rigidbody.position;
-        _nextPointIndex = 1;
     }
 
     private void FixedUpdate()
@@ -62,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
             if (LeftKey)
                 SwitchTrack(-1f);
             if (!RightKey && !LeftKey)
-                _targetLane = _track.ConvertPositionToLane(_nextPointIndex, _rigidbody.position);
+                _targetLane = _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position);
         }
 
         if (!_discreteMovement || LeftKey || RightKey)
@@ -117,17 +116,13 @@ public class PlayerMovement : MonoBehaviour
         // If the direction to the target will become opposite, then it's about to get past the next point
         if (Vector3.Dot(targetPoint - _rigidbody.position, targetPoint - newPosition) <= 0.0001f)
         {
-            _nextPointIndex++;
-            if (_nextPointIndex == _track.TrackPoints.Length)
-            {
-                _nextPointIndex = 1; // for testing purposes (probably will add new track sections endlessly)
-            }
+            gameManager.InstantiateTrackSegment();
         }
     }
 
     private Vector3 TargetPoint()
     {
-        return _track.LanePoint(_nextPointIndex, _track.ConvertPositionToLane(_nextPointIndex, _rigidbody.position));
+        return _track.LanePoint(TARGET_POINT_INDEX, _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position));
     }
 
     private void SwitchTrack(float laneChange)
@@ -141,12 +136,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void IncludeVelocityTowardsTargetLane()
     {
-        float currentLane = _track.ConvertPositionToLane(_nextPointIndex, _rigidbody.position);
+        float currentLane = _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position);
         if (currentLane == _targetLane)
             return;
 
 
-        Vector3 targetLanePoint = _track.PositionToBeOnLane(_nextPointIndex, _targetLane, _rigidbody.position);
+        Vector3 targetLanePoint = _track.PositionToBeOnLane(TARGET_POINT_INDEX, _targetLane, _rigidbody.position);
         Vector3 toTargetLanePoint = targetLanePoint - _rigidbody.position;
 
         Vector3 laneChangeVelocity = _laneChangeSpeed * toTargetLanePoint.normalized;
@@ -159,27 +154,5 @@ public class PlayerMovement : MonoBehaviour
         }
 
         _rigidbody.velocity += laneChangeVelocity;
-    }
-
-    //private Vector3 PositionToBeOnTargetLane()
-    //{
-    //    Vector2 targetLaneStart = _track.LanePoint(_nextPointIndex - 1, _targetLane).To2D();
-    //    Vector2 targetLaneEnd = _track.LanePoint(_nextPointIndex, _targetLane).To2D();
-    //    Vector2 playerPoint = (_rigidbody.position - _playerOffset).To2D();
-
-    //    Vector3 result = VectorUtils.ClosestPointOnSegment2D(playerPoint, targetLaneStart, targetLaneEnd).To3D();
-    //    result.y = _rigidbody.position.y;
-    //    return result;
-    //}
-
-    private void OnTriggerEnter(Collider other) {
-        if(other.CompareTag("trackCheckpoint")){
-            if(_lastPointIndex > -1)
-                gameManager.InstantiateTrackSegment();
-                _lastPointIndex ++;
-                if(_lastPointIndex == _track.TrackPoints.Length){
-                    _lastPointIndex = 0;
-                }
-        }
     }
 }
