@@ -37,23 +37,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (!Application.isPlaying)
-            return;
-
-        for (int i = 1; i < _trackPoints.Length; i++)
-        {
-            Gizmos.color = Color.white;
-            Gizmos.DrawLine(_track.LanePoint(i - 1, 0), _track.LanePoint(i, 0));
-
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(_track.LanePoint(i - 1, 1), _track.LanePoint(i, 1));
-
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(_track.LanePoint(i - 1, -1), _track.LanePoint(i, -1));
-        }
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(TargetPoint(), .5f);
+        if (Application.isPlaying)
+            _track.DrawGizmos(_nextPointIndex, CurrentLane());
     }
 
     private void StartOnTrack()
@@ -107,6 +92,8 @@ public class PlayerMovement : MonoBehaviour
         _fixedUpdateHappenedThisFrame = false;
     }
 
+    
+
 
     private void CheckIncrementTrackPointIndex()
     {
@@ -127,7 +114,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 TargetPoint()
     {
-        return _track.LanePoint(_nextPointIndex, _targetLane);
+        return _track.LanePoint(_nextPointIndex, CurrentLane());
     }
 
     private void SwitchTrack(float laneChange)
@@ -137,13 +124,58 @@ public class PlayerMovement : MonoBehaviour
             return;
         _targetLane = nextLane;
 
+        //Vector2 targetLaneStart = _track.LanePoint(_nextPointIndex - 1, _targetLane).To2D();
+        //Vector2 targetLaneEnd = _track.LanePoint(_nextPointIndex, _targetLane).To2D();
+        //Vector2 playerPoint = (_rigidbody.position - _playerOffset).To2D();
+
+        //Vector3 newPosition = VectorUtils.ClosestPointOnLineSegment2D(playerPoint, targetLaneStart, targetLaneEnd).To3D();
+        //newPosition.y = _rigidbody.position.y;
+
+        StopAllCoroutines();
+        StartCoroutine(SwitchLane());
+
+        //_rigidbody.position = PositionToBeOnTargetLane();
+    }
+
+    private float CurrentLane()
+    {
+        Vector2 closestPoint = _track.ClosestPointOnTrack(_nextPointIndex, _rigidbody.position);
+        float distance = (closestPoint - _rigidbody.position.To2D()).magnitude;
+
+        bool toLeft = VectorUtils.PointIsToLeftOfVector(_track.TrackPoint(_nextPointIndex - 1), _track.TrackPoint(_nextPointIndex), _rigidbody.position - _playerOffset);
+        float sign = toLeft ? -1f : 1f;
+        return distance / _distanceBetweenLanes * sign;
+    }
+
+    
+
+    private IEnumerator SwitchLane()
+    {
+        while (true)
+        {
+            Vector3 targetLanePoint = PositionToBeOnTargetLane();
+
+            Vector3 toTargetLanePoint = targetLanePoint - _rigidbody.position;
+
+            if (toTargetLanePoint.sqrMagnitude < .001f)
+            {
+                break;
+            }
+
+            _rigidbody.position += Vector3.MoveTowards(Vector3.zero, toTargetLanePoint, 1.5f * Time.deltaTime);
+
+            yield return new WaitForFixedUpdate();
+        }
+    }
+
+    private Vector3 PositionToBeOnTargetLane()
+    {
         Vector2 targetLaneStart = _track.LanePoint(_nextPointIndex - 1, _targetLane).To2D();
         Vector2 targetLaneEnd = _track.LanePoint(_nextPointIndex, _targetLane).To2D();
         Vector2 playerPoint = (_rigidbody.position - _playerOffset).To2D();
 
-        Vector3 newPosition = VectorUtils.ClosestPointOnLineSegment2D(playerPoint, targetLaneStart, targetLaneEnd).To3D();
-        newPosition.y = _rigidbody.position.y;
-
-        _rigidbody.position = newPosition;
+        Vector3 result = VectorUtils.ClosestPointOnSegment2D(playerPoint, targetLaneStart, targetLaneEnd).To3D();
+        result.y = _rigidbody.position.y;
+        return result;
     }
 }

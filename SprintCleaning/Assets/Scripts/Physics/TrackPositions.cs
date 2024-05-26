@@ -23,6 +23,24 @@ public class TrackPositions
         _playerOffset = playerOffset;
     }
 
+    public void DrawGizmos(int nextPointIndex, float lane)
+    {
+        for (int i = 1; i < _trackPoints.Length; i++)
+        {
+            Gizmos.color = Color.white;
+            Gizmos.DrawLine(LanePoint(i - 1, 0), LanePoint(i, 0));
+
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(LanePoint(i - 1, 1), LanePoint(i, 1));
+
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(LanePoint(i - 1, -1), LanePoint(i, -1));
+        }
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(LanePoint(nextPointIndex, lane), .5f);
+    }
+
     public Vector3 ToNextPoint(Rigidbody rigidbody, int nextPointIndex, float lane)
     {
         return LanePoint(nextPointIndex, lane) - rigidbody.position;
@@ -73,6 +91,13 @@ public class TrackPositions
         result.y = _trackPoints[pointIndex].position.y;
         result += _playerOffset;
         return result;
+    }
+
+    public Vector2 ClosestPointOnTrack(int endpointIndex, Vector3 point)
+    {
+        Vector2 start = TrackPoint(endpointIndex - 1).To2D();
+        Vector2 end = TrackPoint(endpointIndex).To2D();
+        return VectorUtils.ClosestPointOnLineOrSegment2D(point.To2D(), start, end, false);
     }
 
     /// <summary>

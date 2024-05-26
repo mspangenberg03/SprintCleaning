@@ -32,7 +32,16 @@ public class VectorUtils : MonoBehaviour
         float Cross2D(Vector2 v, Vector2 w) => v.x * w.y - v.y * w.x;
     }
 
-    public static Vector2 ClosestPointOnLineSegment2D(Vector2 point, Vector2 segmentPoint1, Vector2 segmentPoint2)
+    public static Vector2 ClosestPointOnLine2D(Vector2 point, Vector2 linePoint1, Vector2 linePoint2)
+    {
+        return ClosestPointOnLineOrSegment2D(point, linePoint1, linePoint2, false);
+    }
+
+    public static Vector2 ClosestPointOnSegment2D(Vector2 point, Vector2 segmentPoint1, Vector2 segmentPoint2)
+    {
+        return ClosestPointOnLineOrSegment2D(point, segmentPoint1, segmentPoint2, true);
+    }
+    public static Vector2 ClosestPointOnLineOrSegment2D(Vector2 point, Vector2 segmentPoint1, Vector2 segmentPoint2, bool segment)
     {
         // stack overflow shortest distance between a point and a line segment
         Vector2 a = segmentPoint1;
@@ -46,7 +55,14 @@ public class VectorUtils : MonoBehaviour
             return a;
 
         float t = Vector2.Dot(pointMinusA, bMinusA) / sqrLength;
-        t = Mathf.Clamp01(t);
+        if (segment)
+            t = Mathf.Clamp01(t);
         return a + t * bMinusA;
+    }
+
+    public static bool PointIsToLeftOfVector(Vector3 vectorStart, Vector3 vectorEnd, Vector3 point)
+    {
+        // https://discussions.unity.com/t/check-if-a-point-is-on-the-right-or-left-of-a-vector/180869
+        return Vector3.Cross(vectorEnd - vectorStart, point - vectorStart).y < 0;
     }
 }
