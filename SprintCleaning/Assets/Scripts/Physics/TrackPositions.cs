@@ -13,7 +13,7 @@ public class TrackPositions : MonoBehaviour
     [SerializeField] private Transform[] _trackPoints;
     [SerializeField] private float _distanceBetweenLanes;
     [SerializeField] private float _playerVerticalOffset = 1.5f;
-
+    
     public Transform[] TrackPoints => _trackPoints;
 
     private static TrackPositions _instance;

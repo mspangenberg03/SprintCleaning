@@ -7,10 +7,20 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] _trackPrefabs;
     [SerializeField] private GameObject _player;
-    [SerializeField] private TrackPositions _track;
+
+    [SerializeField]
+    private TrackTurn[] _turns;
+
+    [System.Serializable]
+    private class TrackTurn
+    {
+        public Vector3 _positionOffset;
+        public float _yRotationOffset;
+    }
+
     private Transform[] TrackPieces => TrackPositions.Instance.TrackPoints;
     private static GameManager _instance;
-    private Vector3 _trackPieceOffset = new Vector3(0, 0, 10);
+    //private Vector3 _trackPieceOffset = new Vector3(0, 0, 10);
 
     public static GameManager Instance
     {
@@ -39,8 +49,15 @@ public class GameManager : MonoBehaviour
         GameObject.Destroy(TrackPieces[0].GetComponentsInParent<Transform>()[1].gameObject);
         //Creates a trackPiece following the last created
         int indexToInstanciate = TrackRandomIndex();
-        GameObject newTrackPiece = Instantiate(_trackPrefabs[indexToInstanciate], TrackPieces[TrackPieces.Length - 1].position + 
-                                                _trackPieceOffset,_trackPrefabs[indexToInstanciate].transform.rotation);
+
+        TrackTurn trackTurn = _turns[Random.Range(0, _turns.Length)];
+
+        Vector3 newPosition = TrackPieces[TrackPieces.Length - 1].TransformPoint(trackTurn._positionOffset);
+
+        float priorYRotation = TrackPieces[TrackPieces.Length - 1].rotation.eulerAngles.y;
+        Quaternion newRotation = Quaternion.Euler(0, priorYRotation + trackTurn._yRotationOffset, 0);
+
+        GameObject newTrackPiece = Instantiate(_trackPrefabs[indexToInstanciate], newPosition, newRotation);
 
 
         for (int i = 0; i < TrackPieces.Length - 1; i++)
