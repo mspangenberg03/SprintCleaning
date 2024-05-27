@@ -5,27 +5,17 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject[] _trackPrefabs;
+    [SerializeField] private GameObject[] _trackPrefabs; // index 0 should be the straight track piece
     [SerializeField] private GameObject _player;
     [SerializeField] private int _numTrackPoints = 10;
     [SerializeField] private float _oddsDontTurn = .8f;
     [SerializeField] private float _minStraightBetweenTurns = 2;
 
-    [SerializeField]
-    private TrackTurn[] _turns; // index 0 must be straight
-
-    [System.Serializable]
-    private class TrackTurn
-    {
-        public Vector3 _positionOffset;
-        public float _yRotationOffset;
-    }
-
-    private int _priorTurnIndex;
+    private int _priorTrackPieceIndex;
     private int _numStraightSinceLastTurn;
 
 
-    private List<Transform> TrackPieces => TrackPositions.Instance.TrackPoints;
+    public List<TrackPiece> TrackPieces { get; private set; } = new();
     private static GameManager _instance;
     //private Vector3 _trackPieceOffset = new Vector3(0, 0, 10);
 
@@ -51,11 +41,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private int TrackRandomIndex()
-    {
-        return Random.Range(0, _trackPrefabs.Length);
-    }
-
     public void AddTrackPiece()
     {
         if (TrackPieces.Count == 0)
@@ -69,25 +54,29 @@ public class GameManager : MonoBehaviour
        
 
         //Creates a trackPiece following the last created
-        int indexToInstanciate = TrackRandomIndex();
+        GameObject prefab = RandomTrackPiecePrefab();
 
-        TrackTurn trackTurn = RandomTurn();
+        // Choose a position and rotation such that the Start transform of the new track piece has the same position and rotation as the prior
+        // track piece's End transform.
 
-        Vector3 newPosition = TrackPieces[TrackPieces.Count - 1].TransformPoint(trackTurn._positionOffset);
+        GameObject instantiated = Instantiate(prefab, transform);
+        TrackPiece newTrackPiece = instantiated.GetComponent<TrackPiece>();
+        TrackPiece priorTrackPiece = TrackPieces[TrackPieces.Count - 1];   
 
-        float priorYRotation = TrackPieces[TrackPieces.Count - 1].rotation.eulerAngles.y;
-        Quaternion newRotation = Quaternion.Euler(0, priorYRotation + trackTurn._yRotationOffset, 0);
+        Vector3 rotationChange = priorTrackPiece.End.rotation.eulerAngles - newTrackPiece.Start.rotation.eulerAngles;
+        instantiated.transform.Rotate(rotationChange);
 
-        GameObject newTrackPiece = Instantiate(_trackPrefabs[indexToInstanciate], newPosition, newRotation, transform);
+        Vector3 positionChange = priorTrackPiece.End.position - newTrackPiece.Start.position;
+        instantiated.transform.position += positionChange;
 
 
         //Inserts the trackPiece just created in the array of trackPoints the player is following
-        TrackPieces.Add(newTrackPiece.transform.GetChild(0));
+        TrackPieces.Add(newTrackPiece);
 
         if (TrackPieces.Count > _numTrackPoints)
         {
             //Destroys the trackPieces as the player gets to the checkPoint in the middle of the next
-            Destroy(TrackPieces[0].parent.gameObject);
+            Destroy(TrackPieces[0].gameObject);
             TrackPieces.RemoveAt(0);
         }
 
@@ -98,10 +87,10 @@ public class GameManager : MonoBehaviour
         GameObject newTrackPiece = Instantiate(RandomTrackPiecePrefab()
             , Vector3.down * TrackPositions.Instance.PlayerVerticalOffset, Quaternion.identity);
 
-        TrackPieces.Add(newTrackPiece.transform.GetChild(0));
+        TrackPieces.Add(newTrackPiece.GetComponent<TrackPiece>());
     }
 
-    private TrackTurn RandomTurn()
+    private GameObject RandomTrackPiecePrefab()
     {
         int index;
 
@@ -117,17 +106,13 @@ public class GameManager : MonoBehaviour
             _numStraightSinceLastTurn = 0;
             do
             {
-                index = Random.Range(1, _turns.Length);
-            } while (index == _priorTurnIndex);
+                index = Random.Range(1, _trackPrefabs.Length);
+            } while (index == _priorTrackPieceIndex);
         }
 
-        _priorTurnIndex = index;
+        _priorTrackPieceIndex = index;
 
-        return _turns[index];
+        return _trackPrefabs[index];
     }
-
-
-
-    private GameObject RandomTrackPiecePrefab() => _trackPrefabs[Random.Range(0, _trackPrefabs.Length)];
 
 }
