@@ -117,6 +117,7 @@ GameObject:
   - component: {fileID: 4914791935381001829}
   - component: {fileID: 1305664302869975571}
   - component: {fileID: 181783345376048072}
+  - component: {fileID: 2311936753881235128}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -155,7 +156,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidbody: {fileID: 1305664302869975571}
   _playerSpeed: 10
+  _laneChangeSpeed: 30
+  _velocityRotationTowardsTargetLane: 30
   _rotationSpeed: 300
+  _playerOffset: {x: 0, y: 1.5, z: 0}
+  _distanceBetweenLanes: 1.5
+  _discreteMovement: 0
   _trackPoints:
   - {fileID: 0}
   - {fileID: 0}
@@ -208,6 +214,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxDirtiness: 50
   _dirtinessBar: {fileID: 0}
+--- !u!114 &2311936753881235128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6153705172661546054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0535ff30f6d754e4493f36ed2c8001f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _numberOfTools: 0
+  _toolsInPickUpRange: []
 --- !u!1 &7667096018232080867
 GameObject:
   m_ObjectHideFlags: 0

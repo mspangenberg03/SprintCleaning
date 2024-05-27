@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-[RequireComponent(typeof(SphereCollider))]
-public class ToolBase : MonoBehaviour
+[System.Serializable]
+public class ToolBase
 {
 
     public ToolType _type;
-    private bool _inPickupRange;
-    // Start is called before the first frame update
-    private void OnTriggerEnter(Collider other)
-    {
-        
-    }
+    [Tooltip("How many times the player used the tool")]
+    public int  _toolUses;
+    [Tooltip("How many times the tool can be used")]
+    public int _durablity = 5;
+
+
+    
+    
 
 }
 public enum ToolType

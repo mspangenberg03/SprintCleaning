@@ -1206,6 +1206,8 @@ GameObject:
   - component: {fileID: 1791975037}
   - component: {fileID: 1791975036}
   - component: {fileID: 1791975035}
+  - component: {fileID: 1791975039}
+  - component: {fileID: 1791975038}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1288,6 +1290,34 @@ Transform:
   - {fileID: 1969838041}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1791975038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791975034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 410d1737b7b5cdd468663483c47e6f08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxDirtiness: 0
+  _dirtinessBar: {fileID: 0}
+--- !u!114 &1791975039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791975034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0535ff30f6d754e4493f36ed2c8001f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _numberOfTools: 0
+  _toolsInPickUpRange: []
 --- !u!1 &1969838040
 GameObject:
   m_ObjectHideFlags: 0
