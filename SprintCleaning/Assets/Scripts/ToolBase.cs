@@ -22,6 +22,5 @@ public enum ToolType
 {
     Broom,
     GarbageBag,
-    Mop,
-    Sponge
+    Mop
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerToolManager : MonoBehaviour
 {
-    
+    [SerializeField]
     private List<ToolBase> _toolList = new(); //The tools that the player currently is carrying
     [SerializeField,Tooltip("How many tools the player can hold")]
     private int _numberOfTools;
@@ -26,6 +26,7 @@ public class PlayerToolManager : MonoBehaviour
         {
             _toolList.Add(_toolsInPickUpRange[0].ToolInfo);
             Destroy(_toolsInPickUpRange[0].gameObject);
+            _toolsInPickUpRange.RemoveAt(0);
             if (_toolList.Count > _numberOfTools)
             {
                 _toolList.RemoveAt(0);

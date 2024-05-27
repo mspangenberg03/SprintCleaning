@@ -19,11 +19,12 @@ public class Garbage : MonoBehaviour
                 if(tool._type == _type)
                 {
                     player.GetComponent<PlayerToolManager>().ToolUsed(tool);
+                    Destroy(gameObject);
                     return;
                 }
             }
             player.GetComponent<DirtinessManager>().AddDirtiness(_dirtiness);
-
+            Destroy(gameObject);
         }
     }
 }
