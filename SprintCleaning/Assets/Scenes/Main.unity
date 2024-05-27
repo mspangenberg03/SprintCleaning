@@ -876,7 +876,7 @@ GameObject:
   - component: {fileID: 1130812331}
   m_Layer: 0
   m_Name: Capsule
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1208,7 +1208,7 @@ GameObject:
   - component: {fileID: 1791975035}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1255,6 +1255,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 1791975035}
   _playerSpeed: 10
   _laneChangeSpeed: 5
+  _velocityRotationTowardsTargetLane: 30
   _rotationSpeed: 300
   _playerOffset: {x: 0, y: 1.5, z: 0}
   _distanceBetweenLanes: 1.5
@@ -1301,7 +1302,7 @@ GameObject:
   - component: {fileID: 1969838042}
   m_Layer: 0
   m_Name: Sphere
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
