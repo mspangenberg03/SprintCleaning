@@ -7,9 +7,10 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] _trackPrefabs;
     [SerializeField] private GameObject _player;
+    [SerializeField] private float _oddsDontTurn = .8f;
 
     [SerializeField]
-    private TrackTurn[] _turns;
+    private TrackTurn[] _turns; // index 0 must be straight
 
     [System.Serializable]
     private class TrackTurn
@@ -18,6 +19,8 @@ public class GameManager : MonoBehaviour
         public float _yRotationOffset;
     }
 
+    private int _priorTurnIndex; 
+
     private Transform[] TrackPieces => TrackPositions.Instance.TrackPoints;
     private static GameManager _instance;
     //private Vector3 _trackPieceOffset = new Vector3(0, 0, 10);
@@ -25,9 +28,10 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance
     {
         get{
-        if(_instance is null){
-            GameObject gameManager = new GameObject("GameManager");
-            gameManager.AddComponent<GameManager>();
+        if(_instance == null){
+            _instance = FindObjectOfType<GameManager>();
+            //GameObject gameManager = new GameObject("GameManager");
+            //gameManager.AddComponent<GameManager>();
         }
         return _instance;
         }
@@ -50,7 +54,26 @@ public class GameManager : MonoBehaviour
         //Creates a trackPiece following the last created
         int indexToInstanciate = TrackRandomIndex();
 
-        TrackTurn trackTurn = _turns[Random.Range(0, _turns.Length)];
+        int count = 0;
+        int turnIndex;
+        do
+        {
+            count++;
+            if (count == 100)
+            {
+                throw new System.Exception();
+            }
+            turnIndex = Random.Range(0, _turns.Length);
+        } while (!(turnIndex == 0 || turnIndex != _priorTurnIndex));
+
+        if (Random.value < _oddsDontTurn)
+        {
+            turnIndex = 0;
+        }
+
+        _priorTurnIndex = turnIndex;
+
+        TrackTurn trackTurn = _turns[turnIndex];
 
         Vector3 newPosition = TrackPieces[TrackPieces.Length - 1].TransformPoint(trackTurn._positionOffset);
 
