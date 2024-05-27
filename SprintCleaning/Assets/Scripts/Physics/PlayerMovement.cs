@@ -64,7 +64,7 @@ public class PlayerMovement : MonoBehaviour
                 _targetLane = _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position);
         }
 
-        if (!_discreteMovement || LeftKey || RightKey)
+        if (_discreteMovement || LeftKey || RightKey)
         {
             IncludeVelocityTowardsTargetLane();
         }
