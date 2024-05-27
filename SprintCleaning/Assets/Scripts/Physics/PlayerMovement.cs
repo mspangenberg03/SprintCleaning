@@ -116,7 +116,7 @@ public class PlayerMovement : MonoBehaviour
         // If the direction to the target will become opposite, then it's about to get past the next point
         if (Vector3.Dot(targetPoint - _rigidbody.position, targetPoint - newPosition) <= 0.0001f)
         {
-            gameManager.InstantiateTrackSegment();
+            gameManager.AddTrackPiece();
         }
     }
 

@@ -10,11 +10,11 @@ using UnityEngine;
 public class TrackPositions : MonoBehaviour
 {
 
-    [SerializeField] private Transform[] _trackPoints;
     [SerializeField] private float _distanceBetweenLanes;
     [SerializeField] private float _playerVerticalOffset = 1.5f;
-    
-    public Transform[] TrackPoints => _trackPoints;
+    public float PlayerVerticalOffset => _playerVerticalOffset;
+
+    public List<Transform> TrackPoints { get; private set; } = new();
 
     private static TrackPositions _instance;
     public static TrackPositions Instance 
@@ -37,7 +37,7 @@ public class TrackPositions : MonoBehaviour
         if (!Application.isPlaying)
             return;
 
-        for (int i = 1; i < _trackPoints.Length; i++)
+        for (int i = 1; i < TrackPoints.Count; i++)
         {
             Gizmos.color = Color.white;
             Gizmos.DrawLine(LanePoint(i - 1, 0), LanePoint(i, 0));
@@ -60,7 +60,7 @@ public class TrackPositions : MonoBehaviour
     /// </summary>
     public Vector3 TrackPoint(int pointIndex)
     {
-        return _trackPoints[pointIndex].position + Vector3.up * _playerVerticalOffset;
+        return TrackPoints[pointIndex].position + Vector3.up * _playerVerticalOffset;
     }
 
     /// <summary>
@@ -68,7 +68,7 @@ public class TrackPositions : MonoBehaviour
     /// </summary>
     public Vector3 LanePoint(int pointIndex, float lane)
     {
-        if (pointIndex == 0 || pointIndex == _trackPoints.Length - 1)
+        if (pointIndex == 0 || pointIndex == TrackPoints.Count - 1)
         {
             // At the end points of the track, there is only 1 segment of the track to consider, so just use an offset perpendicular to that lane segment.
             // Other points are on two segments so this wouldn't work for them.
@@ -92,11 +92,11 @@ public class TrackPositions : MonoBehaviour
             return TrackPoint(pointIndex) + LaneOffset(pointIndex, lane);
         }
 
-        Vector2 lanePointA = (_trackPoints[pointIndex - 1].position + laneOffset).To2D();
-        Vector2 lanePointB = (_trackPoints[pointIndex].position + laneOffset).To2D();
+        Vector2 lanePointA = (TrackPoints[pointIndex - 1].position + laneOffset).To2D();
+        Vector2 lanePointB = (TrackPoints[pointIndex].position + laneOffset).To2D();
 
-        Vector2 nextLanePointA = (_trackPoints[pointIndex].position + nextLaneOffset).To2D();
-        Vector2 nextLanePointB = (_trackPoints[pointIndex + 1].position + nextLaneOffset).To2D();
+        Vector2 nextLanePointA = (TrackPoints[pointIndex].position + nextLaneOffset).To2D();
+        Vector2 nextLanePointB = (TrackPoints[pointIndex + 1].position + nextLaneOffset).To2D();
 
         Vector3 result = VectorUtils.LinesIntersectionPoint2D(lanePointA, lanePointB, nextLanePointA, nextLanePointB).To3D();
         result.y = TrackPoint(pointIndex).y;
@@ -119,7 +119,7 @@ public class TrackPositions : MonoBehaviour
     public Vector3 LaneOffset(int laneSegmentEndpointIndex, float lane)
     {
         // Determine the vector from the middle lane to the a lane.
-        Vector3 pathDirection = _trackPoints[laneSegmentEndpointIndex].position - _trackPoints[laneSegmentEndpointIndex - 1].position;
+        Vector3 pathDirection = TrackPoints[laneSegmentEndpointIndex].position - TrackPoints[laneSegmentEndpointIndex - 1].position;
         float trackAngle = Vector3.SignedAngle(pathDirection, Vector3.forward, Vector3.up);
 
         Vector3 laneOffset = lane * _distanceBetweenLanes * Vector3.right; // the offset if the track isn't rotated

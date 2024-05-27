@@ -47,7 +47,9 @@ MonoBehaviour:
   _trackPrefabs:
   - {fileID: 8436985586966843200, guid: 8bb2a798dd0b81b48a4a239534d025ec, type: 3}
   _player: {fileID: 0}
+  _numTrackPoints: 10
   _oddsDontTurn: 0.7
+  _minStraightBetweenTurns: 2
   _turns:
   - _positionOffset: {x: 0, y: 0, z: 10}
     _yRotationOffset: 0
