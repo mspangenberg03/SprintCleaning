@@ -37,7 +37,7 @@ public class TrackPositions : MonoBehaviour
         if (!Application.isPlaying)
             return;
 
-        for (int i = 1; i < GameManager.Instance.TrackPieces.Count; i++)
+        for (int i = 1; i < TrackGenerator.Instance.TrackPieces.Count; i++)
         {
             Gizmos.color = Color.white;
             Gizmos.DrawLine(LanePoint(i - 1, 0), LanePoint(i, 0));
@@ -50,17 +50,12 @@ public class TrackPositions : MonoBehaviour
         }
     }
 
-    public Vector3 ToNextPoint(Rigidbody rigidbody, int nextPointIndex, float lane)
-    {
-        return LanePoint(nextPointIndex, lane) - rigidbody.position;
-    }
-
     /// <summary>
     /// A point along the track at its midline.
     /// </summary>
     public Vector3 TrackPoint(int pointIndex)
     {
-        return GameManager.Instance.TrackPieces[pointIndex].End.position + Vector3.up * _playerVerticalOffset;
+        return TrackGenerator.Instance.TrackPieces[pointIndex].End.position + Vector3.up * _playerVerticalOffset;
     }
 
     /// <summary>
@@ -68,7 +63,7 @@ public class TrackPositions : MonoBehaviour
     /// </summary>
     public Vector3 LanePoint(int pointIndex, float lane)
     {
-        if (pointIndex == 0 || pointIndex == GameManager.Instance.TrackPieces.Count - 1)
+        if (pointIndex == 0 || pointIndex == TrackGenerator.Instance.TrackPieces.Count - 1)
         {
             // At the end points of the track, there is only 1 segment of the track to consider, so just use an offset perpendicular to that lane segment.
             // Other points are on two segments so this wouldn't work for them.

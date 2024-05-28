@@ -65,4 +65,30 @@ public class VectorUtils : MonoBehaviour
         // https://discussions.unity.com/t/check-if-a-point-is-on-the-right-or-left-of-a-vector/180869
         return Vector3.Cross(vectorEnd - vectorStart, point - vectorStart).y < 0;
     }
+
+    public static void LimitVelocityToPreventOvershoot(ref Vector3 velocity, Vector3 currentPosition, Vector3 targetPosition, float deltaTime)
+    {
+        if (VelocityWillOvershoot(velocity, currentPosition, targetPosition, deltaTime))
+        {
+            velocity = (targetPosition - currentPosition) / deltaTime;
+        }
+    }
+
+    public static bool VelocityWillOvershoot(Vector3 velocity, Vector3 currentPosition, Vector3 targetPosition, float deltaTime)
+    {
+#if UNITY_EDITOR
+        // Check that the velocity is directly towards the target.
+        Vector3 angles = Quaternion.FromToRotation(velocity, targetPosition - currentPosition).eulerAngles;
+        if (angles.sqrMagnitude > .1f)
+        {
+            throw new System.ArgumentException($"Velocity should be towards the target position. velocity direction is {velocity.normalized}" +
+                $" and should be {(targetPosition - currentPosition).normalized}");
+        }
+#endif
+
+        // If the direction to the target will become opposite, then it's about to get past the next point
+        Vector3 currentDisplacement = currentPosition - targetPosition;
+        Vector3 nextDisplacement = currentDisplacement + velocity * deltaTime;
+        return Vector3.Dot(currentDisplacement, nextDisplacement) <= 0.0001f;
+    }
 }

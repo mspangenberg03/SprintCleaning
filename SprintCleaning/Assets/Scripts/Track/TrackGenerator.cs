@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class TrackGenerator : MonoBehaviour
 {
     [SerializeField] private GameObject[] _trackPrefabs; // index 0 should be the straight track piece
     [SerializeField] private GameObject _player;
@@ -15,23 +15,23 @@ public class GameManager : MonoBehaviour
     private int _numStraightSinceLastTurn;
 
 
-    public List<TrackPiece> TrackPieces { get; private set; } = new();
-    private static GameManager _instance;
-    //private Vector3 _trackPieceOffset = new Vector3(0, 0, 10);
 
-    public static GameManager Instance
+    private static TrackGenerator _instance;
+    public static TrackGenerator Instance
     {
         get
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<GameManager>();
-                //GameObject gameManager = new GameObject("GameManager");
-                //gameManager.AddComponent<GameManager>();
+                _instance = FindObjectOfType<TrackGenerator>();
             }
             return _instance;
         }
     }
+
+    public List<TrackPiece> TrackPieces { get; private set; } = new();
+
+
     void Awake()
     {
         _instance = this;
