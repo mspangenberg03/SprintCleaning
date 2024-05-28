@@ -5,12 +5,12 @@ using UnityEngine;
 public class PlayerToolManager : MonoBehaviour
 {
     [SerializeField]
-    private List<ToolBase> _toolList = new(); //The tools that the player currently is carrying
+    public List<ToolBase> _toolList = new(); //The tools that the player currently is carrying
     [SerializeField,Tooltip("How many tools the player can hold")]
     private int _numberOfTools;
     public List<PickUpTool> _toolsInPickUpRange = new();
-    // Start is called before the first frame update
-    
+    [SerializeField] private ToolBar _toolBar;
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))
@@ -31,6 +31,7 @@ public class PlayerToolManager : MonoBehaviour
             {
                 _toolList.RemoveAt(0);
             }
+            _toolBar.DrawSpritesOnToolAdd();
         }
         
 

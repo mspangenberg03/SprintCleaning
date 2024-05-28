@@ -12,6 +12,8 @@ public class ToolBase
     public int  _toolUses;
     [Tooltip("How many times the tool can be used")]
     public int _durablity = 5;
+    [Tooltip("UI informations")]
+    [SerializeField] public ToolUI _toolUI;
 
 
     

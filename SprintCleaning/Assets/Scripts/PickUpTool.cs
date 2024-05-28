@@ -15,7 +15,7 @@ public class PickUpTool : MonoBehaviour
             if (_overlappingColliders == 0)
             {
                 other.transform.parent.GetComponent<PlayerToolManager>()._toolsInPickUpRange.Add(this);
-
+                
             }
             _overlappingColliders++;
 
