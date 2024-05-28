@@ -9,21 +9,24 @@ public class PlayerMovement : MonoBehaviour
     // ^ every time the player reaches the next point, it creates the next track segment and deletes the oldest one, so the player is always
     // moving towards this point index.
 
-    //private const float MAX_FRACTION_LANE_CHANGE_SPEED_AT_END = .1f;
-    //// ^ when the player is changing lanes with _discreteMovement true, they shouldn't accelerate to max speed and then just stop
-    //// instantly. Instead, the maximum lane change speed is reduced based on how far they are, so it's full at half a lane away
-    //// from the target lane (or half a lane away from the current lane, if the target lane is multiple lanes away). At the start
-    //// lane and target lane, the maximum lane change speed is multiplied by this. Linearly interpolate the max speed.
+    private const float MAX_FRACTION_LANE_CHANGE_SPEED_AT_END = .1f;
+    // ^ when the player is changing lanes with _discreteMovement true, they shouldn't accelerate to max speed and then just stop
+    // instantly. Instead, the maximum lane change speed is reduced based on how far they are, so it's full at half a lane away
+    // from the target lane (or half a lane away from the current lane, if the target lane is multiple lanes away). At the start
+    // lane and target lane, the maximum lane change speed is multiplied by this. Linearly interpolate the max speed.
 
 
     [SerializeField] private Rigidbody _rigidbody;
-    [SerializeField] private float _playerSpeed = 0f;
-    [SerializeField] private float _maxLaneChangeSpeed = 5f;
-    [SerializeField] private float _laneChangeSpeedupTime = .1f;
-    [SerializeField] private float _laneChangeTurnaroundTime = .1f;
-    [SerializeField] private float _laneChangeStoppingTime = .2f;
-    [SerializeField] private float _rotationSpeed = 300;
-    [SerializeField] private bool _discreteMovement = false;
+
+    [SerializeField] private PlayerMovementSettings _settings;
+    private bool _discreteMovement = false;
+    private float _playerSpeed = 0f;
+    private float _maxLaneChangeSpeed = 5f;
+    private float _laneChangeSpeedupTime = .1f;
+    private float _laneChangeTurnaroundTime = .1f;
+    private float _laneChangeStoppingTime = .2f;
+    private float _rotationSpeed = 300;
+
     private float _laneChangeSpeed;
     private PlayerMovementTargetLane _targetLaneTracker;
 
@@ -38,6 +41,15 @@ public class PlayerMovement : MonoBehaviour
     {
         gameManager = TrackGenerator.Instance;
         _track = TrackPositions.Instance;
+
+        _discreteMovement = _settings._discreteMovement;
+        _playerSpeed = _settings._playerSpeed;
+        _maxLaneChangeSpeed = _settings._maxLaneChangeSpeed;
+        _laneChangeSpeedupTime = _settings._laneChangeSpeedupTime;
+        _laneChangeTurnaroundTime = _settings._laneChangeTurnaroundTime;
+        _laneChangeStoppingTime = _settings._laneChangeStoppingTime;  
+        _rotationSpeed = _settings._rotationSpeed;
+        
         _targetLaneTracker = new PlayerMovementTargetLane(_discreteMovement);
     }
 
@@ -86,12 +98,11 @@ public class PlayerMovement : MonoBehaviour
     {
         AccelerateLaneChangeSpeed();
 
-        //float currentLane = _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position);
-        //if (currentLane == _targetLaneTracker.TargetLane || !_targetLaneTracker.TargetLane.HasValue)
-        //    return;
-
         // Find a point to the left or right of the player on the lane which the player is moving towards.
-        Vector3 lanePoint = _track.PositionToBeOnLane(TARGET_POINT_INDEX, Mathf.Sign(_laneChangeSpeed), _rigidbody.position);
+        float laneToGoTowards = Mathf.Sign(_laneChangeSpeed);
+        if (_discreteMovement)
+            laneToGoTowards = _targetLaneTracker.TargetLane.Value;
+        Vector3 lanePoint = _track.PositionToBeOnLane(TARGET_POINT_INDEX, laneToGoTowards, _rigidbody.position);
 
         Vector3 laneChangeVelocity = Mathf.Abs(_laneChangeSpeed) * (lanePoint - _rigidbody.position).normalized;
         if (VectorUtils.LimitVelocityToPreventOvershoot(ref laneChangeVelocity, _rigidbody.position, lanePoint, Time.deltaTime))
@@ -126,8 +137,5 @@ public class PlayerMovement : MonoBehaviour
         _laneChangeSpeed += _maxLaneChangeSpeed / accelerationTime * Time.deltaTime * accelerationDirection;
         if (Mathf.Abs(_laneChangeSpeed) > _maxLaneChangeSpeed)
             _laneChangeSpeed = Mathf.Sign(_laneChangeSpeed) * _maxLaneChangeSpeed;
-
-        Debug.Log("acceleration direction: " + accelerationDirection);
-        Debug.Log("lane change speed: " + _laneChangeSpeed);
     }
 }
