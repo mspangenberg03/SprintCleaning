@@ -10,10 +10,7 @@ public class PlayerGarbageCollection : MonoBehaviour
     [SerializeField]
     private CollectedItems _playerItemData;
 
-    private void Start()
-    {
-        _playerItemData.NewRun();
-    }
+    
 
 
 
