@@ -35,20 +35,20 @@ public class CollectedItems : ScriptableObject
        
         
     }
-    public void GarbageCollected(string garbage)
+    public void GarbageCollected(ToolType garbage)
     {
         
-        if(garbage == "Broom")
+        if(garbage == ToolType.Broom)
         {
             _broomGarbageCount++;
             _totalBroomGarbageCount++;
         }
-        if(garbage == "GarbageBag")
+        if(garbage == ToolType.GarbageBag)
         {
             _bagGarbageCount++;
             _totalBagGarbageCount++;
         }
-        if(garbage == "Mop")
+        if(garbage == ToolType.Mop)
         {
             _mopGarbageCount++;
             _totalMopGarbageCount++;

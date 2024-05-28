@@ -22,7 +22,7 @@ public class Garbage : MonoBehaviour
                 if(tool._type == _type)
                 {
                     player.GetComponent<PlayerToolManager>().ToolUsed(tool);
-                    _playerItemData.GarbageCollected(_type.ToString());
+                    _playerItemData.GarbageCollected(_type);
                     _playerItemData.TextEdit();
                     Destroy(gameObject);
                     return;
