@@ -101,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
         // Find a point to the left or right of the player on the lane which the player is moving towards.
         float laneToGoTowards = Mathf.Sign(_laneChangeSpeed);
         if (_discreteMovement)
-            laneToGoTowards = _targetLaneTracker.TargetLane.Value;
+            laneToGoTowards = TargetLane.Value;
         Vector3 lanePoint = _track.PositionToBeOnLane(TARGET_POINT_INDEX, laneToGoTowards, _rigidbody.position);
 
         Vector3 laneChangeVelocity = Mathf.Abs(_laneChangeSpeed) * (lanePoint - _rigidbody.position).normalized;
@@ -119,8 +119,10 @@ public class PlayerMovement : MonoBehaviour
     {
         float currentLane = _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position);
 
+        bool slowDown = currentLane == TargetLane || !TargetLane.HasValue;
+
         float accelerationDirection;
-        if (currentLane == TargetLane || !TargetLane.HasValue)
+        if (slowDown)
             accelerationDirection = -Mathf.Sign(_laneChangeSpeed);
         else
             accelerationDirection = Mathf.Sign(TargetLane.Value - currentLane);
@@ -134,8 +136,11 @@ public class PlayerMovement : MonoBehaviour
                 accelerationTime = _laneChangeStoppingTime;
         }
 
+        float laneChangeSpeedSignBefore = Mathf.Sign(_laneChangeSpeed);
         _laneChangeSpeed += _maxLaneChangeSpeed / accelerationTime * Time.deltaTime * accelerationDirection;
         if (Mathf.Abs(_laneChangeSpeed) > _maxLaneChangeSpeed)
             _laneChangeSpeed = Mathf.Sign(_laneChangeSpeed) * _maxLaneChangeSpeed;
+        if (slowDown && (laneChangeSpeedSignBefore != Mathf.Sign(_laneChangeSpeed)))
+            _laneChangeSpeed = 0;
     }
 }
