@@ -19,13 +19,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody _rigidbody;
 
     [SerializeField] private PlayerMovementSettings _settings;
-    private bool _discreteMovement = false;
-    private float _playerSpeed = 0f;
-    private float _maxLaneChangeSpeed = 5f;
-    private float _laneChangeSpeedupTime = .1f;
-    private float _laneChangeTurnaroundTime = .1f;
-    private float _laneChangeStoppingTime = .2f;
-    private float _rotationSpeed = 300;
 
     private float _laneChangeSpeed;
     private PlayerMovementTargetLane _targetLaneTracker;
@@ -41,16 +34,8 @@ public class PlayerMovement : MonoBehaviour
     {
         gameManager = TrackGenerator.Instance;
         _track = TrackPositions.Instance;
-
-        _discreteMovement = _settings._discreteMovement;
-        _playerSpeed = _settings._playerSpeed;
-        _maxLaneChangeSpeed = _settings._maxLaneChangeSpeed;
-        _laneChangeSpeedupTime = _settings._laneChangeSpeedupTime;
-        _laneChangeTurnaroundTime = _settings._laneChangeTurnaroundTime;
-        _laneChangeStoppingTime = _settings._laneChangeStoppingTime;  
-        _rotationSpeed = _settings._rotationSpeed;
         
-        _targetLaneTracker = new PlayerMovementTargetLane(_discreteMovement);
+        _targetLaneTracker = new PlayerMovementTargetLane(_settings._discreteMovement);
     }
 
     private void Start()
@@ -69,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         Vector3 directionToNextPoint = (EndPoint() - _rigidbody.position).normalized;
-        _rigidbody.velocity = directionToNextPoint * _playerSpeed;
+        _rigidbody.velocity = directionToNextPoint * _settings._playerSpeed;
 
         if (VectorUtils.VelocityWillOvershoot(_rigidbody.velocity, _rigidbody.position, EndPoint(), Time.deltaTime))
         {
@@ -78,9 +63,10 @@ public class PlayerMovement : MonoBehaviour
 
 
         _targetLaneTracker.OnFixedUpdate();
-        LaneMovement();
 
-        _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_rotationSpeed, directionToNextPoint, _rigidbody.rotation));
+        _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings._rotationSpeed, directionToNextPoint, _rigidbody.rotation));
+
+        LaneMovement();
     }
 
     private void Update()
@@ -90,7 +76,19 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 EndPoint()
     {
-        return _track.LanePoint(TARGET_POINT_INDEX, _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position));
+        return PlayerLanePoint(TARGET_POINT_INDEX);
+    }
+
+    private Vector3 DirectionFromEndPoint()
+    {
+        return (PlayerLanePoint(TARGET_POINT_INDEX + 1) - EndPoint()).normalized;
+    }
+
+    // returns a point on the track at the player's current lane, at an index of the list of points which define the track.
+    private Vector3 PlayerLanePoint(int trackIndex)
+    {
+        float currentLane = _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position);
+        return _track.LanePoint(trackIndex, currentLane);
     }
     
 
@@ -100,7 +98,7 @@ public class PlayerMovement : MonoBehaviour
 
         // Find a point to the left or right of the player on the lane which the player is moving towards.
         float laneToGoTowards = Mathf.Sign(_laneChangeSpeed);
-        if (_discreteMovement)
+        if (_settings._discreteMovement)
             laneToGoTowards = TargetLane.Value;
         Vector3 lanePoint = _track.PositionToBeOnLane(TARGET_POINT_INDEX, laneToGoTowards, _rigidbody.position);
 
@@ -117,6 +115,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void AccelerateLaneChangeSpeed()
     {
+        // This only changes _laneChangeSpeed. Adjust it more gradually than instantly moving at the maximum lane change speed,
+        // to make it feel better.
+
         float currentLane = _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position);
 
         bool slowDown = currentLane == TargetLane || !TargetLane.HasValue;
@@ -127,19 +128,19 @@ public class PlayerMovement : MonoBehaviour
         else
             accelerationDirection = Mathf.Sign(TargetLane.Value - currentLane);
 
-        float accelerationTime = _laneChangeSpeedupTime;
+        float accelerationTime = _settings._laneChangeSpeedupTime;
         if (Mathf.Sign(accelerationDirection) != Mathf.Sign(_laneChangeSpeed))
         {
             if (_targetLaneTracker.AnyInput)
-                accelerationTime = _laneChangeTurnaroundTime;
+                accelerationTime = _settings._laneChangeTurnaroundTime;
             else
-                accelerationTime = _laneChangeStoppingTime;
+                accelerationTime = _settings._laneChangeStoppingTime;
         }
 
         float laneChangeSpeedSignBefore = Mathf.Sign(_laneChangeSpeed);
-        _laneChangeSpeed += _maxLaneChangeSpeed / accelerationTime * Time.deltaTime * accelerationDirection;
-        if (Mathf.Abs(_laneChangeSpeed) > _maxLaneChangeSpeed)
-            _laneChangeSpeed = Mathf.Sign(_laneChangeSpeed) * _maxLaneChangeSpeed;
+        _laneChangeSpeed += _settings._maxLaneChangeSpeed / accelerationTime * Time.deltaTime * accelerationDirection;
+        if (Mathf.Abs(_laneChangeSpeed) > _settings._maxLaneChangeSpeed)
+            _laneChangeSpeed = Mathf.Sign(_laneChangeSpeed) * _settings._maxLaneChangeSpeed;
         if (slowDown && (laneChangeSpeedSignBefore != Mathf.Sign(_laneChangeSpeed)))
             _laneChangeSpeed = 0;
     }
