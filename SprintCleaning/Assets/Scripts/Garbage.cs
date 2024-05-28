@@ -9,6 +9,9 @@ public class Garbage : MonoBehaviour
 
     [SerializeField,Tooltip("How much dirtiness does this garbage add")]
     private int _dirtiness = 10;
+
+    [SerializeField]
+    private CollectedItems _playerItemData;
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
@@ -19,6 +22,8 @@ public class Garbage : MonoBehaviour
                 if(tool._type == _type)
                 {
                     player.GetComponent<PlayerToolManager>().ToolUsed(tool);
+                    _playerItemData.GarbageCollected(_type.ToString());
+                    _playerItemData.TextEdit();
                     Destroy(gameObject);
                     return;
                 }

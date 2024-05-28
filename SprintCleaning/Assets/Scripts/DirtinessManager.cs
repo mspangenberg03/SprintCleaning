@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,13 +14,24 @@ public class DirtinessManager : MonoBehaviour
     private GameObject _dirtinessBar;
 
     private float _percentOfDirtiness;
+
+    [SerializeField]
+    private TextMeshProUGUI _dirtinessText;
+
+    private void Start()
+    {
+        _dirtinessText.text = _currentDirtiness.ToString() + "/"+ _maxDirtiness.ToString();
+    }
+
+
+
     //This function should be called from either the player script or the garbage script
     //Param: dirtiness - The amount of dirtiness that the piece of trash adds to the player
     public void AddDirtiness(int addedDirtiness)
     {
         _currentDirtiness += addedDirtiness;
-        Debug.Log(_currentDirtiness);
-        if(_currentDirtiness >= _maxDirtiness)
+        _dirtinessText.text = _currentDirtiness.ToString() + "/" + _maxDirtiness.ToString();
+        if (_currentDirtiness >= _maxDirtiness)
         {
             GameOver();
         }
@@ -32,7 +44,7 @@ public class DirtinessManager : MonoBehaviour
     
     private void GameOver()
     {
-        Debug.Log("Game Over");
+        //GetComponent<PlayerGarbageCollection>().GameOver();
         SceneManager.LoadScene("MainMenu");
     }
     //TODO: Create health bar
