@@ -239,7 +239,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidbody: {fileID: 6654320705877145291}
   _playerSpeed: 10
-  _laneChangeSpeed: 5
+  _maxLaneChangeSpeed: 5
+  _laneChangeSpeedupTime: 0.05
+  _laneChangeTurnaroundTime: 0.1
+  _laneChangeStoppingTime: 0.15
   _rotationSpeed: 300
   _discreteMovement: 0
 --- !u!54 &6654320705877145291
@@ -295,5 +298,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0535ff30f6d754e4493f36ed2c8001f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _toolList: []
   _numberOfTools: 2
   _toolsInPickUpRange: []

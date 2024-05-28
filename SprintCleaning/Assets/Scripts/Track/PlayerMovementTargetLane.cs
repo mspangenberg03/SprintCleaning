@@ -16,7 +16,8 @@ public class PlayerMovementTargetLane
     private bool LeftKey => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
     private bool RightKey => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
 
-    public float? TargetLane { get; private set; } 
+    public float? TargetLane { get; private set; }
+    public bool AnyInput => LeftKey || RightKey;
 
 
     public PlayerMovementTargetLane(bool discreteMovement)
@@ -66,6 +67,7 @@ public class PlayerMovementTargetLane
         CheckPollInput();
 
         _polledInputsThisFrame = false; // update happens after fixed update, so this is the end of the frame for this code
+
     }
 
     private void CheckPollInput()

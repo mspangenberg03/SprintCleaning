@@ -66,12 +66,14 @@ public class VectorUtils : MonoBehaviour
         return Vector3.Cross(vectorEnd - vectorStart, point - vectorStart).y < 0;
     }
 
-    public static void LimitVelocityToPreventOvershoot(ref Vector3 velocity, Vector3 currentPosition, Vector3 targetPosition, float deltaTime)
+    public static bool LimitVelocityToPreventOvershoot(ref Vector3 velocity, Vector3 currentPosition, Vector3 targetPosition, float deltaTime)
     {
         if (VelocityWillOvershoot(velocity, currentPosition, targetPosition, deltaTime))
         {
             velocity = (targetPosition - currentPosition) / deltaTime;
+            return true;
         }
+        return false;
     }
 
     public static bool VelocityWillOvershoot(Vector3 velocity, Vector3 currentPosition, Vector3 targetPosition, float deltaTime)
