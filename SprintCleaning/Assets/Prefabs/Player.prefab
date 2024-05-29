@@ -201,7 +201,7 @@ GameObject:
   - component: {fileID: 6654320705877145291}
   - component: {fileID: 3019220370651282654}
   - component: {fileID: 6582814077961112365}
-  - component: {fileID: 5570182909230411769}
+  - component: {fileID: 3205953339151722299}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -285,7 +285,6 @@ MonoBehaviour:
   _maxDirtiness: 50
   _dirtinessBar: {fileID: 0}
   _dirtinessText: {fileID: 0}
-  _playerData: {fileID: 11400000, guid: a4d552aa22ccde841848f0e8f2245245, type: 2}
 --- !u!114 &6582814077961112365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -301,7 +300,8 @@ MonoBehaviour:
   _toolList: []
   _numberOfTools: 2
   _toolsInPickUpRange: []
---- !u!114 &5570182909230411769
+  _toolBar: {fileID: 0}
+--- !u!114 &3205953339151722299
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
