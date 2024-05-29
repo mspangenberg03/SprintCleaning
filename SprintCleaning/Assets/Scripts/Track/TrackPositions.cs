@@ -32,39 +32,9 @@ public class TrackPositions : MonoBehaviour
         _instance = this;
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //    if (!Application.isPlaying)
-    //        return;
-
-    //    for (int i = 1; i < TrackGenerator.Instance.TrackPieces.Count; i++)
-    //    {
-    //        Gizmos.color = Color.white;
-    //        Gizmos.DrawLine(LanePoint(i - 1, 0), LanePoint(i, 0));
-
-    //        Gizmos.color = Color.green;
-    //        Gizmos.DrawLine(LanePoint(i - 1, 1), LanePoint(i, 1));
-
-    //        Gizmos.color = Color.blue;
-    //        Gizmos.DrawLine(LanePoint(i - 1, -1), LanePoint(i, -1));
-    //    }
-    //}
-
-    /// <summary>
-    /// A point along the track at its midline.
-    /// </summary>
     public Vector3 TrackPoint(int pointIndex)
     {
         return TrackGenerator.Instance.TrackPieces[pointIndex].EndTransform.position + Vector3.up * _playerVerticalOffset;
-    }
-
-    public Transform StartTransform(int pointIndex)
-    {
-        return TrackGenerator.Instance.TrackPieces[pointIndex].StartTransform;
-    }
-    public Transform EndTransform(int pointIndex)
-    {
-        return TrackGenerator.Instance.TrackPieces[pointIndex].EndTransform;
     }
 
     /// <summary>
@@ -142,7 +112,7 @@ public class TrackPositions : MonoBehaviour
         return distance / _distanceBetweenLanes * sign;
     }
 
-    public Vector3 PositionToBeOnLaneUsingStraightLines(int endpointIndex, float lane, Vector3 position)
+    private Vector3 PositionToBeOnLaneUsingStraightLines(int endpointIndex, float lane, Vector3 position)
     {
         Vector2 targetLaneStart = LanePoint(endpointIndex - 1, lane).To2D();
         Vector2 targetLaneEnd = LanePoint(endpointIndex, lane).To2D();
@@ -152,65 +122,65 @@ public class TrackPositions : MonoBehaviour
         return result;
     }
 
-    public Vector3 ClosestPointOnLane(int endpointIndex, float lane, Vector3 position)
-    {
+    //public Vector3 ClosestPointOnLane(int endpointIndex, float lane, Vector3 position)
+    //{
 
-        return PositionToBeOnLaneUsingStraightLines(endpointIndex, lane, position);
+    //    return PositionToBeOnLaneUsingStraightLines(endpointIndex, lane, position);
 
-        // to do
+    //    // to do
 
-        //Transform start = StartTransform(endpointIndex);
-        //Transform end = EndTransform(endpointIndex);
+    //    //Transform start = StartTransform(endpointIndex);
+    //    //Transform end = EndTransform(endpointIndex);
 
-        //Vector3 startDirection = start.forward;
-        //Vector3 startPosition = start.position + lane * DistanceBetweenLanes * start.right;
+    //    //Vector3 startDirection = start.forward;
+    //    //Vector3 startPosition = start.position + lane * DistanceBetweenLanes * start.right;
 
-        //Vector3 endDirection = end.forward;
-        //Vector3 endPosition = end.position + lane * DistanceBetweenLanes * end.right;
+    //    //Vector3 endDirection = end.forward;
+    //    //Vector3 endPosition = end.position + lane * DistanceBetweenLanes * end.right;
 
-        //bool trackPieceGoesStraight = Vector3.Angle(startDirection, endDirection) < .1f;
-        //bool closeEnoughToGoStraightToEnd = (position - endPosition).magnitude < 1.25f * PlayerMovement.Settings._playerSpeed * Time.deltaTime;
+    //    //bool trackPieceGoesStraight = Vector3.Angle(startDirection, endDirection) < .1f;
+    //    //bool closeEnoughToGoStraightToEnd = (position - endPosition).magnitude < 1.25f * PlayerMovement.Settings._playerSpeed * Time.deltaTime;
 
-        //if (trackPieceGoesStraight || closeEnoughToGoStraightToEnd)
-        //{
-        //    return PositionToBeOnLaneUsingStraightLines(endpointIndex, lane, position);
-        //}
+    //    //if (trackPieceGoesStraight || closeEnoughToGoStraightToEnd)
+    //    //{
+    //    //    return PositionToBeOnLaneUsingStraightLines(endpointIndex, lane, position);
+    //    //}
 
-        //// probably move bezier stuff into TrackPositions
-        //// (this code was copy and pasted from player movement)
+    //    //// probably move bezier stuff into TrackPositions
+    //    //// (this code was copy and pasted from player movement)
 
 
-        //// Use a bezier curve as the path between the start and end of the current track piece.
-        //// https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_B%C3%A9zier_curves
-        //Vector3 p0 = startPosition;
-        //Vector3 p2 = endPosition;
-        //Vector3 p1 = VectorUtils.LinesIntersectionPoint2D(p0.To2D(), p0.To2D() + startDirection.To2D(), p2.To2D(), p2.To2D() + endDirection.To2D()).To3D();
-        //p1.y = (p0.y + p2.y) / 2;
+    //    //// Use a bezier curve as the path between the start and end of the current track piece.
+    //    //// https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_B%C3%A9zier_curves
+    //    //Vector3 p0 = startPosition;
+    //    //Vector3 p2 = endPosition;
+    //    //Vector3 p1 = VectorUtils.LinesIntersectionPoint2D(p0.To2D(), p0.To2D() + startDirection.To2D(), p2.To2D(), p2.To2D() + endDirection.To2D()).To3D();
+    //    //p1.y = (p0.y + p2.y) / 2;
 
-        //Vector3 r = position;
+    //    //Vector3 r = position;
 
-        //const int steps = 1000;
-        //float bestT = 0;
-        //float bestError = float.PositiveInfinity;
-        //for (int i = 0; i < steps; i++)
-        //{
-        //    Vector3 BMinusR = PlayerMovement.BezierCurve((float)i / steps, p0, p1, p2) - r;
+    //    //const int steps = 1000;
+    //    //float bestT = 0;
+    //    //float bestError = float.PositiveInfinity;
+    //    //for (int i = 0; i < steps; i++)
+    //    //{
+    //    //    Vector3 BMinusR = PlayerMovement.BezierCurve((float)i / steps, p0, p1, p2) - r;
 
-        //    float error = BMinusR.sqrMagnitude;
+    //    //    float error = BMinusR.sqrMagnitude;
 
-        //    if (error < bestError)
-        //    {
+    //    //    if (error < bestError)
+    //    //    {
 
-        //        bestT = (float)i / steps;
-        //        bestError = error;
-        //    }
-        //}
+    //    //        bestT = (float)i / steps;
+    //    //        bestError = error;
+    //    //    }
+    //    //}
 
-        //if (bestError == float.PositiveInfinity)
-        //{
-        //    return PositionToBeOnLaneUsingStraightLines(endpointIndex, lane, position);
-        //}
+    //    //if (bestError == float.PositiveInfinity)
+    //    //{
+    //    //    return PositionToBeOnLaneUsingStraightLines(endpointIndex, lane, position);
+    //    //}
 
-        //return PlayerMovement.BezierCurve(bestT, p0, p1, p2);
-    }
+    //    //return PlayerMovement.BezierCurve(bestT, p0, p1, p2);
+    //}
 }

@@ -93,4 +93,9 @@ public class VectorUtils : MonoBehaviour
         Vector3 nextDisplacement = currentDisplacement + velocity * deltaTime;
         return Vector3.Dot(currentDisplacement, nextDisplacement) <= 0.0001f;
     }
+
+    public static float ProjectionMagnitude(Vector2 vector, Vector2 projectOnto)
+    {
+        return Vector2.Dot(vector, projectOnto.normalized);
+    }
 }
