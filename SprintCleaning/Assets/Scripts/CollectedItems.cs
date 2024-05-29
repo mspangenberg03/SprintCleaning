@@ -12,21 +12,23 @@ public class CollectedItems : ScriptableObject
     private int _totalBagGarbageCount = 0;
     private int _totalBroomGarbageCount = 0;
     private int _totalMopGarbageCount = 0;
-    public Dictionary<ToolType, int> _counts = new Dictionary<ToolType, int>
+    public Dictionary<ToolType, int> _counts;
+    public void Awake()
     {
-         {ToolType.Broom,0},
-         {ToolType.Mop, 0},
-         {ToolType.GarbageBag, 0}
-    };
+        _counts = new Dictionary<ToolType, int>
+        {
+            { ToolType.Broom, _totalBroomGarbageCount },
+            { ToolType.Mop, _totalMopGarbageCount },
+            { ToolType.GarbageBag, _totalBagGarbageCount }
+        };
+
+    }
     public void GarbageCollected(ToolType garbage)
     {
         _counts[garbage]++;
+        _totalBagGarbageCount = _counts[ToolType.GarbageBag];
+        _totalBroomGarbageCount = _counts[ToolType.Broom];
+        _totalMopGarbageCount = _counts[ToolType.Mop];
     }
-    //Saves the total garbage collected
-    public void GameOver()
-    {
-        _totalBagGarbageCount += _counts[ToolType.GarbageBag];
-        _totalBroomGarbageCount += _counts[ToolType.Broom];
-        _totalMopGarbageCount += _counts[ToolType.Mop];
-    }
+    
 }

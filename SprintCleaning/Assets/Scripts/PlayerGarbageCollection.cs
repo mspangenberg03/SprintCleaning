@@ -1,14 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerGarbageCollection : MonoBehaviour
 {
-    public TextMeshProUGUI _garbageText;
+    [SerializeField]
+    private TextMeshProUGUI _garbageText;
 
     [SerializeField]
     private CollectedItems _playerItemData;
+
+    
+    private void Start()
+    {
+        _playerItemData.Awake();
+    }
     public void TextEdit()
     {
         if (_garbageText != null)

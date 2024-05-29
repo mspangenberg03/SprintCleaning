@@ -17,9 +17,6 @@ public class DirtinessManager : MonoBehaviour
 
     [SerializeField]
     private TextMeshProUGUI _dirtinessText;
-
-    [SerializeField]
-    private CollectedItems _playerData;
     private void Start()
     {
         _dirtinessText.text = _currentDirtiness.ToString() + "/"+ _maxDirtiness.ToString();
@@ -46,7 +43,6 @@ public class DirtinessManager : MonoBehaviour
     
     private void GameOver()
     {
-        _playerData.GameOver();
         SceneManager.LoadScene("MainMenu");
     }
     //TODO: Create health bar
