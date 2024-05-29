@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerToolManager : MonoBehaviour
@@ -9,7 +10,6 @@ public class PlayerToolManager : MonoBehaviour
     [SerializeField,Tooltip("How many tools the player can hold")]
     private int _numberOfTools;
     public List<PickUpTool> _toolsInPickUpRange = new();
-    // Start is called before the first frame update
     
     private void Update()
     {
@@ -17,6 +17,9 @@ public class PlayerToolManager : MonoBehaviour
         {
             TryAddTool();
         }
+       
+        
+       
     }
 
     public void TryAddTool()
@@ -25,12 +28,14 @@ public class PlayerToolManager : MonoBehaviour
         if(_toolsInPickUpRange.Count > 0)
         {
             _toolList.Add(_toolsInPickUpRange[0].ToolInfo);
+            //_toolText.text += _toolsInPickUpRange[0].ToolInfo._type.ToString() +", ";
             Destroy(_toolsInPickUpRange[0].gameObject);
             _toolsInPickUpRange.RemoveAt(0);
             if (_toolList.Count > _numberOfTools)
             {
                 _toolList.RemoveAt(0);
             }
+            
         }
         
 
@@ -41,6 +46,7 @@ public class PlayerToolManager : MonoBehaviour
         if(tool._toolUses >= tool._durablity) 
         {
             _toolList.Remove(tool);
+            //_toolText.text = _toolText.text.Replace(tool._type.ToString() +", ","");
         }
     }
         
