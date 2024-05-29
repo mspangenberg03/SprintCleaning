@@ -6,7 +6,6 @@ using UnityEngine;
 [System.Serializable]
 public class ToolBase
 {
-
     public ToolType _type;
     [Tooltip("How many times the player used the tool")]
     public int  _toolUses;
