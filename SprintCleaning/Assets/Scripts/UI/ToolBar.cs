@@ -11,13 +11,19 @@ public class ToolBar : MonoBehaviour
     
     public void DrawSpritesOnToolAdd()
     {
-        
-        for (int i = 0; i < ActiveTools.Count; i++)
+        if (ActiveTools.Count == 1)
         {
-            if (ActiveTools[i] != null)
-                _toolSprites[i + 1].overrideSprite = ActiveTools[i]._toolUI.Sprite;
+            _toolSprites[2].overrideSprite = ActiveTools[0]._toolUI.Sprite;
         }
+        else
+        {
+            for (int i = 0; i < ActiveTools.Count; i++)
+            {
+                if (ActiveTools[i] != null)
 
+                    _toolSprites[i + 1].overrideSprite = ActiveTools[i]._toolUI.Sprite;
+            }
+        }
 
     }
 }
