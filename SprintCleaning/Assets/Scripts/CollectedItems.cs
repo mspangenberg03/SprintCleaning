@@ -12,35 +12,21 @@ public class CollectedItems : ScriptableObject
     private int _totalBagGarbageCount = 0;
     private int _totalBroomGarbageCount = 0;
     private int _totalMopGarbageCount = 0;
-
-    public void TextEdit()
+    public Dictionary<ToolType, int> _counts = new Dictionary<ToolType, int>
     {
-        GameObject player = GameObject.Find("Player");
-        TextMeshProUGUI text = player.GetComponent<PlayerGarbageCollection>()._garbageText;
-        if(text != null)
-        {
-            text.text = "Broom Garbage: " + _totalBroomGarbageCount +"\n" +
-                        "Mop Garbage: " + _totalMopGarbageCount +"\n" +
-                        "Bag Garbage: " + _totalBagGarbageCount;
-        }
-       
-        
-    }
+         {ToolType.Broom,0},
+         {ToolType.Mop, 0},
+         {ToolType.GarbageBag, 0}
+    };
     public void GarbageCollected(ToolType garbage)
     {
-        
-        if(garbage == ToolType.Broom)
-        {
-            _totalBroomGarbageCount++;
-        }
-        if(garbage == ToolType.GarbageBag)
-        {
-
-            _totalBagGarbageCount++;
-        }
-        if(garbage == ToolType.Mop)
-        {
-            _totalMopGarbageCount++;
-        }
+        _counts[garbage]++;
+    }
+    //Saves the total garbage collected
+    public void GameOver()
+    {
+        _totalBagGarbageCount += _counts[ToolType.GarbageBag];
+        _totalBroomGarbageCount += _counts[ToolType.Broom];
+        _totalMopGarbageCount += _counts[ToolType.Mop];
     }
 }

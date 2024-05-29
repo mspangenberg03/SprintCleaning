@@ -285,6 +285,7 @@ MonoBehaviour:
   _maxDirtiness: 50
   _dirtinessBar: {fileID: 0}
   _dirtinessText: {fileID: 0}
+  _playerData: {fileID: 11400000, guid: a4d552aa22ccde841848f0e8f2245245, type: 2}
 --- !u!114 &6582814077961112365
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -23,7 +23,7 @@ public class Garbage : MonoBehaviour
                 {
                     player.GetComponent<PlayerToolManager>().ToolUsed(tool);
                     _playerItemData.GarbageCollected(_type);
-                    _playerItemData.TextEdit();
+                    player.GetComponent<PlayerGarbageCollection>().TextEdit();
                     Destroy(gameObject);
                     return;
                 }
