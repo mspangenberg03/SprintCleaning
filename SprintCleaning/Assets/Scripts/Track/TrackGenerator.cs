@@ -63,10 +63,10 @@ public class TrackGenerator : MonoBehaviour
         TrackPiece newTrackPiece = instantiated.GetComponent<TrackPiece>();
         TrackPiece priorTrackPiece = TrackPieces[TrackPieces.Count - 1];   
 
-        Vector3 rotationChange = priorTrackPiece.End.rotation.eulerAngles - newTrackPiece.Start.rotation.eulerAngles;
+        Vector3 rotationChange = priorTrackPiece.EndTransform.rotation.eulerAngles - newTrackPiece.StartTransform.rotation.eulerAngles;
         instantiated.transform.Rotate(rotationChange);
 
-        Vector3 positionChange = priorTrackPiece.End.position - newTrackPiece.Start.position;
+        Vector3 positionChange = priorTrackPiece.EndTransform.position - newTrackPiece.StartTransform.position;
         instantiated.transform.position += positionChange;
 
 

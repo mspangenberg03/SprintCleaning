@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8106894535350359632}
   - component: {fileID: 7236938786578858706}
   - component: {fileID: 4066943307069292971}
-  - component: {fileID: 8166087967291312215}
   m_Layer: 0
   m_Name: 2nd visual piece
   m_TagString: Untagged
@@ -84,20 +83,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &8166087967291312215
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1903238861021371761}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d15607d6813bd014aa209c5e0c2586e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Start>k__BackingField: {fileID: 0}
-  <End>k__BackingField: {fileID: 0}
 --- !u!1 &7660089248075401983
 GameObject:
   m_ObjectHideFlags: 0
@@ -228,8 +213,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d15607d6813bd014aa209c5e0c2586e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Start>k__BackingField: {fileID: 3497149722837914828}
-  <End>k__BackingField: {fileID: 116830074961514206}
+  <StartTransform>k__BackingField: {fileID: 3497149722837914828}
+  <EndTransform>k__BackingField: {fileID: 116830074961514206}
 --- !u!1 &8510740565994504317
 GameObject:
   m_ObjectHideFlags: 0

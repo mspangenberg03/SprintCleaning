@@ -13,7 +13,7 @@ public class TrackPositions : MonoBehaviour
     [SerializeField] private float _distanceBetweenLanes;
     [SerializeField] private float _playerVerticalOffset = 1.5f;
     public float PlayerVerticalOffset => _playerVerticalOffset;
-
+    public float DistanceBetweenLanes => _distanceBetweenLanes;
 
 
     private static TrackPositions _instance;
@@ -32,30 +32,39 @@ public class TrackPositions : MonoBehaviour
         _instance = this;
     }
 
-    private void OnDrawGizmos()
-    {
-        if (!Application.isPlaying)
-            return;
+    //private void OnDrawGizmos()
+    //{
+    //    if (!Application.isPlaying)
+    //        return;
 
-        for (int i = 1; i < TrackGenerator.Instance.TrackPieces.Count; i++)
-        {
-            Gizmos.color = Color.white;
-            Gizmos.DrawLine(LanePoint(i - 1, 0), LanePoint(i, 0));
+    //    for (int i = 1; i < TrackGenerator.Instance.TrackPieces.Count; i++)
+    //    {
+    //        Gizmos.color = Color.white;
+    //        Gizmos.DrawLine(LanePoint(i - 1, 0), LanePoint(i, 0));
 
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(LanePoint(i - 1, 1), LanePoint(i, 1));
+    //        Gizmos.color = Color.green;
+    //        Gizmos.DrawLine(LanePoint(i - 1, 1), LanePoint(i, 1));
 
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(LanePoint(i - 1, -1), LanePoint(i, -1));
-        }
-    }
+    //        Gizmos.color = Color.blue;
+    //        Gizmos.DrawLine(LanePoint(i - 1, -1), LanePoint(i, -1));
+    //    }
+    //}
 
     /// <summary>
     /// A point along the track at its midline.
     /// </summary>
     public Vector3 TrackPoint(int pointIndex)
     {
-        return TrackGenerator.Instance.TrackPieces[pointIndex].End.position + Vector3.up * _playerVerticalOffset;
+        return TrackGenerator.Instance.TrackPieces[pointIndex].EndTransform.position + Vector3.up * _playerVerticalOffset;
+    }
+
+    public Transform StartTransform(int pointIndex)
+    {
+        return TrackGenerator.Instance.TrackPieces[pointIndex].StartTransform;
+    }
+    public Transform EndTransform(int pointIndex)
+    {
+        return TrackGenerator.Instance.TrackPieces[pointIndex].EndTransform;
     }
 
     /// <summary>
@@ -123,6 +132,8 @@ public class TrackPositions : MonoBehaviour
 
     public float ConvertPositionToLane(int endpointIndex, Vector3 position)
     {
+        // This and probably other things need to take into account the bezier curves. So gotta implement the approximation
+        // for closest point on a bezier curve (and the lane equals the distance excluding y from that closest point divided by space between lanes)
         Vector2 closestPoint = ClosestPointOnTrack(endpointIndex, position);
         float distance = (closestPoint - position.To2D()).magnitude;
 
@@ -131,7 +142,7 @@ public class TrackPositions : MonoBehaviour
         return distance / _distanceBetweenLanes * sign;
     }
 
-    public Vector3 PositionToBeOnLane(int endpointIndex, float lane, Vector3 position)
+    public Vector3 PositionToBeOnLaneUsingStraightLines(int endpointIndex, float lane, Vector3 position)
     {
         Vector2 targetLaneStart = LanePoint(endpointIndex - 1, lane).To2D();
         Vector2 targetLaneEnd = LanePoint(endpointIndex, lane).To2D();
@@ -139,5 +150,67 @@ public class TrackPositions : MonoBehaviour
         Vector3 result = VectorUtils.ClosestPointOnSegment2D(position.To2D(), targetLaneStart, targetLaneEnd).To3D();
         result.y = position.y;
         return result;
+    }
+
+    public Vector3 ClosestPointOnLane(int endpointIndex, float lane, Vector3 position)
+    {
+
+        return PositionToBeOnLaneUsingStraightLines(endpointIndex, lane, position);
+
+        // to do
+
+        //Transform start = StartTransform(endpointIndex);
+        //Transform end = EndTransform(endpointIndex);
+
+        //Vector3 startDirection = start.forward;
+        //Vector3 startPosition = start.position + lane * DistanceBetweenLanes * start.right;
+
+        //Vector3 endDirection = end.forward;
+        //Vector3 endPosition = end.position + lane * DistanceBetweenLanes * end.right;
+
+        //bool trackPieceGoesStraight = Vector3.Angle(startDirection, endDirection) < .1f;
+        //bool closeEnoughToGoStraightToEnd = (position - endPosition).magnitude < 1.25f * PlayerMovement.Settings._playerSpeed * Time.deltaTime;
+
+        //if (trackPieceGoesStraight || closeEnoughToGoStraightToEnd)
+        //{
+        //    return PositionToBeOnLaneUsingStraightLines(endpointIndex, lane, position);
+        //}
+
+        //// probably move bezier stuff into TrackPositions
+        //// (this code was copy and pasted from player movement)
+
+
+        //// Use a bezier curve as the path between the start and end of the current track piece.
+        //// https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_B%C3%A9zier_curves
+        //Vector3 p0 = startPosition;
+        //Vector3 p2 = endPosition;
+        //Vector3 p1 = VectorUtils.LinesIntersectionPoint2D(p0.To2D(), p0.To2D() + startDirection.To2D(), p2.To2D(), p2.To2D() + endDirection.To2D()).To3D();
+        //p1.y = (p0.y + p2.y) / 2;
+
+        //Vector3 r = position;
+
+        //const int steps = 1000;
+        //float bestT = 0;
+        //float bestError = float.PositiveInfinity;
+        //for (int i = 0; i < steps; i++)
+        //{
+        //    Vector3 BMinusR = PlayerMovement.BezierCurve((float)i / steps, p0, p1, p2) - r;
+
+        //    float error = BMinusR.sqrMagnitude;
+
+        //    if (error < bestError)
+        //    {
+
+        //        bestT = (float)i / steps;
+        //        bestError = error;
+        //    }
+        //}
+
+        //if (bestError == float.PositiveInfinity)
+        //{
+        //    return PositionToBeOnLaneUsingStraightLines(endpointIndex, lane, position);
+        //}
+
+        //return PlayerMovement.BezierCurve(bestT, p0, p1, p2);
     }
 }
