@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     //// from the target lane (or half a lane away from the current lane, if the target lane is multiple lanes away). At the start
     //// lane and target lane, the maximum lane change speed is multiplied by this. Linearly interpolate the max speed.
 
+    [SerializeField] private int _seed = -1;
 
     [SerializeField] private Rigidbody _rigidbody;
 
@@ -35,6 +36,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake() 
     {
+        if (_seed == -1)
+        {
+            _seed = Random.Range(int.MinValue, int.MaxValue);
+            Debug.Log("RNG seed: " + _seed);
+        }
+        Random.InitState(_seed);
+
         test = _rigidbody;
         Settings = _settings;
         gameManager = TrackGenerator.Instance;
@@ -58,10 +66,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //Debug.Log("y: " + _rigidbody.position.y);
+
         TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
 
         Vector3 currentPosition = _rigidbody.position - Vector3.up * TrackPositions.Instance.PlayerVerticalOffset;
         float currentLane = trackPiece.Lane(currentPosition, out float t);
+
+        //Debug.Log(currentLane);
 
         Vector3 forwardsVelocity = NextVelocityAlongTrack(trackPiece, currentPosition, currentLane, t, out bool goingStraightTowardsEnd, out Vector3 trackEnd);
         _rigidbody.velocity = forwardsVelocity;
@@ -92,9 +104,9 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // The derivative of the bezier curve is the direction of the velocity, if timesteps were infinitely small.
-        // Use the 2nd derivative to help reduce the error.
+        // Use the 2nd derivative to help reduce the error from discrete timesteps.
         Vector3 derivative = trackPiece.BezierCurveDerivative(t);
-        Vector3 secondDerivative = trackPiece.BezierCurveSecondDerivative(t);
+        Vector3 secondDerivative = trackPiece.BezierCurveSecondDerivative();
         float estimatedTChangeDuringTimestep = _settings._playerSpeed * Time.deltaTime / derivative.magnitude;
         Vector3 averageDerivative = derivative + estimatedTChangeDuringTimestep / 2 * secondDerivative;
         return _settings._playerSpeed * averageDerivative.normalized;
@@ -119,17 +131,35 @@ public class PlayerMovement : MonoBehaviour
         Vector3 laneChangeVelocity = _laneChangeSpeed * laneChangeDirection;
 
         trackPiece.StoreLane(0);
-        Vector3 trackMidpoint = trackPiece.BezierCurve(t); // Should instead get this by intersecting the lane change direction with 
-                                                           // the bezier curve, to get an exact point. Currently the overshoot check isn't precise
-                                                           // and I had to comment out some input validation in a method called by 
-                                                           // LimitVelocityToPreventOvershoot
-        Vector3 movingTowards = trackMidpoint + Mathf.Sign(_laneChangeSpeed) * laneChangeDirection * TrackPositions.Instance.DistanceBetweenLanes;
+
+        // The track midpoint is at the intersection of the track's bezier curve and a line along laneChangeVelocity
+        Vector2 linePoint1 = currentPosition.To2D();
+        Vector2 linePoint2 = linePoint1 + laneChangeDirection.To2D();
+        (Vector2, Vector2) possibleMidpoints = trackPiece.IntersectionsOfBezierCurveWithLine2D(linePoint1, linePoint2);
+        Vector2 approximateMidpoint = trackPiece.BezierCurve(t);
+        Vector2 trackMidpoint;
+        if ((approximateMidpoint - possibleMidpoints.Item1).sqrMagnitude < (approximateMidpoint - possibleMidpoints.Item2).sqrMagnitude)
+            trackMidpoint = possibleMidpoints.Item1;
+        else
+            trackMidpoint = possibleMidpoints.Item2;
+        Vector3 trackMidpoint3d = trackMidpoint.To3D();
+        trackMidpoint3d.y = currentPosition.y;
+
+
+        //Vector3 trackMidpoint = trackPiece.BezierCurve(t); // Should instead get this by intersecting the lane change direction with 
+        //                                                   // the bezier curve, to get an exact point. Currently the overshoot check isn't precise
+        //                                                   // and I had to comment out some input validation in a method called by 
+        //                                                   // LimitVelocityToPreventOvershoot
+        Vector3 movingTowards = trackMidpoint3d + Mathf.Sign(_laneChangeSpeed) * laneChangeDirection * TrackPositions.Instance.DistanceBetweenLanes;
         if (VectorUtils.LimitVelocityToPreventOvershoot(ref laneChangeVelocity, currentPosition, movingTowards, Time.deltaTime))
         {
             // It's going to reach the edge of the track. Without this, it takes a moment to move the other direction
             // after reaching the edge of the track.
             _laneChangeSpeed = 0;
         }
+
+        if (laneChangeVelocity.y != 0)
+            Debug.Log("laneChangeVelocity.y: " + laneChangeVelocity.y);
 
         _rigidbody.velocity += laneChangeVelocity;
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -98,5 +99,24 @@ public class VectorUtils : MonoBehaviour
     public static float ProjectionMagnitude(Vector2 vector, Vector2 projectOnto)
     {
         return Vector2.Dot(vector, projectOnto.normalized);
+    }
+
+    public static Vector2 LineLineIntersection2d(Vector2 line1PointA, Vector2 line1PointB, Vector2 line2PointA, Vector2 line2PointB)
+    {
+        // https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+        float x1 = line1PointA.x; // L1
+        float y1 = line1PointA.y;
+        float x2 = line1PointB.x;
+        float y2 = line1PointB.y;
+        float x3 = line2PointA.x; // L2
+        float y3 = line2PointA.y;
+        float x4 = line2PointB.x;
+        float y4 = line2PointB.y;
+
+        float denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4); // 0 if the two lines are parallel
+        float xNumerator = (x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4);
+        float yNumerator = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4);
+        return new Vector2(xNumerator / denominator, yNumerator / denominator);
+
     }
 }
