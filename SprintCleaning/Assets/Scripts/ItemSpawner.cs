@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -12,15 +14,12 @@ public class ItemSpawner : MonoBehaviour
     [SerializeField,Tooltip("The max amount of items that can spawn on a track piece")]
     private int _maxItems;
 
-    [SerializeField]
-    private GameObject _itemToSpawn;
-
     [SerializeField,Tooltip("The types of garbage that can spawn")]
     private List<GameObject> _garbageTypes = new List<GameObject>();
     [SerializeField, Tooltip("")]
     private List<GameObject> _toolTypes = new List<GameObject>();
-
-    private const int _chanceOfSpawningTool = 40; 
+    [SerializeField,Tooltip("The percent chance of spawning a tool"),Range(0,100)]
+    public const int _chanceOfSpawningTool = 20; 
     
 
     public void SpawnItems(GameObject trackPiece)
