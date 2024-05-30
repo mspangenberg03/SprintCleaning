@@ -63,21 +63,20 @@ public class PlayerMovement : MonoBehaviour
         Vector3 currentPosition = _rigidbody.position - Vector3.up * TrackPositions.Instance.PlayerVerticalOffset;
         float currentLane = trackPiece.Lane(currentPosition, out float t);
 
-        Vector3 nextVelocity = NextVelocityAlongTrack(trackPiece, currentPosition, currentLane, t, out bool goingStraightTowardsEnd, out Vector3 trackEnd);
-        _rigidbody.velocity = nextVelocity;
+        Vector3 forwardsVelocity = NextVelocityAlongTrack(trackPiece, currentPosition, currentLane, t, out bool goingStraightTowardsEnd, out Vector3 trackEnd);
+        _rigidbody.velocity = forwardsVelocity;
 
-        if (goingStraightTowardsEnd && VectorUtils.VelocityWillOvershoot(_rigidbody.velocity.To2D().To3D(), _rigidbody.position.To2D().To3D(), trackEnd.To2D().To3D(), Time.deltaTime))
+        if (goingStraightTowardsEnd && VectorUtils.VelocityWillOvershoot(forwardsVelocity.To2D().To3D(), currentPosition.To2D().To3D(), trackEnd.To2D().To3D(), Time.deltaTime))
         {
-            //Debug.Log("add track piece");
             gameManager.AddTrackPiece();
         }
 
 
         _targetLaneTracker.OnFixedUpdate();
 
-        _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings._rotationSpeed, nextVelocity, _rigidbody.rotation));
+        _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings._rotationSpeed, forwardsVelocity, _rigidbody.rotation));
 
-        LaneMovement(trackPiece, currentLane);
+        LaneMovement(trackPiece, currentLane, t, forwardsVelocity, currentPosition); // should check whether this is always orthogonal to lane movement. It should be.
     }
 
     private Vector3 NextVelocityAlongTrack(TrackPiece trackPiece, Vector3 currentPosition, float currentLane
@@ -86,23 +85,19 @@ public class PlayerMovement : MonoBehaviour
         trackPiece.StoreLane(currentLane);
         trackEnd = trackPiece.EndPosition;
 
-        if ((trackEnd - currentPosition).magnitude <= _settings._playerSpeed * Time.deltaTime)
+        goingStraightTowardsEnd = (trackEnd - currentPosition).magnitude <= _settings._playerSpeed * Time.deltaTime;
+        if (goingStraightTowardsEnd)
         {
-            goingStraightTowardsEnd = true;
             return _settings._playerSpeed * (trackEnd - currentPosition).normalized;
         }
-        goingStraightTowardsEnd = false;
 
         // The derivative of the bezier curve is the direction of the velocity, if timesteps were infinitely small.
-        // Could use the 2nd derivative to help account for the discrete timesteps.
-        return _settings._playerSpeed * trackPiece.BezierCurveDerivative(t).normalized;
-
-
-
-        //Vector3 targetPosition = trackPiece.PointToMoveTowardsOnSameLane(currentPosition, _settings._playerSpeed * Time.deltaTime, out goingStraightTowardsEnd, trackEnd, currentLane
-        //    , t);
-
-        //return _settings._playerSpeed * (targetPosition - currentPosition).normalized;
+        // Use the 2nd derivative to help reduce the error.
+        Vector3 derivative = trackPiece.BezierCurveDerivative(t);
+        Vector3 secondDerivative = trackPiece.BezierCurveSecondDerivative(t);
+        float estimatedTChangeDuringTimestep = _settings._playerSpeed * Time.deltaTime / derivative.magnitude;
+        Vector3 averageDerivative = derivative + estimatedTChangeDuringTimestep / 2 * secondDerivative;
+        return _settings._playerSpeed * averageDerivative.normalized;
     }
 
     private void Update()
@@ -111,21 +106,25 @@ public class PlayerMovement : MonoBehaviour
     }
     
 
-    private void LaneMovement(TrackPiece trackPiece, float currentLane)
+    private void LaneMovement(TrackPiece trackPiece, float currentLane, float t, Vector3 forwardsVelocity, Vector3 currentPosition)
     {
         AccelerateLaneChangeSpeed(currentLane);
 
-        // Find a point to the left or right of the player on the lane which the player is moving towards.
-        float laneToGoTowards = Mathf.Sign(_laneChangeSpeed);
-        if (_settings._discreteMovement)
-            laneToGoTowards = TargetLane.Value;
+        //// Find a point to the left or right of the player on the lane which the player is moving towards.
+        //float laneToGoTowards = Mathf.Sign(_laneChangeSpeed);
+        //if (_settings._discreteMovement)
+        //    laneToGoTowards = TargetLane.Value;
 
-        trackPiece.StoreLane(laneToGoTowards);
-        Vector3 lanePoint = trackPiece.ClosestPointOnStoredLane(_rigidbody.position);
-        lanePoint.y = _rigidbody.position.y;
+        Vector3 laneChangeDirection = -Vector2.Perpendicular(forwardsVelocity.To2D()).normalized.To3D();
+        Vector3 laneChangeVelocity = _laneChangeSpeed * laneChangeDirection;
 
-        Vector3 laneChangeVelocity = Mathf.Abs(_laneChangeSpeed) * (lanePoint - _rigidbody.position).normalized;
-        if (VectorUtils.LimitVelocityToPreventOvershoot(ref laneChangeVelocity, _rigidbody.position, lanePoint, Time.deltaTime))
+        trackPiece.StoreLane(0);
+        Vector3 trackMidpoint = trackPiece.BezierCurve(t); // Should instead get this by intersecting the lane change direction with 
+                                                           // the bezier curve, to get an exact point. Currently the overshoot check isn't precise
+                                                           // and I had to comment out some input validation in a method called by 
+                                                           // LimitVelocityToPreventOvershoot
+        Vector3 movingTowards = trackMidpoint + Mathf.Sign(_laneChangeSpeed) * laneChangeDirection * TrackPositions.Instance.DistanceBetweenLanes;
+        if (VectorUtils.LimitVelocityToPreventOvershoot(ref laneChangeVelocity, currentPosition, movingTowards, Time.deltaTime))
         {
             // It's going to reach the edge of the track. Without this, it takes a moment to move the other direction
             // after reaching the edge of the track.

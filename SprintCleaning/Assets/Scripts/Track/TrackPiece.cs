@@ -36,7 +36,7 @@ public class TrackPiece : MonoBehaviour
         return BezierCurve(TOfClosestPointOnStoredLane(point));
     }
 
-    private float TOfClosestPointOnStoredLane(Vector3 point, bool dontAllowEarlierPoints = false)
+    private float TOfClosestPointOnStoredLane(Vector3 point)
     {
         const int steps = 1000;
         float minSqrDistance = float.PositiveInfinity;
@@ -47,26 +47,6 @@ public class TrackPiece : MonoBehaviour
             Vector3 v = BezierCurve(t);
             if ((v - point).To2D().sqrMagnitude < minSqrDistance)
             {
-                if (dontAllowEarlierPoints)
-                {
-                    // Do not return a t which is less than the t of the exact closest point.
-                    // So check that the tangent to the curve at the t being checked isn't pointing away from the point
-                    Vector2 derivative = BezierCurveDerivative(t).To2D();
-
-                    bool wrongDirection = Vector2.Dot(derivative, (v - point).To2D()) < 0;
-                    //bool wrongDirectionAlt = Vector2.Dot(PlayerMovement.test.velocity.To2D(), (point - v).To2D()) < 0;
-                    //if (wrongDirection != wrongDirectionAlt)
-                    //    Debug.Log("wtf " + t);
-
-
-                    //Vector2 startPosition = BezierCurve(t).To2D();
-                    //if (Vector2.Dot(startPosition - PlayerMovement.test.position.To2D(), PlayerMovement.test.velocity.To2D()) < 0)
-                    //    wrongDirectionAlt = true;
-
-                    if (wrongDirection)
-                        continue;
-                }
-
                 minSqrDistance = (v - point).To2D().sqrMagnitude;
                 bestT = t;
             }
@@ -97,51 +77,7 @@ public class TrackPiece : MonoBehaviour
         return lane;
     }
 
-    public Vector3 PointToMoveTowardsOnSameLane(Vector3 currentPosition, float distanceFromCurrentPosition
-        , out bool isEndPoint, Vector3 trackEnd, float currentLane, float t)
-    {
-        StoreLane(currentLane);
-
-        // Find the t of currentPosition (does it change or can it just use the t from before?)
-        // And then iterate starting from there to find a point on the curve at the specified distance away.
-        // Need to start from there so it doesn't find an earlier point on the curve (which'd make the player move backwards).
-        float startT = TOfClosestPointOnStoredLane(currentPosition, true);
-
-        Vector2 startPosition = BezierCurve(startT).To2D();
-        if (Vector2.Dot(startPosition - PlayerMovement.test.position.To2D(), PlayerMovement.test.velocity.To2D()) < 0)
-            Debug.LogError("startT isn't a point ahead. startT: " + startT + ", startPosition: " + startPosition + ", player pos: " + PlayerMovement.test.position);
-
-
-
-        const int steps = 1000;
-        float bestDistanceError = float.PositiveInfinity;
-        float bestT = float.NaN;
-        for (int i = 0; i <= steps; i++)
-        {
-            //float nextT = (float)i / steps;
-            float nextT = Mathf.Lerp(startT, 1f, (float)i / steps);
-            Vector3 nextPoint = BezierCurve(nextT);
-
-            float distanceError = Mathf.Abs((currentPosition - nextPoint).magnitude - distanceFromCurrentPosition);
-            if (distanceError < bestDistanceError)
-            {
-                bestT = nextT;
-                bestDistanceError = distanceError;
-            }
-        }
-        Vector3 result = BezierCurve(bestT);
-
-        isEndPoint = bestT == 1;
-        if (isEndPoint)
-        {
-            Debug.Log("isEndPoint. trackEnd: " + trackEnd.DetailedString() + ", result: " + result.DetailedString() + " (or " + BezierCurve(bestT).DetailedString() 
-                + "), EndPosition: " + EndPosition.DetailedString() + ", currentLane: " + currentLane);
-        }
-
-        return result;
-    }
-
-    private Vector3 BezierCurve(float t)
+    public Vector3 BezierCurve(float t)
     {
         // Use a bezier curve as the path between the start and end of the current track piece.
         // https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_B%C3%A9zier_curves

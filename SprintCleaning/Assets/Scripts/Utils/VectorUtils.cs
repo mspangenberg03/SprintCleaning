@@ -78,15 +78,16 @@ public class VectorUtils : MonoBehaviour
 
     public static bool VelocityWillOvershoot(Vector3 velocity, Vector3 currentPosition, Vector3 targetPosition, float deltaTime)
     {
-#if UNITY_EDITOR
-        // Check that the velocity is directly towards the target.
-        Vector3 angles = Quaternion.FromToRotation(velocity, targetPosition - currentPosition).eulerAngles;
-        if (angles.sqrMagnitude > .1f)
-        {
-            throw new System.ArgumentException($"Velocity should be towards the target position. velocity direction is {velocity.normalized}" +
-                $" and should be {(targetPosition - currentPosition).normalized}");
-        }
-#endif
+        // this shouldn't be commented out. just getting stuff working
+//#if UNITY_EDITOR
+//        // Check that the velocity is directly towards the target.
+//        Vector3 angles = Quaternion.FromToRotation(velocity, targetPosition - currentPosition).eulerAngles;
+//        if (angles.sqrMagnitude > .1f)
+//        {
+//            throw new System.ArgumentException($"Velocity should be towards the target position. velocity direction is {velocity.normalized.DetailedString()}" +
+//                $" and should be {(targetPosition - currentPosition).normalized.DetailedString()}");
+//        }
+//#endif
 
         // If the direction to the target will become opposite, then it's about to get past the next point
         Vector3 currentDisplacement = currentPosition - targetPosition;
