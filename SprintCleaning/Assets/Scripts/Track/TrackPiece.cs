@@ -32,10 +32,10 @@ public class TrackPiece : MonoBehaviour
         }
     }
 
-    public Vector3 ClosestPointOnStoredLane(Vector3 point)
-    {
-        return BezierCurve(TOfClosestPointOnStoredLane(point));
-    }
+    //public Vector3 ClosestPointOnStoredLane(Vector3 point)
+    //{
+    //    return BezierCurve(TOfClosestPointOnStoredLane(point));
+    //}
 
     private float TOfClosestPointOnStoredLane(Vector3 point)
     {
@@ -97,67 +97,65 @@ public class TrackPiece : MonoBehaviour
         return 2 * (p2 - 2 * p1 + p0);
     }
 
-    private Vector2[] _test = new Vector2[0];
+    //public (Vector2, Vector2) IntersectionsOfBezierCurveWithLine2D(Vector2 linePoint1, Vector2 linePoint2)
+    //{
+    //    // https://www.tumblr.com/floorplanner-techblog/66681002205/computing-the-intersection-between-linear-and
 
-    public (Vector2, Vector2) IntersectionsOfBezierCurveWithLine2D(Vector2 linePoint1, Vector2 linePoint2)
-    {
-        // https://www.tumblr.com/floorplanner-techblog/66681002205/computing-the-intersection-between-linear-and
+    //    Vector2 A = linePoint1;
+    //    Vector2 B = linePoint2;
+    //    Vector2 C = p0.To2D();
+    //    Vector2 D = p1.To2D();
+    //    Vector2 E = p2.To2D();
 
-        Vector2 A = linePoint1;
-        Vector2 B = linePoint2;
-        Vector2 C = p0.To2D();
-        Vector2 D = p1.To2D();
-        Vector2 E = p2.To2D();
-
-        if (StartTransform.forward.To2D() == EndTransform.forward.To2D())
-        {
-            // The bezier curve is a straight line, so handle this differently
-            Vector2 result = VectorUtils.LineLineIntersection2d(A, B, C, E);
-            return (result, result);
-        }
+    //    if (StartTransform.forward.To2D() == EndTransform.forward.To2D())
+    //    {
+    //        // The bezier curve is a straight line, so handle this differently
+    //        Vector2 result = VectorUtils.LineLineIntersection2d(A, B, C, E);
+    //        return (result, result);
+    //    }
 
         
 
 
-        float k = (A.y - B.y) / (B.x - A.x);
-        float a = k * (C.x - 2 * D.x + E.x) + C.y - 2 * D.y + E.y;
-        float b = -2 * (k * (C.x - D.x) + C.y - D.y);
-        float c = k * (C.x - A.x) + C.y - A.y;
+    //    float k = (A.y - B.y) / (B.x - A.x);
+    //    float a = k * (C.x - 2 * D.x + E.x) + C.y - 2 * D.y + E.y;
+    //    float b = -2 * (k * (C.x - D.x) + C.y - D.y);
+    //    float c = k * (C.x - A.x) + C.y - A.y;
 
-        if (Mathf.Abs(B.x - A.x) < .00001f)
-        {
-            // The line is vertical (x = constant) so need to use a different method.
-            a = C.x - 2 * D.x + E.x;
-            b = -2 * (C.x - D.x);
-            c = C.x - A.x;
-        }
+    //    if (Mathf.Abs(B.x - A.x) < .00001f)
+    //    {
+    //        // The line is vertical (x = constant) so need to use a different method.
+    //        a = C.x - 2 * D.x + E.x;
+    //        b = -2 * (C.x - D.x);
+    //        c = C.x - A.x;
+    //    }
 
-        if (Mathf.Abs(B.y - A.y) < .00001f)
-        {
-            // The line is horizontal (y = constant) so need to use a different method.
+    //    if (Mathf.Abs(B.y - A.y) < .00001f)
+    //    {
+    //        // The line is horizontal (y = constant) so need to use a different method.
 
-            a = C.y - 2 * D.y + E.y;
-            b = -2 * (C.y - D.y);
-            c = C.y - A.y;
-        }
+    //        a = C.y - 2 * D.y + E.y;
+    //        b = -2 * (C.y - D.y);
+    //        c = C.y - A.y;
+    //    }
 
-        float triangle = b * b - 4 * a * c; // probably only do 1 sqrt on this.
+    //    float triangle = b * b - 4 * a * c; // probably only do 1 sqrt on this.
 
-        if (triangle < 0)
-        {
-            Debug.LogError("no intersections");
-            // no intersections
-            return (new Vector2(float.NaN, float.NaN), new Vector2(float.NaN, float.NaN));
-        }
+    //    if (triangle < 0)
+    //    {
+    //        Debug.LogError("no intersections");
+    //        // no intersections
+    //        return (new Vector2(float.NaN, float.NaN), new Vector2(float.NaN, float.NaN));
+    //    }
 
-        float t1 = (-b + Mathf.Sqrt(triangle)) / (2 * a);
-        float t2 = (-b - Mathf.Sqrt(triangle)) / (2 * a);
+    //    float t1 = (-b + Mathf.Sqrt(triangle)) / (2 * a);
+    //    float t2 = (-b - Mathf.Sqrt(triangle)) / (2 * a);
 
-        Vector2 option1 = BezierCurve(t1).To2D();
-        Vector2 option2 = BezierCurve(t2).To2D();
+    //    Vector2 option1 = BezierCurve(t1).To2D();
+    //    Vector2 option2 = BezierCurve(t2).To2D();
 
-        return (option1, option2);
-    }
+    //    return (option1, option2);
+    //}
 
     private void OnDrawGizmos()
     {
@@ -171,12 +169,12 @@ public class TrackPiece : MonoBehaviour
         DrawOneLane(1f);
        
 
-        for (int i = 0; i < _test.Length; i++)
-        {
-            Gizmos.color = i < 3 ? Color.red : Color.green;
-            Vector3 pos = new Vector3(_test[i].x, 3f, _test[i].y);
-            Gizmos.DrawSphere(pos, .1f);
-        }
+        //for (int i = 0; i < _test.Length; i++)
+        //{
+        //    Gizmos.color = i < 3 ? Color.red : Color.green;
+        //    Vector3 pos = new Vector3(_test[i].x, 3f, _test[i].y);
+        //    Gizmos.DrawSphere(pos, .1f);
+        //}
     }
 
     private void DrawOneLane(float lane)

@@ -74,12 +74,9 @@ public class PlayerMovement : MonoBehaviour
             gameManager.AddTrackPiece();
         }
 
-
-        //_targetLaneTracker.SetTargetLane();
-
         _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings._rotationSpeed, forwardsVelocity, _rigidbody.rotation));
 
-        LaneMovement(trackPiece, currentLane, t, forwardsVelocity, currentPosition); // should check whether this is always orthogonal to lane movement. It should be.
+        LaneMovement(currentLane, forwardsVelocity);
     }
 
     private Vector3 NextVelocityAlongTrack(TrackPiece trackPiece, Vector3 currentPosition, float currentLane
@@ -114,38 +111,21 @@ public class PlayerMovement : MonoBehaviour
     }
     
 
-    private void LaneMovement(TrackPiece trackPiece, float currentLane, float t, Vector3 forwardsVelocity, Vector3 currentPosition)
+    private void LaneMovement(float currentLane, Vector3 forwardsVelocity)
     {
         AccelerateLaneChangeSpeed(currentLane);
 
         Vector3 laneChangeDirection = -Vector2.Perpendicular(forwardsVelocity.To2D()).normalized.To3D();
         Vector3 laneChangeVelocity = _laneChangeSpeed * laneChangeDirection;
 
-        trackPiece.StoreLane(0);
-
-        // The track midpoint is at the intersection of the track's bezier curve and a line along laneChangeVelocity
-        Vector2 linePoint1 = currentPosition.To2D();
-        Vector2 linePoint2 = linePoint1 + laneChangeDirection.To2D();
-        (Vector2, Vector2) possibleMidpoints = trackPiece.IntersectionsOfBezierCurveWithLine2D(linePoint1, linePoint2);
-        Vector2 approximateMidpoint = trackPiece.BezierCurve(t);
-        Vector2 trackMidpoint;
-        if ((approximateMidpoint - possibleMidpoints.Item1).sqrMagnitude < (approximateMidpoint - possibleMidpoints.Item2).sqrMagnitude)
-            trackMidpoint = possibleMidpoints.Item1;
-        else
-            trackMidpoint = possibleMidpoints.Item2;
-        Vector3 trackMidpoint3d = trackMidpoint.To3D();
-        trackMidpoint3d.y = currentPosition.y;
-
-        Vector3 movingTowards = trackMidpoint3d + Mathf.Sign(_laneChangeSpeed) * laneChangeDirection * TrackPositions.Instance.DistanceBetweenLanes;
-        if (VectorUtils.LimitVelocityToPreventOvershoot(ref laneChangeVelocity, currentPosition, movingTowards, Time.deltaTime))
+        float nextLane = currentLane + _laneChangeSpeed / TrackPositions.Instance.DistanceBetweenLanes * Time.deltaTime;
+        if (nextLane < -1f || nextLane > 1f)
         {
-            // It's going to reach the edge of the track. Without this, it takes a moment to move the other direction
-            // after reaching the edge of the track.
-            _laneChangeSpeed = 0;
+            // don't overshoot
+            nextLane = nextLane < -1f ? -1f : 1f;
+            _laneChangeSpeed = (nextLane - currentLane) * TrackPositions.Instance.DistanceBetweenLanes / Time.deltaTime;
+            laneChangeVelocity = _laneChangeSpeed * laneChangeDirection;
         }
-
-        if (laneChangeVelocity.y != 0)
-            Debug.Log("laneChangeVelocity y vel: " + laneChangeVelocity.y);
 
         _rigidbody.velocity += laneChangeVelocity;
     }
