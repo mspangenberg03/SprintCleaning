@@ -21,7 +21,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerMovementSettings _settings;
 
     private float _laneChangeSpeed;
-    private Vector3 _priorVelocityAlongTrack = new Vector3(float.NaN, 0, 0);
     private PlayerMovementTargetLane _targetLaneTracker;
 
     private TrackPositions _track;
@@ -31,9 +30,12 @@ public class PlayerMovement : MonoBehaviour
     private float? TargetLane => _targetLaneTracker.TargetLane;
     public static PlayerMovementSettings Settings { get; private set; }
 
+    public static Rigidbody test;
+
 
     private void Awake() 
     {
+        test = _rigidbody;
         Settings = _settings;
         gameManager = TrackGenerator.Instance;
         _track = TrackPositions.Instance;
@@ -58,12 +60,15 @@ public class PlayerMovement : MonoBehaviour
     {
         TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
 
-        Vector3 nextVelocity = NextVelocityAlongTrack(trackPiece, out bool goingStraightTowardsEnd);
-        _priorVelocityAlongTrack = nextVelocity;
+        Vector3 currentPosition = _rigidbody.position - Vector3.up * TrackPositions.Instance.PlayerVerticalOffset;
+        float currentLane = trackPiece.Lane(currentPosition, out float t);
+
+        Vector3 nextVelocity = NextVelocityAlongTrack(trackPiece, currentPosition, currentLane, t, out bool goingStraightTowardsEnd, out Vector3 trackEnd);
         _rigidbody.velocity = nextVelocity;
 
-        if (goingStraightTowardsEnd && VectorUtils.VelocityWillOvershoot(_rigidbody.velocity, _rigidbody.position, EndPoint(), Time.deltaTime))
+        if (goingStraightTowardsEnd && VectorUtils.VelocityWillOvershoot(_rigidbody.velocity.To2D().To3D(), _rigidbody.position.To2D().To3D(), trackEnd.To2D().To3D(), Time.deltaTime))
         {
+            //Debug.Log("add track piece");
             gameManager.AddTrackPiece();
         }
 
@@ -72,95 +77,43 @@ public class PlayerMovement : MonoBehaviour
 
         _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings._rotationSpeed, nextVelocity, _rigidbody.rotation));
 
-        LaneMovement(trackPiece);
+        LaneMovement(trackPiece, currentLane);
     }
 
-    private Vector3 NextVelocityAlongTrack(TrackPiece trackPiece, out bool goingStraightTowardsEnd)
+    private Vector3 NextVelocityAlongTrack(TrackPiece trackPiece, Vector3 currentPosition, float currentLane
+        , float t, out bool goingStraightTowardsEnd, out Vector3 trackEnd)
     {
-
-        // Travel along a bezier curve to smoothly travel along the current track piece.
-        // https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_B%C3%A9zier_curves
-
-        float currentLane = _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position); // bugged (see the method. might need to use line segments)
         trackPiece.StoreLane(currentLane);
+        trackEnd = trackPiece.EndPosition;
 
-        Vector3 currentPosition = _rigidbody.position - Vector3.up * TrackPositions.Instance.PlayerVerticalOffset;
-
-        float k = _settings._playerSpeed * Time.deltaTime; // distance the player will travel
-
-        goingStraightTowardsEnd = (currentPosition - trackPiece.EndPosition).magnitude < 1.25f * k;
-        if (goingStraightTowardsEnd)
+        if ((trackEnd - currentPosition).magnitude <= _settings._playerSpeed * Time.deltaTime)
         {
-            return VelocityToDirectlyGoToEnd();
+            goingStraightTowardsEnd = true;
+            return _settings._playerSpeed * (trackEnd - currentPosition).normalized;
         }
+        goingStraightTowardsEnd = false;
 
-        Vector3 targetPoint = trackPiece.PointToMoveTowardsOnSameLane(currentPosition, _settings._playerSpeed * Time.deltaTime);
-        return _settings._playerSpeed * (targetPoint - currentPosition).normalized;
+        // The derivative of the bezier curve is the direction of the velocity, if timesteps were infinitely small.
+        // Could use the 2nd derivative to help account for the discrete timesteps.
+        return _settings._playerSpeed * trackPiece.BezierCurveDerivative(t).normalized;
 
-        //Vector3 r = currentPosition;
 
 
-        //// B(t) = point on bezier curve, where t is 0 to 1
-        //// k = magnitude(r - B(t))
+        //Vector3 targetPosition = trackPiece.PointToMoveTowardsOnSameLane(currentPosition, _settings._playerSpeed * Time.deltaTime, out goingStraightTowardsEnd, trackEnd, currentLane
+        //    , t);
 
-        //// find t such that
-        //// 0 = magnitude(r - B(t)) - k = error (the difference between the distance and correct distance the player will travel)
-        //// and not the opposite direction of velocity
-        //const int steps = 1000;
-        //float bestT = 0;
-        //float bestError = float.PositiveInfinity;
-        //for (int i = 0; i < steps; i++)
-        //{
-        //    Vector3 BMinusR = trackPiece.BezierCurve((float)i / steps) - r;
-
-        //    float error = Mathf.Abs(BMinusR.magnitude - k);
-
-        //    if (Vector3.Dot(_priorVelocityAlongTrack, BMinusR) >= 0 || float.IsNaN(_priorVelocityAlongTrack.x))
-        //    {
-        //        if (error < bestError)
-        //        {
-        //            bestT = (float)i / steps;
-        //            bestError = error;
-        //        }
-        //    }
-        //}
-
-        //if (bestError == float.PositiveInfinity)
-        //{
-        //    goingStraightTowardsEnd = true;
-        //    return VelocityToDirectlyGoToEnd();
-        //}
-
-        //Vector3 targetPoint = trackPiece.BezierCurve(bestT);
-
-        //Debug.Log($"targetPoint: {targetPoint.DetailedString()}, position: {r.DetailedString()}, _priorVelocityAlongTrack: {_priorVelocityAlongTrack.DetailedString()}");
-
-        //return _settings._playerSpeed * (targetPoint - r).normalized;
-
-    }
-
-    private Vector3 VelocityToDirectlyGoToEnd()
-    {
-        // go directly towards the end point
-        Vector3 directionToNextPoint = (EndPoint() - _rigidbody.position).normalized;
-        return directionToNextPoint * _settings._playerSpeed;
+        //return _settings._playerSpeed * (targetPosition - currentPosition).normalized;
     }
 
     private void Update()
     {
         _targetLaneTracker.OnUpdate();
     }
-
-    private Vector3 EndPoint()
-    {
-        float currentLane = _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position);
-        return _track.LanePoint(TARGET_POINT_INDEX, currentLane);
-    }
     
 
-    private void LaneMovement(TrackPiece trackPiece)
+    private void LaneMovement(TrackPiece trackPiece, float currentLane)
     {
-        AccelerateLaneChangeSpeed();
+        AccelerateLaneChangeSpeed(currentLane);
 
         // Find a point to the left or right of the player on the lane which the player is moving towards.
         float laneToGoTowards = Mathf.Sign(_laneChangeSpeed);
@@ -182,12 +135,12 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody.velocity += laneChangeVelocity;
     }
 
-    private void AccelerateLaneChangeSpeed()
+    private void AccelerateLaneChangeSpeed(float currentLane)
     {
         // This only changes _laneChangeSpeed. Adjust it more gradually than instantly moving at the maximum lane change speed,
         // to make it feel better.
 
-        float currentLane = _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position);
+        //float currentLane = _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position);
 
         bool slowDown = currentLane == TargetLane || !TargetLane.HasValue;
 

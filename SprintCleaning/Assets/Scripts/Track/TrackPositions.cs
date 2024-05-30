@@ -100,17 +100,17 @@ public class TrackPositions : MonoBehaviour
         return VectorUtils.RotateVectorAroundYAxis(laneOffset, trackAngle);
     }
 
-    public float ConvertPositionToLane(int endpointIndex, Vector3 position)
-    {
-        // This and probably other things need to take into account the bezier curves. So gotta implement the approximation
-        // for closest point on a bezier curve (and the lane equals the distance excluding y from that closest point divided by space between lanes)
-        Vector2 closestPoint = ClosestPointOnTrack(endpointIndex, position);
-        float distance = (closestPoint - position.To2D()).magnitude;
+    //public float ConvertPositionToLane(int endpointIndex, Vector3 position)
+    //{
+    //    // This and probably other things need to take into account the bezier curves. So gotta implement the approximation
+    //    // for closest point on a bezier curve (and the lane equals the distance excluding y from that closest point divided by space between lanes)
+    //    Vector2 closestPoint = ClosestPointOnTrack(endpointIndex, position);
+    //    float distance = (closestPoint - position.To2D()).magnitude;
 
-        bool toLeft = VectorUtils.PointIsToLeftOfVector(TrackPoint(endpointIndex - 1), TrackPoint(endpointIndex), position - Vector3.up * _playerVerticalOffset);
-        float sign = toLeft ? -1f : 1f;
-        return distance / _distanceBetweenLanes * sign;
-    }
+    //    bool toLeft = VectorUtils.PointIsToLeftOfVector(TrackPoint(endpointIndex - 1), TrackPoint(endpointIndex), position - Vector3.up * _playerVerticalOffset);
+    //    float sign = toLeft ? -1f : 1f;
+    //    return distance / _distanceBetweenLanes * sign;
+    //}
 
     private Vector3 PositionToBeOnLaneUsingStraightLines(int endpointIndex, float lane, Vector3 position)
     {
