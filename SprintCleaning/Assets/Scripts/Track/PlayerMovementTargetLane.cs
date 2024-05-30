@@ -43,7 +43,7 @@ public class PlayerMovementTargetLane
 
     private void SetTargetLaneForContinuousMovement()
     {
-        if (RightKey == LeftKey)
+        if (RightKey == LeftKey) // might feel better if remember the most recent one and use that
             TargetLane = null;
         else if (RightKey)
             TargetLane = 1;

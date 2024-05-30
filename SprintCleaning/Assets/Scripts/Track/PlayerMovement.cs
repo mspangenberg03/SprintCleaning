@@ -66,14 +66,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //Debug.Log("y: " + _rigidbody.position.y);
-
         TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
 
         Vector3 currentPosition = _rigidbody.position - Vector3.up * TrackPositions.Instance.PlayerVerticalOffset;
         float currentLane = trackPiece.Lane(currentPosition, out float t);
-
-        //Debug.Log(currentLane);
 
         Vector3 forwardsVelocity = NextVelocityAlongTrack(trackPiece, currentPosition, currentLane, t, out bool goingStraightTowardsEnd, out Vector3 trackEnd);
         _rigidbody.velocity = forwardsVelocity;
@@ -97,19 +93,29 @@ public class PlayerMovement : MonoBehaviour
         trackPiece.StoreLane(currentLane);
         trackEnd = trackPiece.EndPosition;
 
-        goingStraightTowardsEnd = (trackEnd - currentPosition).magnitude <= _settings._playerSpeed * Time.deltaTime;
-        if (goingStraightTowardsEnd)
-        {
-            return _settings._playerSpeed * (trackEnd - currentPosition).normalized;
-        }
-
         // The derivative of the bezier curve is the direction of the velocity, if timesteps were infinitely small.
         // Use the 2nd derivative to help reduce the error from discrete timesteps.
         Vector3 derivative = trackPiece.BezierCurveDerivative(t);
         Vector3 secondDerivative = trackPiece.BezierCurveSecondDerivative();
         float estimatedTChangeDuringTimestep = _settings._playerSpeed * Time.deltaTime / derivative.magnitude;
         Vector3 averageDerivative = derivative + estimatedTChangeDuringTimestep / 2 * secondDerivative;
-        return _settings._playerSpeed * averageDerivative.normalized;
+        Vector3 result = _settings._playerSpeed * averageDerivative.normalized;
+
+        // The player's y position shifts very slightly even on a flat track. Not sure why, maybe internal physics engine stuff.
+        // Do this to keep the y position's drift in check.
+        Vector3 point = trackPiece.BezierCurve(t);
+        float yDifference = point.y - currentPosition.y;
+        result.y += 10f * yDifference * Time.deltaTime;
+
+        goingStraightTowardsEnd = (trackEnd - currentPosition).magnitude <= _settings._playerSpeed * Time.deltaTime;
+        if (goingStraightTowardsEnd)
+        {
+            float yResult = result.y;
+            result = _settings._playerSpeed * (trackEnd - currentPosition).normalized;
+            result.y = yResult;
+        }
+
+        return result;
     }
 
     private void Update()
@@ -145,11 +151,6 @@ public class PlayerMovement : MonoBehaviour
         Vector3 trackMidpoint3d = trackMidpoint.To3D();
         trackMidpoint3d.y = currentPosition.y;
 
-
-        //Vector3 trackMidpoint = trackPiece.BezierCurve(t); // Should instead get this by intersecting the lane change direction with 
-        //                                                   // the bezier curve, to get an exact point. Currently the overshoot check isn't precise
-        //                                                   // and I had to comment out some input validation in a method called by 
-        //                                                   // LimitVelocityToPreventOvershoot
         Vector3 movingTowards = trackMidpoint3d + Mathf.Sign(_laneChangeSpeed) * laneChangeDirection * TrackPositions.Instance.DistanceBetweenLanes;
         if (VectorUtils.LimitVelocityToPreventOvershoot(ref laneChangeVelocity, currentPosition, movingTowards, Time.deltaTime))
         {
@@ -159,7 +160,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if (laneChangeVelocity.y != 0)
-            Debug.Log("laneChangeVelocity.y: " + laneChangeVelocity.y);
+            Debug.Log("laneChangeVelocity y vel: " + laneChangeVelocity.y);
 
         _rigidbody.velocity += laneChangeVelocity;
     }
@@ -168,8 +169,6 @@ public class PlayerMovement : MonoBehaviour
     {
         // This only changes _laneChangeSpeed. Adjust it more gradually than instantly moving at the maximum lane change speed,
         // to make it feel better.
-
-        //float currentLane = _track.ConvertPositionToLane(TARGET_POINT_INDEX, _rigidbody.position);
 
         bool slowDown = currentLane == TargetLane || !TargetLane.HasValue;
 
