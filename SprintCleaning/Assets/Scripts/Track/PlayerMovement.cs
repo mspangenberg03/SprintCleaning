@@ -9,12 +9,6 @@ public class PlayerMovement : MonoBehaviour
     // ^ every time the player reaches the next point, it creates the next track segment and deletes the oldest one, so the player is always
     // moving towards this point index.
 
-    //private const float MAX_FRACTION_LANE_CHANGE_SPEED_AT_END = .1f;
-    //// ^ when the player is changing lanes with _discreteMovement true, they shouldn't accelerate to max speed and then just stop
-    //// instantly. Instead, the maximum lane change speed is reduced based on how far they are, so it's full at half a lane away
-    //// from the target lane (or half a lane away from the current lane, if the target lane is multiple lanes away). At the start
-    //// lane and target lane, the maximum lane change speed is multiplied by this. Linearly interpolate the max speed.
-
     [SerializeField] private int _seed = -1;
 
     [SerializeField] private Rigidbody _rigidbody;
@@ -22,13 +16,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerMovementSettings _settings;
 
     private float _laneChangeSpeed;
-    private PlayerMovementTargetLane _targetLaneTracker;
+    //private PlayerMovementTargetLane _targetLaneTracker;
 
     private TrackPositions _track;
 
     private TrackGenerator gameManager;
 
-    private float? TargetLane => _targetLaneTracker.TargetLane;
+    private bool LeftKey => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
+    private bool RightKey => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
+
     public static PlayerMovementSettings Settings { get; private set; }
 
     public static Rigidbody test;
@@ -48,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
         gameManager = TrackGenerator.Instance;
         _track = TrackPositions.Instance;
         
-        _targetLaneTracker = new PlayerMovementTargetLane(_settings._discreteMovement);
+        //_targetLaneTracker = new PlayerMovementTargetLane();
     }
 
     private void Start()
@@ -59,7 +55,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void StartOnTrack()
     {
-        _targetLaneTracker.Reset();
         _rigidbody.position = _track.TrackPoint(0);
         _rigidbody.transform.position = _rigidbody.position;
     }
@@ -80,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
 
-        _targetLaneTracker.OnFixedUpdate();
+        //_targetLaneTracker.SetTargetLane();
 
         _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings._rotationSpeed, forwardsVelocity, _rigidbody.rotation));
 
@@ -117,21 +112,11 @@ public class PlayerMovement : MonoBehaviour
 
         return result;
     }
-
-    private void Update()
-    {
-        _targetLaneTracker.OnUpdate();
-    }
     
 
     private void LaneMovement(TrackPiece trackPiece, float currentLane, float t, Vector3 forwardsVelocity, Vector3 currentPosition)
     {
         AccelerateLaneChangeSpeed(currentLane);
-
-        //// Find a point to the left or right of the player on the lane which the player is moving towards.
-        //float laneToGoTowards = Mathf.Sign(_laneChangeSpeed);
-        //if (_settings._discreteMovement)
-        //    laneToGoTowards = TargetLane.Value;
 
         Vector3 laneChangeDirection = -Vector2.Perpendicular(forwardsVelocity.To2D()).normalized.To3D();
         Vector3 laneChangeVelocity = _laneChangeSpeed * laneChangeDirection;
@@ -170,18 +155,26 @@ public class PlayerMovement : MonoBehaviour
         // This only changes _laneChangeSpeed. Adjust it more gradually than instantly moving at the maximum lane change speed,
         // to make it feel better.
 
-        bool slowDown = currentLane == TargetLane || !TargetLane.HasValue;
+        float? targetLane = null;
+        if (RightKey == LeftKey) // might feel better if remember the most recent one and use that
+            targetLane = null;
+        else if (RightKey)
+            targetLane = 1;
+        else if (LeftKey)
+            targetLane = -1;
+
+        bool slowDown = currentLane == targetLane || !targetLane.HasValue;
 
         float accelerationDirection;
         if (slowDown)
             accelerationDirection = -Mathf.Sign(_laneChangeSpeed);
         else
-            accelerationDirection = Mathf.Sign(TargetLane.Value - currentLane);
+            accelerationDirection = Mathf.Sign(targetLane.Value - currentLane);
 
         float accelerationTime = _settings._laneChangeSpeedupTime;
         if (Mathf.Sign(accelerationDirection) != Mathf.Sign(_laneChangeSpeed))
         {
-            if (_targetLaneTracker.AnyInput)
+            if (RightKey || LeftKey)
                 accelerationTime = _settings._laneChangeTurnaroundTime;
             else
                 accelerationTime = _settings._laneChangeStoppingTime;
