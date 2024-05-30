@@ -81,6 +81,7 @@ public class GameManager : MonoBehaviour
         Quaternion newRotation = Quaternion.Euler(0, priorYRotation + trackTurn._yRotationOffset, 0);
 
         GameObject newTrackPiece = Instantiate(_trackPrefabs[indexToInstanciate], newPosition, newRotation);
+        GetComponent<ItemSpawner>().SpawnItems(newTrackPiece);
 
 
         for (int i = 0; i < TrackPieces.Length - 1; i++)
