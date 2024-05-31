@@ -22,7 +22,7 @@ public class ItemSpawner : MonoBehaviour
     [SerializeField, Tooltip("")]
     private List<GameObject> _toolTypes = new List<GameObject>();
     [SerializeField,Tooltip("The percent chance of spawning a tool"), Range(0, 100)]
-    private const int _chanceOfSpawningTool = 20; 
+    private const int _chanceOfSpawningTool = 40; 
     
 
     public void SpawnItems(GameObject trackPiece)
