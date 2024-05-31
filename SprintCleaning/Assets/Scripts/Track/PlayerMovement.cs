@@ -12,8 +12,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private PlayerMovementSettings _settings;
 
-    public float test;
-
     private float _laneChangeSpeed;
     private float _speedMultiplier = 1f;
     private TrackGenerator gameManager;
@@ -65,7 +63,6 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         CurrentForwardsSpeed += _settings.ForwardsAcceleration * Time.deltaTime;
-        test = CurrentForwardsSpeed;
 
         TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
 
