@@ -56,13 +56,11 @@ public class TrackPiece : MonoBehaviour
         
         Vector3 closestPointOnMiddleLane = BezierCurve(t);
 
-        // Determine whether the point is to the left or right of the middle lane
-        Vector3 curveDerivative = BezierCurveDerivative(t); // direction the curve is going at this point
-        bool toLeft = VectorUtils.PointIsToLeftOfVector(closestPointOnMiddleLane, closestPointOnMiddleLane + curveDerivative, currentPosition);
-
-        // Find the distance to that point, but only along the direction which is perpendicular to the curve
+        // Find the distance to that point, but only along the direction which is perpendicular to the curve, because t uses
+        // an approximation so it's a bit off.
         Vector2 offset = (currentPosition - closestPointOnMiddleLane).To2D();
         Vector2 perpendicularDirection = Vector2.Perpendicular(BezierCurveDerivative(t).To2D());
+        bool toLeft = VectorUtils.PointIsToLeftOfVector(closestPointOnMiddleLane, closestPointOnMiddleLane + BezierCurveDerivative(t), currentPosition);
         if (toLeft)
             perpendicularDirection *= -1;
         float distanceToMiddleLane = VectorUtils.ProjectionMagnitude(offset, perpendicularDirection);

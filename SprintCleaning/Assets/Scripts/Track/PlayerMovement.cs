@@ -68,7 +68,7 @@ public class PlayerMovement : MonoBehaviour
 
         _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings.RotationSpeed, forwardsVelocity, _rigidbody.rotation));
 
-        _rigidbody.velocity += SidewaysVelocity(currentLane, forwardsVelocity);
+        _rigidbody.velocity += LaneChangeVelocity(currentLane, forwardsVelocity);
     }
 
     private Vector3 ForwardsVelocity(TrackPiece trackPiece, Vector3 currentPosition, float t, out bool goingStraightTowardsEnd, Vector3 trackEnd)
@@ -99,7 +99,7 @@ public class PlayerMovement : MonoBehaviour
     }
     
 
-    private Vector3 SidewaysVelocity(float currentLane, Vector3 forwardsVelocity)
+    private Vector3 LaneChangeVelocity(float currentLane, Vector3 forwardsVelocity)
     {
         AccelerateLaneChangeSpeed(currentLane);
 
