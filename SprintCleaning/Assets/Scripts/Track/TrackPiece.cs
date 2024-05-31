@@ -91,8 +91,8 @@ public class TrackPiece : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (!Application.isPlaying)
-            return;
+        //if (!Application.isPlaying)
+        //    return;
         Gizmos.color = Color.green;
         DrawOneLane(-1f);
         Gizmos.color = Color.black;

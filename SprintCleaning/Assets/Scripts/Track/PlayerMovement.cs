@@ -69,14 +69,14 @@ public class PlayerMovement : MonoBehaviour
         Vector3 forwardsVelocity = ForwardsVelocity(trackPiece, currentPosition, t, out bool goingStraightTowardsEnd, trackEnd);
         _rigidbody.velocity = forwardsVelocity;
 
+        _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings.RotationSpeed, forwardsVelocity, _rigidbody.rotation));
+
+        _rigidbody.velocity += LaneChangeVelocity(currentLane, forwardsVelocity);
+
         if (goingStraightTowardsEnd && VectorUtils.VelocityWillOvershoot(forwardsVelocity.To2D().To3D(), currentPosition.To2D().To3D(), trackEnd.To2D().To3D(), Time.deltaTime))
         {
             gameManager.AddTrackPiece();
         }
-
-        _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings.RotationSpeed, forwardsVelocity, _rigidbody.rotation));
-
-        _rigidbody.velocity += LaneChangeVelocity(currentLane, forwardsVelocity);
     }
 
     private Vector3 ForwardsVelocity(TrackPiece trackPiece, Vector3 currentPosition, float t, out bool goingStraightTowardsEnd, Vector3 trackEnd)

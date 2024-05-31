@@ -33,63 +33,14 @@ public class VectorUtils : MonoBehaviour
         float Cross2D(Vector2 v, Vector2 w) => v.x * w.y - v.y * w.x;
     }
 
-    public static Vector2 ClosestPointOnLine2D(Vector2 point, Vector2 linePoint1, Vector2 linePoint2)
-    {
-        return ClosestPointOnLineOrSegment2D(point, linePoint1, linePoint2, false);
-    }
-
-    public static Vector2 ClosestPointOnSegment2D(Vector2 point, Vector2 segmentPoint1, Vector2 segmentPoint2)
-    {
-        return ClosestPointOnLineOrSegment2D(point, segmentPoint1, segmentPoint2, true);
-    }
-    public static Vector2 ClosestPointOnLineOrSegment2D(Vector2 point, Vector2 segmentPoint1, Vector2 segmentPoint2, bool segment)
-    {
-        // stack overflow shortest distance between a point and a line segment
-        Vector2 a = segmentPoint1;
-        Vector2 b = segmentPoint2;
-
-        Vector2 bMinusA = b - a;
-        Vector2 pointMinusA = point - a;
-
-        float sqrLength = bMinusA.sqrMagnitude;
-        if (sqrLength == 0)
-            return a;
-
-        float t = Vector2.Dot(pointMinusA, bMinusA) / sqrLength;
-        if (segment)
-            t = Mathf.Clamp01(t);
-        return a + t * bMinusA;
-    }
-
     public static bool PointIsToLeftOfVector(Vector3 vectorStart, Vector3 vectorEnd, Vector3 point)
     {
         // https://discussions.unity.com/t/check-if-a-point-is-on-the-right-or-left-of-a-vector/180869
         return Vector3.Cross(vectorEnd - vectorStart, point - vectorStart).y < 0;
     }
 
-    public static bool LimitVelocityToPreventOvershoot(ref Vector3 velocity, Vector3 currentPosition, Vector3 targetPosition, float deltaTime)
-    {
-        if (VelocityWillOvershoot(velocity, currentPosition, targetPosition, deltaTime))
-        {
-            velocity = (targetPosition - currentPosition) / deltaTime;
-            return true;
-        }
-        return false;
-    }
-
     public static bool VelocityWillOvershoot(Vector3 velocity, Vector3 currentPosition, Vector3 targetPosition, float deltaTime)
     {
-        // this shouldn't be commented out. just getting stuff working
-//#if UNITY_EDITOR
-//        // Check that the velocity is directly towards the target.
-//        Vector3 angles = Quaternion.FromToRotation(velocity, targetPosition - currentPosition).eulerAngles;
-//        if (angles.sqrMagnitude > .1f)
-//        {
-//            throw new System.ArgumentException($"Velocity should be towards the target position. velocity direction is {velocity.normalized.DetailedString()}" +
-//                $" and should be {(targetPosition - currentPosition).normalized.DetailedString()}");
-//        }
-//#endif
-
         // If the direction to the target will become opposite, then it's about to get past the next point
         Vector3 currentDisplacement = currentPosition - targetPosition;
         Vector3 nextDisplacement = currentDisplacement + velocity * deltaTime;
@@ -99,24 +50,5 @@ public class VectorUtils : MonoBehaviour
     public static float ProjectionMagnitude(Vector2 vector, Vector2 projectOnto)
     {
         return Vector2.Dot(vector, projectOnto.normalized);
-    }
-
-    public static Vector2 LineLineIntersection2d(Vector2 line1PointA, Vector2 line1PointB, Vector2 line2PointA, Vector2 line2PointB)
-    {
-        // https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
-        float x1 = line1PointA.x; // L1
-        float y1 = line1PointA.y;
-        float x2 = line1PointB.x;
-        float y2 = line1PointB.y;
-        float x3 = line2PointA.x; // L2
-        float y3 = line2PointA.y;
-        float x4 = line2PointB.x;
-        float y4 = line2PointB.y;
-
-        float denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4); // 0 if the two lines are parallel
-        float xNumerator = (x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4);
-        float yNumerator = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4);
-        return new Vector2(xNumerator / denominator, yNumerator / denominator);
-
     }
 }
