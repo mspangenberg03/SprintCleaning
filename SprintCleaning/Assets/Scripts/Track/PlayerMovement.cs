@@ -13,7 +13,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerMovementSettings _settings;
 
     private float _laneChangeSpeed;
-    public float _speedMultiplier = 1f;
+    private float _speedMultiplier = 1f;
     private float _lastGarbageSlowdownTime = float.NegativeInfinity;
     private TrackGenerator gameManager;
 
