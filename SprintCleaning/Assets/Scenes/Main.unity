@@ -160,7 +160,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 1791975040}
   m_Follow: {fileID: 1791975040}
   m_Lens:
-    FieldOfView: 60
+    FieldOfView: 96
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
@@ -186,8 +186,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 312858116}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.3162281, y: 0, z: 0, w: 0.9486832}
-  m_LocalPosition: {x: 0, y: 3, z: -4}
+  m_LocalRotation: {x: 0.24324922, y: 0.00000002971672, z: -0.000000007452411, w: 0.96996385}
+  m_LocalPosition: {x: 0, y: 2.25, z: -1.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -393,6 +393,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1057270599399239904, guid: 78631e0c8851d5b4f860e2dcc5fa3ab5, type: 3}
+      propertyPath: field of view
+      value: 96
+      objectReference: {fileID: 0}
     - target: {fileID: 2120144707414654657, guid: 78631e0c8851d5b4f860e2dcc5fa3ab5, type: 3}
       propertyPath: m_Name
       value: Main Camera
@@ -401,33 +405,37 @@ PrefabInstance:
       propertyPath: _player
       value: 
       objectReference: {fileID: 1791975035}
+    - target: {fileID: 7772085433317995502, guid: 78631e0c8851d5b4f860e2dcc5fa3ab5, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8347825767012117269, guid: 78631e0c8851d5b4f860e2dcc5fa3ab5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8347825767012117269, guid: 78631e0c8851d5b4f860e2dcc5fa3ab5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3
+      value: 2.25
       objectReference: {fileID: 0}
     - target: {fileID: 8347825767012117269, guid: 78631e0c8851d5b4f860e2dcc5fa3ab5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4
+      value: -1.45
       objectReference: {fileID: 0}
     - target: {fileID: 8347825767012117269, guid: 78631e0c8851d5b4f860e2dcc5fa3ab5, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9486832
+      value: 0.96996385
       objectReference: {fileID: 0}
     - target: {fileID: 8347825767012117269, guid: 78631e0c8851d5b4f860e2dcc5fa3ab5, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.3162281
+      value: 0.24324922
       objectReference: {fileID: 0}
     - target: {fileID: 8347825767012117269, guid: 78631e0c8851d5b4f860e2dcc5fa3ab5, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.00000002971672
       objectReference: {fileID: 0}
     - target: {fileID: 8347825767012117269, guid: 78631e0c8851d5b4f860e2dcc5fa3ab5, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0.000000007452411
       objectReference: {fileID: 0}
     - target: {fileID: 8347825767012117269, guid: 78631e0c8851d5b4f860e2dcc5fa3ab5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -583,13 +591,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 0, y: 3, z: -4}
-  m_XDamping: 1
+  m_FollowOffset: {x: 0, y: 2.25, z: -1.45}
+  m_XDamping: 0
   m_YDamping: 1
   m_ZDamping: 1
   m_AngularDampingMode: 0
   m_PitchDamping: 0
-  m_YawDamping: 1
+  m_YawDamping: 0
   m_RollDamping: 0
   m_AngularDamping: 0
 --- !u!114 &1706136423
@@ -608,10 +616,10 @@ MonoBehaviour:
   m_LookaheadTime: 0
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 0
-  m_HorizontalDamping: 0.5
-  m_VerticalDamping: 0.5
+  m_HorizontalDamping: 0.3
+  m_VerticalDamping: 0.3
   m_ScreenX: 0.5
-  m_ScreenY: 0.5
+  m_ScreenY: 0.75
   m_DeadZoneWidth: 0
   m_DeadZoneHeight: 0
   m_SoftZoneWidth: 0.8

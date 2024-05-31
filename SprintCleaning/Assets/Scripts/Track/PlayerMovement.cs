@@ -89,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
 
         _rigidbody.velocity += LaneChangeVelocity(currentLane, forwardsVelocity);
 
-        if (goingStraightTowardsEnd && VectorUtils.VelocityWillOvershoot(forwardsVelocity.To2D().To3D(), currentPosition.To2D().To3D(), trackEnd.To2D().To3D(), Time.deltaTime))
+        if (goingStraightTowardsEnd)// && VectorUtils.VelocityWillOvershoot(forwardsVelocity.To2D().To3D(), currentPosition.To2D().To3D(), trackEnd.To2D().To3D(), Time.deltaTime))
         {
             gameManager.AddTrackPiece();
         }
@@ -112,12 +112,12 @@ public class PlayerMovement : MonoBehaviour
         result.y += 10f * yDifference * Time.deltaTime;
 
         goingStraightTowardsEnd = (trackEnd - currentPosition).magnitude <= CurrentForwardsSpeed * Time.deltaTime;
-        if (goingStraightTowardsEnd)
-        {
-            float yResult = result.y;
-            result = CurrentForwardsSpeed * (trackEnd - currentPosition).normalized;
-            result.y = yResult;
-        }
+        //if (goingStraightTowardsEnd)
+        //{
+        //    float yResult = result.y;
+        //    result = CurrentForwardsSpeed * (trackEnd - currentPosition).normalized;
+        //    result.y = yResult;
+        //}
 
         return result;
     }
