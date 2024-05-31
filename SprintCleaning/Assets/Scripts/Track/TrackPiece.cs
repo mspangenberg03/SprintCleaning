@@ -11,7 +11,7 @@ public class TrackPiece : MonoBehaviour
     private Vector3 p1; // control point of bezier curve
     private Vector3 p2; // end point of bezier curve
 
-    public Vector3 EndPosition => p2; // end position for current lane
+    public Vector3 EndPositionForStoredLane => p2;
 
     public void StoreLane(float lane)
     {

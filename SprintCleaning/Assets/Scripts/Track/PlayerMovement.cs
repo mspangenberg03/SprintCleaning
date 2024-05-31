@@ -56,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
         float currentLane = trackPiece.Lane(currentPosition, t);
 
         trackPiece.StoreLane(currentLane);
-        Vector3 trackEnd = trackPiece.EndPosition;
+        Vector3 trackEnd = trackPiece.EndPositionForStoredLane;
 
         Vector3 forwardsVelocity = ForwardsVelocity(trackPiece, currentPosition, t, out bool goingStraightTowardsEnd, trackEnd);
         _rigidbody.velocity = forwardsVelocity;

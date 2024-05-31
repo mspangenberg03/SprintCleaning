@@ -48,6 +48,8 @@ MonoBehaviour:
   - {fileID: 8436985586966843200, guid: 8bb2a798dd0b81b48a4a239534d025ec, type: 3}
   - {fileID: 8589974252934845640, guid: df471b59619600344af10887dc0a1eeb, type: 3}
   - {fileID: 8077653236005777457, guid: 61a56f14fd0f90f42bdbb09d3b39ec28, type: 3}
+  - {fileID: 6221956084416107605, guid: ee67fbf2631f503419efad82417c6a6e, type: 3}
+  - {fileID: 1641981354471546479, guid: 2c5af1c4aa87bd4429c8b00015ef1c9b, type: 3}
   _player: {fileID: 0}
   _numTrackPoints: 10
   _oddsDontTurn: 0.7
