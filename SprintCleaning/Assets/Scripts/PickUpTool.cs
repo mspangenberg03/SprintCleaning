@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PickUpTool : MonoBehaviour
@@ -15,7 +16,7 @@ public class PickUpTool : MonoBehaviour
             if (_overlappingColliders == 0)
             {
                 other.transform.parent.GetComponent<PlayerToolManager>()._toolsInPickUpRange.Add(this);
-
+                
             }
             _overlappingColliders++;
 
