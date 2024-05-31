@@ -10,43 +10,47 @@ public class PlayerMovement : MonoBehaviour
     // moving towards this point index.
 
     [SerializeField] private Rigidbody _rigidbody;
-
     [SerializeField] private PlayerMovementSettings _settings;
 
     private float _laneChangeSpeed;
-    private TrackPositions _track;
     private TrackGenerator gameManager;
 
     private bool LeftKey => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
     private bool RightKey => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
 
-    public static PlayerMovementSettings Settings { get; private set; }
-
+    private static PlayerMovementSettings _settingsStatic;
+    public static PlayerMovementSettings Settings 
+    {
+        get
+        {
+            if (_settingsStatic == null)
+            {
+                _settingsStatic = FindObjectOfType<PlayerMovement>()._settings;
+            }
+            return _settingsStatic;
+        }
+    }
 
     private void Awake() 
     {
-        Settings = _settings;
+        _settingsStatic = _settings;
         gameManager = TrackGenerator.Instance;
-        _track = TrackPositions.Instance;
     }
+
+
 
     private void Start()
     {
-        StartOnTrack();
-        PlayerMovementProcessor.SetFixedDeltaTime();
-    }
-
-    private void StartOnTrack()
-    {
-        _rigidbody.position = _track.TrackPoint(0);
+        _rigidbody.position = TrackGenerator.Instance.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
         _rigidbody.transform.position = _rigidbody.position;
+        PlayerMovementProcessor.SetFixedDeltaTime();
     }
 
     private void FixedUpdate()
     {
         TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
 
-        Vector3 currentPosition = _rigidbody.position - Vector3.up * TrackPositions.Instance.PlayerVerticalOffset;
+        Vector3 currentPosition = _rigidbody.position - Vector3.up * _settings.PlayerVerticalOffset;
 
         float t = trackPiece.FindTForClosestPointOnMidline(currentPosition);
         float currentLane = trackPiece.Lane(currentPosition, t);
@@ -62,7 +66,7 @@ public class PlayerMovement : MonoBehaviour
             gameManager.AddTrackPiece();
         }
 
-        _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings._rotationSpeed, forwardsVelocity, _rigidbody.rotation));
+        _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings.RotationSpeed, forwardsVelocity, _rigidbody.rotation));
 
         _rigidbody.velocity += SidewaysVelocity(currentLane, forwardsVelocity);
     }
@@ -73,9 +77,9 @@ public class PlayerMovement : MonoBehaviour
         // Use the 2nd derivative to help reduce the error from discrete timesteps.
         Vector3 derivative = trackPiece.BezierCurveDerivative(t);
         Vector3 secondDerivative = trackPiece.BezierCurveSecondDerivative();
-        float estimatedTChangeDuringTimestep = _settings._playerSpeed * Time.deltaTime / derivative.magnitude;
+        float estimatedTChangeDuringTimestep = _settings.PlayerSpeed * Time.deltaTime / derivative.magnitude;
         Vector3 averageDerivative = derivative + estimatedTChangeDuringTimestep / 2 * secondDerivative;
-        Vector3 result = _settings._playerSpeed * averageDerivative.normalized;
+        Vector3 result = _settings.PlayerSpeed * averageDerivative.normalized;
 
         // The player's y position shifts very slightly even on a flat track. Not sure why, maybe internal physics engine stuff.
         // Do this to keep the y position's drift in check.
@@ -83,11 +87,11 @@ public class PlayerMovement : MonoBehaviour
         float yDifference = point.y - currentPosition.y;
         result.y += 10f * yDifference * Time.deltaTime;
 
-        goingStraightTowardsEnd = (trackEnd - currentPosition).magnitude <= _settings._playerSpeed * Time.deltaTime;
+        goingStraightTowardsEnd = (trackEnd - currentPosition).magnitude <= _settings.PlayerSpeed * Time.deltaTime;
         if (goingStraightTowardsEnd)
         {
             float yResult = result.y;
-            result = _settings._playerSpeed * (trackEnd - currentPosition).normalized;
+            result = _settings.PlayerSpeed * (trackEnd - currentPosition).normalized;
             result.y = yResult;
         }
 
@@ -102,12 +106,12 @@ public class PlayerMovement : MonoBehaviour
         Vector3 laneChangeDirection = -Vector2.Perpendicular(forwardsVelocity.To2D()).normalized.To3D();
         Vector3 laneChangeVelocity = _laneChangeSpeed * laneChangeDirection;
 
-        float nextLane = currentLane + _laneChangeSpeed / TrackPositions.Instance.DistanceBetweenLanes * Time.deltaTime;
+        float nextLane = currentLane + _laneChangeSpeed / _settings.DistanceBetweenLanes * Time.deltaTime;
         if (nextLane < -1f || nextLane > 1f)
         {
             // don't overshoot
             nextLane = nextLane < -1f ? -1f : 1f;
-            _laneChangeSpeed = (nextLane - currentLane) * TrackPositions.Instance.DistanceBetweenLanes / Time.deltaTime;
+            _laneChangeSpeed = (nextLane - currentLane) * _settings.DistanceBetweenLanes / Time.deltaTime;
             laneChangeVelocity = _laneChangeSpeed * laneChangeDirection;
         }
 
@@ -135,19 +139,19 @@ public class PlayerMovement : MonoBehaviour
         else
             accelerationDirection = Mathf.Sign(targetLane.Value - currentLane);
 
-        float accelerationTime = _settings._laneChangeSpeedupTime;
+        float accelerationTime = _settings.LaneChangeSpeedupTime;
         if (Mathf.Sign(accelerationDirection) != Mathf.Sign(_laneChangeSpeed))
         {
             if (RightKey || LeftKey)
-                accelerationTime = _settings._laneChangeTurnaroundTime;
+                accelerationTime = _settings.LaneChangeTurnaroundTime;
             else
-                accelerationTime = _settings._laneChangeStoppingTime;
+                accelerationTime = _settings.LaneChangeStoppingTime;
         }
 
         float laneChangeSpeedSignBefore = Mathf.Sign(_laneChangeSpeed);
-        _laneChangeSpeed += _settings._maxLaneChangeSpeed / accelerationTime * Time.deltaTime * accelerationDirection;
-        if (Mathf.Abs(_laneChangeSpeed) > _settings._maxLaneChangeSpeed)
-            _laneChangeSpeed = Mathf.Sign(_laneChangeSpeed) * _settings._maxLaneChangeSpeed;
+        _laneChangeSpeed += _settings.MaxLaneChangeSpeed / accelerationTime * Time.deltaTime * accelerationDirection;
+        if (Mathf.Abs(_laneChangeSpeed) > _settings.MaxLaneChangeSpeed)
+            _laneChangeSpeed = Mathf.Sign(_laneChangeSpeed) * _settings.MaxLaneChangeSpeed;
         if (slowDown && (laneChangeSpeedSignBefore != Mathf.Sign(_laneChangeSpeed)))
             _laneChangeSpeed = 0;
     }

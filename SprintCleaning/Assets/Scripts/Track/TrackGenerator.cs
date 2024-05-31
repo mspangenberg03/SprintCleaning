@@ -49,10 +49,6 @@ public class TrackGenerator : MonoBehaviour
             return;
         }
 
-
-
-       
-
         //Creates a trackPiece following the last created
         GameObject prefab = RandomTrackPiecePrefab();
 
@@ -69,8 +65,6 @@ public class TrackGenerator : MonoBehaviour
         Vector3 positionChange = priorTrackPiece.EndTransform.position - newTrackPiece.StartTransform.position;
         instantiated.transform.position += positionChange;
 
-
-        //Inserts the trackPiece just created in the array of trackPoints the player is following
         TrackPieces.Add(newTrackPiece);
 
         if (TrackPieces.Count > _numTrackPoints)
@@ -85,7 +79,7 @@ public class TrackGenerator : MonoBehaviour
     private void CreateFirstTrackPiece()
     {
         GameObject newTrackPiece = Instantiate(RandomTrackPiecePrefab()
-            , Vector3.down * TrackPositions.Instance.PlayerVerticalOffset, Quaternion.identity);
+            , Vector3.down * PlayerMovement.Settings.PlayerVerticalOffset, Quaternion.identity);
 
         TrackPieces.Add(newTrackPiece.GetComponent<TrackPiece>());
     }

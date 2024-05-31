@@ -17,8 +17,8 @@ public class TrackPiece : MonoBehaviour
     {
         Vector3 startDirection = StartTransform.forward;
         Vector3 endDirection = EndTransform.forward;
-        p0 = StartTransform.position + lane * TrackPositions.Instance.DistanceBetweenLanes * StartTransform.right;
-        p2 = EndTransform.position + lane * TrackPositions.Instance.DistanceBetweenLanes * EndTransform.right;
+        p0 = StartTransform.position + lane * PlayerMovement.Settings.DistanceBetweenLanes * StartTransform.right;
+        p2 = EndTransform.position + lane * PlayerMovement.Settings.DistanceBetweenLanes * EndTransform.right;
 
         if (Vector3.Angle(startDirection, endDirection) < .2f)
         { 
@@ -68,7 +68,7 @@ public class TrackPiece : MonoBehaviour
         float distanceToMiddleLane = VectorUtils.ProjectionMagnitude(offset, perpendicularDirection);
 
         float lane = toLeft ? distanceToMiddleLane : -distanceToMiddleLane;
-        lane /= TrackPositions.Instance.DistanceBetweenLanes;
+        lane /= PlayerMovement.Settings.DistanceBetweenLanes;
         return lane;
     }
 
@@ -109,11 +109,12 @@ public class TrackPiece : MonoBehaviour
         // Use a bezier curve as the path between the start and end of the current track piece.
         // https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_B%C3%A9zier_curves
         const int segments = 100;
-        Vector3 priorPoint = p0 + Vector3.up * TrackPositions.Instance.PlayerVerticalOffset;
+        Vector3 verticalOffset = Vector3.up * PlayerMovement.Settings.PlayerVerticalOffset;
+        Vector3 priorPoint = p0 + verticalOffset;
         for (int i = 1; i <= segments; i++)
         {
             float t = (float)i / segments;
-            Vector3 nextPoint = BezierCurve(t) + Vector3.up * TrackPositions.Instance.PlayerVerticalOffset;
+            Vector3 nextPoint = BezierCurve(t) + verticalOffset;
             Gizmos.DrawLine(priorPoint, nextPoint);
             priorPoint = nextPoint;
         }
