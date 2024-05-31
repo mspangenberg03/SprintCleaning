@@ -10,6 +10,9 @@ public class Garbage : MonoBehaviour
     [SerializeField,Tooltip("How much dirtiness does this garbage add")]
     private int _dirtiness = 10;
 
+    [SerializeField, Tooltip("Multiplies the player's speed")]
+    private float _playerSpeedMultiplier = .9f;
+
     [SerializeField]
     private CollectedItems _playerItemData;
     private void OnTriggerEnter(Collider other)
@@ -29,6 +32,7 @@ public class Garbage : MonoBehaviour
                 }
             }
             player.GetComponent<DirtinessManager>().AddDirtiness(_dirtiness);
+            player.GetComponent<PlayerMovement>().GarbageSlow(_playerSpeedMultiplier);
             Destroy(gameObject);
         }
     }

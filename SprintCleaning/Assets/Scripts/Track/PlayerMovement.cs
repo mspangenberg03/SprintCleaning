@@ -13,7 +13,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerMovementSettings _settings;
 
     private float _laneChangeSpeed;
+    private float _speedMultiplier = 1f;
     private TrackGenerator gameManager;
+
+    private float CurrentSpeed => _settings.PlayerSpeed * _speedMultiplier;
 
     private bool LeftKey => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
     private bool RightKey => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
@@ -44,6 +47,11 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody.position = TrackGenerator.Instance.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
         _rigidbody.transform.position = _rigidbody.position;
         PlayerMovementProcessor.SetFixedDeltaTime();
+    }
+
+    public void GarbageSlow(float playerSpeedMultiplier)
+    {
+        _speedMultiplier *= playerSpeedMultiplier;
     }
 
     private void FixedUpdate()
@@ -77,9 +85,9 @@ public class PlayerMovement : MonoBehaviour
         // Use the 2nd derivative to help reduce the error from discrete timesteps.
         Vector3 derivative = trackPiece.BezierCurveDerivative(t);
         Vector3 secondDerivative = trackPiece.BezierCurveSecondDerivative();
-        float estimatedTChangeDuringTimestep = _settings.PlayerSpeed * Time.deltaTime / derivative.magnitude;
+        float estimatedTChangeDuringTimestep = CurrentSpeed * Time.deltaTime / derivative.magnitude;
         Vector3 averageDerivative = derivative + estimatedTChangeDuringTimestep / 2 * secondDerivative;
-        Vector3 result = _settings.PlayerSpeed * averageDerivative.normalized;
+        Vector3 result = CurrentSpeed * averageDerivative.normalized;
 
         // The player's y position shifts very slightly even on a flat track. Not sure why, maybe internal physics engine stuff.
         // Do this to keep the y position's drift in check.
@@ -87,11 +95,11 @@ public class PlayerMovement : MonoBehaviour
         float yDifference = point.y - currentPosition.y;
         result.y += 10f * yDifference * Time.deltaTime;
 
-        goingStraightTowardsEnd = (trackEnd - currentPosition).magnitude <= _settings.PlayerSpeed * Time.deltaTime;
+        goingStraightTowardsEnd = (trackEnd - currentPosition).magnitude <= CurrentSpeed * Time.deltaTime;
         if (goingStraightTowardsEnd)
         {
             float yResult = result.y;
-            result = _settings.PlayerSpeed * (trackEnd - currentPosition).normalized;
+            result = CurrentSpeed * (trackEnd - currentPosition).normalized;
             result.y = yResult;
         }
 
