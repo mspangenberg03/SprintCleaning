@@ -12,11 +12,18 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private PlayerMovementSettings _settings;
 
+    public float test;
+
     private float _laneChangeSpeed;
     private float _speedMultiplier = 1f;
     private TrackGenerator gameManager;
 
-    private float CurrentSpeed => _settings.PlayerSpeed * _speedMultiplier;
+    private float CurrentForwardsSpeed
+    {
+        get => _settings.BaseForwardsSpeed * _speedMultiplier;
+        set => _speedMultiplier = Mathf.Min(value, _settings.MaxForwardsSpeed) / _settings.BaseForwardsSpeed;
+    }
+    private float CurrentFullLaneChangeSpeed => Mathf.Min(_settings.LaneChangeSpeedCap, _settings.BaseLaneChangeSpeed * _speedMultiplier);
 
     private bool LeftKey => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
     private bool RightKey => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
@@ -52,10 +59,14 @@ public class PlayerMovement : MonoBehaviour
     public void GarbageSlow(float playerSpeedMultiplier)
     {
         _speedMultiplier *= playerSpeedMultiplier;
+        _speedMultiplier = Mathf.Max(1f, _speedMultiplier);
     }
 
     private void FixedUpdate()
     {
+        CurrentForwardsSpeed += _settings.ForwardsAcceleration * Time.deltaTime;
+        test = CurrentForwardsSpeed;
+
         TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
 
         Vector3 currentPosition = _rigidbody.position - Vector3.up * _settings.PlayerVerticalOffset;
@@ -85,9 +96,9 @@ public class PlayerMovement : MonoBehaviour
         // Use the 2nd derivative to help reduce the error from discrete timesteps.
         Vector3 derivative = trackPiece.BezierCurveDerivative(t);
         Vector3 secondDerivative = trackPiece.BezierCurveSecondDerivative();
-        float estimatedTChangeDuringTimestep = CurrentSpeed * Time.deltaTime / derivative.magnitude;
+        float estimatedTChangeDuringTimestep = CurrentForwardsSpeed * Time.deltaTime / derivative.magnitude;
         Vector3 averageDerivative = derivative + estimatedTChangeDuringTimestep / 2 * secondDerivative;
-        Vector3 result = CurrentSpeed * averageDerivative.normalized;
+        Vector3 result = CurrentForwardsSpeed * averageDerivative.normalized;
 
         // The player's y position shifts very slightly even on a flat track. Not sure why, maybe internal physics engine stuff.
         // Do this to keep the y position's drift in check.
@@ -95,11 +106,11 @@ public class PlayerMovement : MonoBehaviour
         float yDifference = point.y - currentPosition.y;
         result.y += 10f * yDifference * Time.deltaTime;
 
-        goingStraightTowardsEnd = (trackEnd - currentPosition).magnitude <= CurrentSpeed * Time.deltaTime;
+        goingStraightTowardsEnd = (trackEnd - currentPosition).magnitude <= CurrentForwardsSpeed * Time.deltaTime;
         if (goingStraightTowardsEnd)
         {
             float yResult = result.y;
-            result = CurrentSpeed * (trackEnd - currentPosition).normalized;
+            result = CurrentForwardsSpeed * (trackEnd - currentPosition).normalized;
             result.y = yResult;
         }
 
@@ -157,9 +168,9 @@ public class PlayerMovement : MonoBehaviour
         }
 
         float laneChangeSpeedSignBefore = Mathf.Sign(_laneChangeSpeed);
-        _laneChangeSpeed += _settings.MaxLaneChangeSpeed / accelerationTime * Time.deltaTime * accelerationDirection;
-        if (Mathf.Abs(_laneChangeSpeed) > _settings.MaxLaneChangeSpeed)
-            _laneChangeSpeed = Mathf.Sign(_laneChangeSpeed) * _settings.MaxLaneChangeSpeed;
+        _laneChangeSpeed += CurrentFullLaneChangeSpeed / accelerationTime * Time.deltaTime * accelerationDirection;
+        if (Mathf.Abs(_laneChangeSpeed) > CurrentFullLaneChangeSpeed)
+            _laneChangeSpeed = Mathf.Sign(_laneChangeSpeed) * CurrentFullLaneChangeSpeed;
         if (slowDown && (laneChangeSpeedSignBefore != Mathf.Sign(_laneChangeSpeed)))
             _laneChangeSpeed = 0;
     }

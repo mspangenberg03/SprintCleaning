@@ -12,11 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f39a5fb73d97a5a42a36bf8acfd22120, type: 3}
   m_Name: Player Movement Settings
   m_EditorClassIdentifier: 
-  <PlayerSpeed>k__BackingField: 12
-  <MaxLaneChangeSpeed>k__BackingField: 5
+  <BaseForwardsSpeed>k__BackingField: 10
+  <MaxForwardsSpeed>k__BackingField: 35
+  <ForwardsAcceleration>k__BackingField: 0.5
+  <BaseLaneChangeSpeed>k__BackingField: 8
+  <LaneChangeSpeedCap>k__BackingField: 8
   <LaneChangeSpeedupTime>k__BackingField: 0.05
   <LaneChangeTurnaroundTime>k__BackingField: 0.1
-  <LaneChangeStoppingTime>k__BackingField: 0.15
+  <LaneChangeStoppingTime>k__BackingField: 0.125
   <RotationSpeed>k__BackingField: 300
   <DistanceBetweenLanes>k__BackingField: 3
   <PlayerVerticalOffset>k__BackingField: 1.5
