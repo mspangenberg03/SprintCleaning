@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1375575320403334610}
   - component: {fileID: 1545204112729474243}
+  - component: {fileID: 8591421941481674112}
   m_Layer: 0
   m_Name: Track
   m_TagString: Untagged
@@ -46,3 +47,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _distanceBetweenLanes: 1.5
   _playerVerticalOffset: 1.5
+--- !u!114 &8591421941481674112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5538579981810319939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac9afc36f1aafe6499cf66a115c3f55a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _comment: delete this prefab

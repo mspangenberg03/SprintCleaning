@@ -9,17 +9,12 @@ public class PlayerMovement : MonoBehaviour
     // ^ every time the player reaches the next point, it creates the next track segment and deletes the oldest one, so the player is always
     // moving towards this point index.
 
-    [SerializeField] private int _seed = -1;
-
     [SerializeField] private Rigidbody _rigidbody;
 
     [SerializeField] private PlayerMovementSettings _settings;
 
     private float _laneChangeSpeed;
-    //private PlayerMovementTargetLane _targetLaneTracker;
-
     private TrackPositions _track;
-
     private TrackGenerator gameManager;
 
     private bool LeftKey => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
@@ -27,24 +22,12 @@ public class PlayerMovement : MonoBehaviour
 
     public static PlayerMovementSettings Settings { get; private set; }
 
-    public static Rigidbody test;
-
 
     private void Awake() 
     {
-        if (_seed == -1)
-        {
-            _seed = Random.Range(int.MinValue, int.MaxValue);
-            Debug.Log("RNG seed: " + _seed);
-        }
-        Random.InitState(_seed);
-
-        test = _rigidbody;
         Settings = _settings;
         gameManager = TrackGenerator.Instance;
         _track = TrackPositions.Instance;
-        
-        //_targetLaneTracker = new PlayerMovementTargetLane();
     }
 
     private void Start()
@@ -64,9 +47,14 @@ public class PlayerMovement : MonoBehaviour
         TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
 
         Vector3 currentPosition = _rigidbody.position - Vector3.up * TrackPositions.Instance.PlayerVerticalOffset;
-        float currentLane = trackPiece.Lane(currentPosition, out float t);
 
-        Vector3 forwardsVelocity = NextVelocityAlongTrack(trackPiece, currentPosition, currentLane, t, out bool goingStraightTowardsEnd, out Vector3 trackEnd);
+        float t = trackPiece.FindTForClosestPointOnMidline(currentPosition);
+        float currentLane = trackPiece.Lane(currentPosition, t);
+
+        trackPiece.StoreLane(currentLane);
+        Vector3 trackEnd = trackPiece.EndPosition;
+
+        Vector3 forwardsVelocity = ForwardsVelocity(trackPiece, currentPosition, t, out bool goingStraightTowardsEnd, trackEnd);
         _rigidbody.velocity = forwardsVelocity;
 
         if (goingStraightTowardsEnd && VectorUtils.VelocityWillOvershoot(forwardsVelocity.To2D().To3D(), currentPosition.To2D().To3D(), trackEnd.To2D().To3D(), Time.deltaTime))
@@ -76,15 +64,11 @@ public class PlayerMovement : MonoBehaviour
 
         _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings._rotationSpeed, forwardsVelocity, _rigidbody.rotation));
 
-        LaneMovement(currentLane, forwardsVelocity);
+        _rigidbody.velocity += SidewaysVelocity(currentLane, forwardsVelocity);
     }
 
-    private Vector3 NextVelocityAlongTrack(TrackPiece trackPiece, Vector3 currentPosition, float currentLane
-        , float t, out bool goingStraightTowardsEnd, out Vector3 trackEnd)
+    private Vector3 ForwardsVelocity(TrackPiece trackPiece, Vector3 currentPosition, float t, out bool goingStraightTowardsEnd, Vector3 trackEnd)
     {
-        trackPiece.StoreLane(currentLane);
-        trackEnd = trackPiece.EndPosition;
-
         // The derivative of the bezier curve is the direction of the velocity, if timesteps were infinitely small.
         // Use the 2nd derivative to help reduce the error from discrete timesteps.
         Vector3 derivative = trackPiece.BezierCurveDerivative(t);
@@ -111,7 +95,7 @@ public class PlayerMovement : MonoBehaviour
     }
     
 
-    private void LaneMovement(float currentLane, Vector3 forwardsVelocity)
+    private Vector3 SidewaysVelocity(float currentLane, Vector3 forwardsVelocity)
     {
         AccelerateLaneChangeSpeed(currentLane);
 
@@ -127,7 +111,7 @@ public class PlayerMovement : MonoBehaviour
             laneChangeVelocity = _laneChangeSpeed * laneChangeDirection;
         }
 
-        _rigidbody.velocity += laneChangeVelocity;
+        return laneChangeVelocity;
     }
 
     private void AccelerateLaneChangeSpeed(float currentLane)
