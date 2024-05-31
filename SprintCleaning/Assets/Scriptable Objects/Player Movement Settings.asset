@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Player Movement Settings
   m_EditorClassIdentifier: 
   <BaseForwardsSpeed>k__BackingField: 10
+  <MinForwardsSpeed>k__BackingField: 5
   <MaxForwardsSpeed>k__BackingField: 35
   <ForwardsAcceleration>k__BackingField: 0.5
+  <ForwardsAccelerationWhileBelowBaseSpeed>k__BackingField: 10
   <BaseLaneChangeSpeed>k__BackingField: 8
   <LaneChangeSpeedCap>k__BackingField: 8
   <LaneChangeSpeedupTime>k__BackingField: 0.05

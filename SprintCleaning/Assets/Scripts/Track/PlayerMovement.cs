@@ -13,13 +13,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerMovementSettings _settings;
 
     private float _laneChangeSpeed;
-    private float _speedMultiplier = 1f;
+    public float _speedMultiplier = 1f;
+    private float _lastGarbageSlowdownTime = float.NegativeInfinity;
     private TrackGenerator gameManager;
 
     private float CurrentForwardsSpeed
     {
         get => _settings.BaseForwardsSpeed * _speedMultiplier;
-        set => _speedMultiplier = Mathf.Min(value, _settings.MaxForwardsSpeed) / _settings.BaseForwardsSpeed;
+        set => _speedMultiplier = Mathf.Clamp(value, _settings.MinForwardsSpeed, _settings.MaxForwardsSpeed) / _settings.BaseForwardsSpeed;
     }
     private float CurrentFullLaneChangeSpeed => Mathf.Min(_settings.LaneChangeSpeedCap, _settings.BaseLaneChangeSpeed * _speedMultiplier);
 
@@ -57,12 +58,19 @@ public class PlayerMovement : MonoBehaviour
     public void GarbageSlow(float playerSpeedMultiplier)
     {
         _speedMultiplier *= playerSpeedMultiplier;
-        _speedMultiplier = Mathf.Max(1f, _speedMultiplier);
+        _speedMultiplier = Mathf.Max(_settings.MinForwardsSpeed / _settings.BaseForwardsSpeed, _speedMultiplier);
+        _lastGarbageSlowdownTime = Time.time;
     }
 
     private void FixedUpdate()
     {
-        CurrentForwardsSpeed += _settings.ForwardsAcceleration * Time.deltaTime;
+        if (Time.time > _lastGarbageSlowdownTime + _settings.AccelerationPauseAfterGarbageSlowdown)
+        {
+            if (_speedMultiplier >= 1f)
+                CurrentForwardsSpeed += _settings.ForwardsAcceleration * Time.deltaTime;
+            else
+                CurrentForwardsSpeed += _settings.ForwardsAccelerationWhileBelowBaseSpeed * Time.deltaTime;
+        }
 
         TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
 

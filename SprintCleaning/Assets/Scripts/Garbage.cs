@@ -11,7 +11,7 @@ public class Garbage : MonoBehaviour
     private int _dirtiness = 10;
 
     [SerializeField, Tooltip("Multiplies the player's speed")]
-    private float _playerSpeedMultiplier = .9f;
+    private float _playerSpeedMultiplier = .3f;
 
     [SerializeField]
     private CollectedItems _playerItemData;
