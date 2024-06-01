@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
     // ^ every time the player reaches the next point, it creates the next track segment and deletes the oldest one
 
     [SerializeField] private Rigidbody _rigidbody;
-    [SerializeField] private float _playerSpeed = 0f;
+    [SerializeField] private float _playerSpeed = 1f;
     [SerializeField] private float _laneChangeSpeed = 30f;
     [SerializeField] private float _rotationSpeed = 300;
     [SerializeField] private bool _discreteMovement = false;
@@ -131,7 +131,7 @@ public class PlayerMovement : MonoBehaviour
         if (nextLane != _targetLane)
             _targetLane = nextLane;
     }
-
+    
     
 
     private void IncludeVelocityTowardsTargetLane()
@@ -154,5 +154,10 @@ public class PlayerMovement : MonoBehaviour
         }
 
         _rigidbody.velocity += laneChangeVelocity;
+    }
+
+    public void GarbageSlow(float slowAmount)
+    {
+        _playerSpeed = _playerSpeed * slowAmount;
     }
 }
