@@ -54,7 +54,22 @@ MonoBehaviour:
   - {fileID: 2007551459213979358, guid: 4bfd1ed85f90b134fad13ebbdeb3b311, type: 3}
   - {fileID: 7340645871352052559, guid: 893a9649cb0274d448c6e99c6124535c, type: 3}
   - {fileID: 7290087389331728689, guid: 37f2c1bccdd93c148a8ccb365392a385, type: 3}
-  _player: {fileID: 0}
   _numTrackPoints: 10
   _oddsDontTurn: 0.7
   _minStraightBetweenTurns: 2
+  _minObjectSeparation: 3
+  _trackObjectsYOffset: 1.5
+  _trashCountPerStandardLength:
+    min: 0.5
+    max: 1.5
+  _toolCountPerStandardLength:
+    min: 0.5
+    max: 1
+  _trashPrefabs:
+  - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
+  - {fileID: 5889100143449206652, guid: c40c73e8c8806c64aa7f0b2f190c752b, type: 3}
+  - {fileID: 531514119308221982, guid: 37d0712457ceae149ae4b04ce1b892fa, type: 3}
+  _toolPrefabs:
+  - {fileID: 1997853173736980697, guid: a5c6b2319db257f469740d8fd585983a, type: 3}
+  - {fileID: 3618007095663537576, guid: b7e1e94b03ba1d440b00c6f240c937bd, type: 3}
+  - {fileID: 1226523630981635959, guid: ee8be1f4a16064a42b371f4e6d54f39a, type: 3}

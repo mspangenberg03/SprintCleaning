@@ -15,7 +15,7 @@ public class PickUpTool : MonoBehaviour
         {
             if (_overlappingColliders == 0)
             {
-                other.transform.parent.GetComponent<PlayerToolManager>()._toolsInPickUpRange.Add(this);
+                other.transform.parent.GetComponent<PlayerToolManager>().AddToolInRange(this);
                 
             }
             _overlappingColliders++;
@@ -29,7 +29,7 @@ public class PickUpTool : MonoBehaviour
             _overlappingColliders--;
             if (_overlappingColliders == 0)
             {
-                other.transform.parent.GetComponent<PlayerToolManager>()._toolsInPickUpRange.Remove(this);
+                other.transform.parent.GetComponent<PlayerToolManager>().RemoveToolInRange(this);
             }
 
         }

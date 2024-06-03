@@ -9,7 +9,7 @@ public class PlayerToolManager : MonoBehaviour
     public List<ToolBase> _toolList = new(); //The tools that the player currently is carrying
     [SerializeField,Tooltip("How many tools the player can hold")]
     private int _numberOfTools;
-    public List<PickUpTool> _toolsInPickUpRange = new();
+    private List<PickUpTool> _toolsInPickUpRange = new();
     [SerializeField] private ToolBar _toolBar;
 
     private void Update()
@@ -23,8 +23,23 @@ public class PlayerToolManager : MonoBehaviour
        
     }
 
+    public void AddToolInRange(PickUpTool pickupTool)
+    {
+        _toolsInPickUpRange.Add(pickupTool);
+    }
+
+    public void RemoveToolInRange(PickUpTool pickupTool)
+    {
+        _toolsInPickUpRange.Remove(pickupTool);
+    }
+
     public void TryAddTool()
     {
+        for (int i = _toolsInPickUpRange.Count - 1; i >= 0; i--)
+        {
+            if (_toolsInPickUpRange[i] == null)
+                _toolsInPickUpRange.RemoveAt(i); // remove destroyed tools
+        }
  
         if(_toolsInPickUpRange.Count > 0)
         {
