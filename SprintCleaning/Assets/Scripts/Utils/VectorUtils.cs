@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -32,37 +33,22 @@ public class VectorUtils : MonoBehaviour
         float Cross2D(Vector2 v, Vector2 w) => v.x * w.y - v.y * w.x;
     }
 
-    public static Vector2 ClosestPointOnLine2D(Vector2 point, Vector2 linePoint1, Vector2 linePoint2)
-    {
-        return ClosestPointOnLineOrSegment2D(point, linePoint1, linePoint2, false);
-    }
-
-    public static Vector2 ClosestPointOnSegment2D(Vector2 point, Vector2 segmentPoint1, Vector2 segmentPoint2)
-    {
-        return ClosestPointOnLineOrSegment2D(point, segmentPoint1, segmentPoint2, true);
-    }
-    public static Vector2 ClosestPointOnLineOrSegment2D(Vector2 point, Vector2 segmentPoint1, Vector2 segmentPoint2, bool segment)
-    {
-        // stack overflow shortest distance between a point and a line segment
-        Vector2 a = segmentPoint1;
-        Vector2 b = segmentPoint2;
-
-        Vector2 bMinusA = b - a;
-        Vector2 pointMinusA = point - a;
-
-        float sqrLength = bMinusA.sqrMagnitude;
-        if (sqrLength == 0)
-            return a;
-
-        float t = Vector2.Dot(pointMinusA, bMinusA) / sqrLength;
-        if (segment)
-            t = Mathf.Clamp01(t);
-        return a + t * bMinusA;
-    }
-
     public static bool PointIsToLeftOfVector(Vector3 vectorStart, Vector3 vectorEnd, Vector3 point)
     {
         // https://discussions.unity.com/t/check-if-a-point-is-on-the-right-or-left-of-a-vector/180869
         return Vector3.Cross(vectorEnd - vectorStart, point - vectorStart).y < 0;
+    }
+
+    public static bool VelocityWillOvershoot(Vector3 velocity, Vector3 currentPosition, Vector3 targetPosition, float deltaTime)
+    {
+        // If the direction to the target will become opposite, then it's about to get past the next point
+        Vector3 currentDisplacement = currentPosition - targetPosition;
+        Vector3 nextDisplacement = currentDisplacement + velocity * deltaTime;
+        return Vector3.Dot(currentDisplacement, nextDisplacement) <= 0.0001f;
+    }
+
+    public static float ProjectionMagnitude(Vector2 vector, Vector2 projectOnto)
+    {
+        return Vector2.Dot(vector, projectOnto.normalized);
     }
 }

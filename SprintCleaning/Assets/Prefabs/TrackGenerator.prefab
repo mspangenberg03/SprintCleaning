@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 608179131147895185}
   - component: {fileID: 1360909279564036929}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: TrackGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,12 +46,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _trackPrefabs:
   - {fileID: 8436985586966843200, guid: 8bb2a798dd0b81b48a4a239534d025ec, type: 3}
+  - {fileID: 8589974252934845640, guid: df471b59619600344af10887dc0a1eeb, type: 3}
+  - {fileID: 8077653236005777457, guid: 61a56f14fd0f90f42bdbb09d3b39ec28, type: 3}
+  - {fileID: 6221956084416107605, guid: ee67fbf2631f503419efad82417c6a6e, type: 3}
+  - {fileID: 1641981354471546479, guid: 2c5af1c4aa87bd4429c8b00015ef1c9b, type: 3}
+  - {fileID: 139109404602557050, guid: 5fcb0bb6d433a8041bd4eae6de610692, type: 3}
+  - {fileID: 2007551459213979358, guid: 4bfd1ed85f90b134fad13ebbdeb3b311, type: 3}
+  - {fileID: 7340645871352052559, guid: 893a9649cb0274d448c6e99c6124535c, type: 3}
+  - {fileID: 7290087389331728689, guid: 37f2c1bccdd93c148a8ccb365392a385, type: 3}
   _player: {fileID: 0}
+  _numTrackPoints: 10
   _oddsDontTurn: 0.7
-  _turns:
-  - _positionOffset: {x: 0, y: 0, z: 10}
-    _yRotationOffset: 0
-  - _positionOffset: {x: 2.5, y: 0, z: 7.5}
-    _yRotationOffset: 90
-  - _positionOffset: {x: -2.5, y: 0, z: 7.5}
-    _yRotationOffset: -90
+  _minStraightBetweenTurns: 2

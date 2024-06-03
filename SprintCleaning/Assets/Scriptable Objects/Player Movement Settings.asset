@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f39a5fb73d97a5a42a36bf8acfd22120, type: 3}
+  m_Name: Player Movement Settings
+  m_EditorClassIdentifier: 
+  <BaseForwardsSpeed>k__BackingField: 10
+  <MinForwardsSpeed>k__BackingField: 5
+  <MaxForwardsSpeed>k__BackingField: 35
+  <ForwardsAcceleration>k__BackingField: 0.5
+  <ForwardsAccelerationWhileBelowBaseSpeed>k__BackingField: 10
+  <BaseLaneChangeSpeed>k__BackingField: 8
+  <LaneChangeSpeedCap>k__BackingField: 8
+  <LaneChangeSpeedupTime>k__BackingField: 0.05
+  <LaneChangeTurnaroundTime>k__BackingField: 0.1
+  <LaneChangeStoppingTime>k__BackingField: 0.125
+  <RotationSpeed>k__BackingField: 300
+  <DistanceBetweenLanes>k__BackingField: 3
+  <PlayerVerticalOffset>k__BackingField: 1.5

@@ -15,10 +15,10 @@ public static class PlayerMovementProcessor
         Time.fixedDeltaTime = (float)(1f / (frameRate * fixedUpdatesPerFrame));
     }
 
-    public static Quaternion NextRotation(float degreesPerSecond, Vector3 toTarget, Quaternion currentRotation)
+    public static Quaternion NextRotation(float degreesPerSecond, Vector3 velocity, Quaternion currentRotation)
     {
-        Vector3 toTargetOnPlane = new Vector3(toTarget.x, 0, toTarget.z);
-        float movementAngle = Quaternion.FromToRotation(Vector3.forward, toTargetOnPlane).eulerAngles.y;
+        Vector3 velocityOnPlane = new Vector3(velocity.x, 0, velocity.z);
+        float movementAngle = Quaternion.FromToRotation(Vector3.forward, velocityOnPlane).eulerAngles.y;
         Vector3 currentAngles = currentRotation.eulerAngles;
         float angleChange = movementAngle - currentAngles.y;
         angleChange = ((angleChange + 540) % 360) - 180; // make change be from -180 to 180
