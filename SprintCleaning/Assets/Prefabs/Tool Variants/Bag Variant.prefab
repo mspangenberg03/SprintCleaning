@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4723714752103091541, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
+      propertyPath: m_Radius
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7213048395655017689, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
       propertyPath: <ToolInfo>k__BackingField._type
       value: 1
@@ -60,6 +64,10 @@ PrefabInstance:
       propertyPath: <ToolInfo>k__BackingField._toolUI
       value: 
       objectReference: {fileID: 11400000, guid: ea6b16ef93ccb764381edb4f149ac9e4, type: 2}
+    - target: {fileID: 7213048395655017689, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
+      propertyPath: <ToolInfo>k__BackingField._toolUses
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7593384376440917220, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
       propertyPath: m_Name
       value: Bag Variant

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using TMPro;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private PlayerMovementSettings _settings;
+    [SerializeField] private TMPro.TextMeshProUGUI _speedText;
 
     private float _laneChangeSpeed;
     private float _speedMultiplier = 1f;
@@ -53,6 +55,11 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody.position = TrackGenerator.Instance.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
         _rigidbody.transform.position = _rigidbody.position;
         PlayerMovementProcessor.SetFixedDeltaTime();
+    }
+
+    private void LateUpdate()
+    {
+        _speedText.text = "Speed: " + (int)CurrentForwardsSpeed;
     }
 
     public void GarbageSlow(float playerSpeedMultiplier)

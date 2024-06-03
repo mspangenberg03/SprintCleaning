@@ -25,8 +25,11 @@ public class TrackGenerator : MonoBehaviour
     [SerializeField] private GameObject[] _trashPrefabs;
     [SerializeField] private GameObject[] _toolPrefabs;
 
+    private int _totalTrackPieces;
     private int _priorTrackPieceIndex;
     private int _numStraightSinceLastTurn;
+    private float _trashLeftover;
+    private float _toolLeftover;
     private List<List<GameObject>> _spawnedObjects = new();
     private List<List<GameObject>> _gameObjectListPool = new();
     public List<TrackPiece> TrackPieces { get; private set; } = new();
@@ -62,6 +65,7 @@ public class TrackGenerator : MonoBehaviour
             CreateFirstTrackPiece();
             return;
         }
+        _totalTrackPieces++;
 
         //Creates a trackPiece following the last created
         GameObject prefab = RandomTrackPiecePrefab();
@@ -117,14 +121,18 @@ public class TrackGenerator : MonoBehaviour
         // Determine how many trashes and how many tools.
         trackPiece.StoreLane(0);
         float numStandardLengths = trackPiece.ApproximateCurveLength() / STANDARD_TRACK_PIECE_LENGTH;
-        float numTrashFloat = Random.Range(_trashCountPerStandardLength.min, _trashCountPerStandardLength.max) * numStandardLengths;
-        float numToolsFloat = Random.Range(_toolCountPerStandardLength.min, _toolCountPerStandardLength.max) * numStandardLengths;
+        float numTrashFloat = Random.Range(_trashCountPerStandardLength.min, _trashCountPerStandardLength.max) * numStandardLengths + _trashLeftover;
+        float numToolsFloat = Random.Range(_toolCountPerStandardLength.min, _toolCountPerStandardLength.max) * numStandardLengths + _toolLeftover;
         int numTrash = (int)numTrashFloat;
-        if (Random.value < numTrashFloat - numTrash) // e.g. if numTrashFloat = 4.3, numTrash = 4 but 30% chance of 5 instead.
-            numTrash++;
         int numTools = (int)numToolsFloat;
-        if (Random.value < numToolsFloat - numTools)
-            numTools++;
+        _trashLeftover = numTrashFloat - numTrash;
+        _toolLeftover = numToolsFloat - numTools;
+
+        if (_totalTrackPieces < 5)
+        {
+            numTrash = 0;
+            numTools = 0;
+        }
 
         // Add trash pieces
         for (int i = 0; i < numTrash; i++)

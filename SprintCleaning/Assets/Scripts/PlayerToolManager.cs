@@ -5,72 +5,114 @@ using UnityEngine;
 
 public class PlayerToolManager : MonoBehaviour
 {
-    [SerializeField]
-    public List<ToolBase> _toolList = new(); //The tools that the player currently is carrying
-    [SerializeField,Tooltip("How many tools the player can hold")]
-    private int _numberOfTools;
-    private List<PickUpTool> _toolsInPickUpRange = new();
+    [Tooltip("How many tools the player can hold")]
+    [SerializeField] private int _numberOfTools;
     [SerializeField] private ToolBar _toolBar;
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            TryAddTool();
-        }
-       
-        
-       
-    }
+    public List<ToolBase> _heldTools = new();
 
-    public void AddToolInRange(PickUpTool pickupTool)
+    public void ToolUsed(ToolType toolType)
     {
-        _toolsInPickUpRange.Add(pickupTool);
-    }
-
-    public void RemoveToolInRange(PickUpTool pickupTool)
-    {
-        _toolsInPickUpRange.Remove(pickupTool);
-    }
-
-    public void TryAddTool()
-    {
-        for (int i = _toolsInPickUpRange.Count - 1; i >= 0; i--)
+        int index = -1;
+        for (int i = 0; i < _heldTools.Count; i++)
         {
-            if (_toolsInPickUpRange[i] == null)
-                _toolsInPickUpRange.RemoveAt(i); // remove destroyed tools
-        }
- 
-        if(_toolsInPickUpRange.Count > 0)
-        {
-            _toolList.Add(_toolsInPickUpRange[0].ToolInfo);
-            //_toolText.text += _toolsInPickUpRange[0].ToolInfo._type.ToString() +", ";
-            Destroy(_toolsInPickUpRange[0].gameObject);
-            _toolsInPickUpRange.RemoveAt(0);
-            if (_toolList.Count > _numberOfTools)
+            if (_heldTools[i]._type == toolType)
             {
-                _toolList.RemoveAt(0);
+                index = i; 
+                break;
             }
-            _toolBar.DrawSpritesOnToolAdd();
         }
-        
+        if (index == -1)
+            throw new System.Exception("No tool in _heldTools is toolType.");
 
-    }
-    public void ToolUsed(ToolBase tool)
-    {
-        tool._toolUses++;
-        if(tool._toolUses >= tool._durablity) 
+        _heldTools[index]._toolUses++;
+        if (_heldTools[index]._toolUses == _heldTools[index]._durablity)
         {
-            _toolList.Remove(tool);
-            //_toolText.text = _toolText.text.Replace(tool._type.ToString() +", ","");
+            _heldTools.RemoveAt(index);
         }
+
+        _toolBar.UpdateDisplayedInfo(_heldTools);
     }
-        
-    
-    public List<ToolBase> GetToolList()
+
+    public void TryAddTool(PickUpTool pickupTool)
     {
-        return _toolList;
+        for (int i = 0; i < _heldTools.Count; i++)
+        {
+            if (pickupTool.ToolInfo._type == _heldTools[i]._type)
+            {
+                _heldTools[i]._toolUses = 0;
+                Destroy(pickupTool.gameObject);
+                _toolBar.UpdateDisplayedInfo(_heldTools);
+                return;
+            }
+        }
+
+        _heldTools.Insert(0, pickupTool.ToolInfo);
+        Destroy(pickupTool.gameObject);
+
+        if (_heldTools.Count > _numberOfTools)
+        {
+            _heldTools.RemoveAt(_heldTools.Count - 1);
+        }
+
+        _toolBar.UpdateDisplayedInfo(_heldTools);
     }
-    
+
+    public bool HasTool(ToolType toolType)
+    {
+        foreach (ToolBase tool in _heldTools)
+        {
+            if (tool._type == toolType)
+                return true;
+        }
+        return false;
+    }
+
+    //public void RemoveToolInRange(PickUpTool pickupTool)
+    //{
+    //_toolsInPickUpRange.Remove(pickupTool);
+    //}
+
+    //public void TryAddTool()
+    //{
+    //    for (int i = _toolsInPickUpRange.Count - 1; i >= 0; i--)
+    //    {
+    //        if (_toolsInPickUpRange[i] == null)
+    //            _toolsInPickUpRange.RemoveAt(i); // remove destroyed tools
+    //    }
+
+    //    if(_toolsInPickUpRange.Count > 0)
+    //    {
+    //        _toolList.Add(_toolsInPickUpRange[0].ToolInfo);
+    //        //_toolText.text += _toolsInPickUpRange[0].ToolInfo._type.ToString() +", ";
+    //        Destroy(_toolsInPickUpRange[0].gameObject);
+    //        _toolsInPickUpRange.RemoveAt(0);
+    //        if (_toolList.Count > _numberOfTools)
+    //        {
+    //            _toolList.RemoveAt(0);
+    //        }
+    //        _toolBar.DrawSpritesOnToolAdd();
+    //    }
+
+
+    //}
+
+
+
+    // no durability for now. Need a durability bar to playtest whether it's fun or not.
+    // May or may not be more fun if refill durability upon colliding with an already-held tool. Test with and without that.
+
+    //public void ToolUsed(ToolBase tool)
+    //{
+
+    //tool._toolUses++;
+    //if(tool._toolUses >= tool._durablity) 
+    //{
+    //    _toolList.Remove(tool);
+    //}
+    //}
+
+
+
 
 }
