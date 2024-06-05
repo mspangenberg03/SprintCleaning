@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -87,6 +88,21 @@ public class TrackPiece : MonoBehaviour
     public Vector3 BezierCurveSecondDerivative()
     {
         return 2 * (p2 - 2 * p1 + p0);
+    }
+
+    public float ApproximateCurveLength()
+    {
+        const int steps = 100;
+        float result = 0;
+        Vector3 priorPoint = BezierCurve(0);
+        for (int i = 1; i <= steps; i++)
+        {
+            float t = ((float)i) / steps;
+            Vector3 nextPoint = BezierCurve(t);
+            result += (nextPoint - priorPoint).magnitude;
+            priorPoint = nextPoint;
+        }
+        return result;
     }
 
     private void OnDrawGizmos()

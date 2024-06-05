@@ -22,9 +22,11 @@ public class PlayerGarbageCollection : MonoBehaviour
     {
         if (_garbageText != null)
         {
-            _garbageText.text = "Broom Garbage: " + _playerItemData._counts[ToolType.Broom] + "\n" +
-                        "Mop Garbage: " + _playerItemData._counts[ToolType.Mop] + "\n" +
-                        "Bag Garbage: " + _playerItemData._counts[ToolType.GarbageBag];
+            _garbageText.text = "Broom Garbage: " + _playerItemData._counts[ToolType.Broom]
+                + "\n" + "Mop Garbage: " + _playerItemData._counts[ToolType.Mop]
+                + "\n" + "Bag Garbage: " + _playerItemData._counts[ToolType.GarbageBag]
+                + "\n" + "Purple Garbage: " + _playerItemData._counts[ToolType.Purple]
+                ;
         }
 
     }

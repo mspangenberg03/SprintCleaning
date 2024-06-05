@@ -120,5 +120,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <ToolInfo>k__BackingField:
     _type: 0
-    _toolUses: 0
-    _durablity: 5
+    _durablity: 3
+    _toolUI: {fileID: 0}

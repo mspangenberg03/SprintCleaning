@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4106003207215693523}
   - component: {fileID: 7867055231986845893}
   - component: {fileID: 3552535875520714322}
+  - component: {fileID: 5393652880097964241}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Player
@@ -83,6 +84,29 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!136 &5393652880097964241
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 319652089042280107}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &449601666774174775
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,7 +118,6 @@ GameObject:
   - component: {fileID: 3372843327391064175}
   - component: {fileID: 3464203085860531803}
   - component: {fileID: 7019970005135738460}
-  - component: {fileID: 1200300304900031292}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Player
@@ -167,27 +190,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &1200300304900031292
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 449601666774174775}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2509236342848714715
 GameObject:
   m_ObjectHideFlags: 0
@@ -202,6 +204,7 @@ GameObject:
   - component: {fileID: 3019220370651282654}
   - component: {fileID: 6582814077961112365}
   - component: {fileID: 3205953339151722299}
+  - component: {fileID: 4021191614930848293}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -240,6 +243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rigidbody: {fileID: 6654320705877145291}
   _settings: {fileID: 11400000, guid: a974e26a5660c8944a6ecbfb082b9ae6, type: 2}
+  _speedText: {fileID: 0}
 --- !u!54 &6654320705877145291
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -279,7 +283,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 410d1737b7b5cdd468663483c47e6f08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxDirtiness: 50
+  _maxDirtiness: 30
   _dirtinessBar: {fileID: 0}
   _dirtinessText: {fileID: 0}
 --- !u!114 &6582814077961112365
@@ -294,10 +298,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0535ff30f6d754e4493f36ed2c8001f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _toolList: []
   _numberOfTools: 2
-  _toolsInPickUpRange: []
   _toolBar: {fileID: 0}
+  _heldTools: []
 --- !u!114 &3205953339151722299
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,3 +315,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _garbageText: {fileID: 0}
   _playerItemData: {fileID: 11400000, guid: a4d552aa22ccde841848f0e8f2245245, type: 2}
+--- !u!114 &4021191614930848293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2509236342848714715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c123f99a42a66714686203024291c600, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _seed: -1
+  _fixedDeltaTime: -1
