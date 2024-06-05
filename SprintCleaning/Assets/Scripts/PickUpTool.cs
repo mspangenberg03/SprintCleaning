@@ -8,18 +8,16 @@ public class PickUpTool : MonoBehaviour
     [field:SerializeField]
     public ToolBase ToolInfo { get; private set; }
 
-    private int _overlappingColliders = 0;
+    private int _overlappingColliders = 0; // This way, even if the player has multiple colliders, it'll behave as 1 collider gameplay-wise.
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (other.gameObject.CompareTag("Player")) // should use collision layer matrix in physics settings instead of a tag
         {
             if (_overlappingColliders == 0)
             {
-                other.transform.parent.GetComponent<PlayerToolManager>()._toolsInPickUpRange.Add(this);
-                
+                other.transform.parent.GetComponent<PlayerToolManager>().TryAddTool(this);
             }
             _overlappingColliders++;
-
         }
     }
     private void OnTriggerExit(Collider other)
@@ -27,11 +25,6 @@ public class PickUpTool : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             _overlappingColliders--;
-            if (_overlappingColliders == 0)
-            {
-                other.transform.parent.GetComponent<PlayerToolManager>()._toolsInPickUpRange.Remove(this);
-            }
-
         }
     }
 }

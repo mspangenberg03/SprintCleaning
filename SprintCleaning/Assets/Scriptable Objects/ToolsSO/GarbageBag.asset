@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46b931819a14eb549bd32412dab96760, type: 3}
   m_Name: GarbageBag
   m_EditorClassIdentifier: 
-  _sprite: {fileID: 21300000, guid: fd0e99dd8f61b294bb89fdbe1ce492bd, type: 3}
+  _sprite: {fileID: 21300000, guid: e93079c96e19ea841aedd305efad5abb, type: 3}
   _toolType: 1

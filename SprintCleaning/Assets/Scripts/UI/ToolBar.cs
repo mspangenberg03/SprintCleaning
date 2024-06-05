@@ -6,24 +6,26 @@ using UnityEngine.UI;
 public class ToolBar : MonoBehaviour
 {
     private PlayerToolManager PlayerToolManager => GameObject.FindObjectOfType<PlayerToolManager>();
-    private List<ToolBase> ActiveTools => PlayerToolManager._toolList;
-    private Image[] _toolSprites => gameObject.GetComponentsInChildren<Image>();
-    
-    public void DrawSpritesOnToolAdd()
+    [SerializeField] private Image[] _toolIcons;
+    [SerializeField] private Slider[] _durabilities;
+
+    public void UpdateDisplayedInfo(List<ToolBase> heldTools)
     {
-        if (ActiveTools.Count == 1)
+        for (int i = 0; i < heldTools.Count; i++)
         {
-            _toolSprites[2].overrideSprite = ActiveTools[0]._toolUI.Sprite;
+            _toolIcons[i].enabled = true;
+            _toolIcons[i].overrideSprite = heldTools[i]._toolUI.Sprite;
+
+            _durabilities[i].gameObject.SetActive(true);
+            _durabilities[i].value = Mathf.InverseLerp(heldTools[i]._durablity, 0, heldTools[i]._toolUses);
+
+            float alpha = heldTools[i]._toolUses == heldTools[i]._durablity - 1 ? .66f : 1f;
+            _toolIcons[i].color = new Color(1f, 1f, 1f, alpha);
         }
-        else
+        for (int i = heldTools.Count; i < _toolIcons.Length; i++)
         {
-            for (int i = 0; i < ActiveTools.Count; i++)
-            {
-                if (ActiveTools[i] != null)
-
-                    _toolSprites[i + 1].overrideSprite = ActiveTools[i]._toolUI.Sprite;
-            }
+            _toolIcons[i].enabled = false;
+            _durabilities[i].gameObject.SetActive(false);
         }
-
     }
 }

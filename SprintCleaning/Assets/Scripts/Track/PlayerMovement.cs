@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using TMPro;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private PlayerMovementSettings _settings;
+    [SerializeField] private TMPro.TextMeshProUGUI _speedText;
 
     private float _laneChangeSpeed;
     private float _speedMultiplier = 1f;
@@ -52,7 +54,11 @@ public class PlayerMovement : MonoBehaviour
     {
         _rigidbody.position = TrackGenerator.Instance.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
         _rigidbody.transform.position = _rigidbody.position;
-        PlayerMovementProcessor.SetFixedDeltaTime();
+    }
+
+    private void LateUpdate()
+    {
+        _speedText.text = "Speed: " + (int)CurrentForwardsSpeed;
     }
 
     public void GarbageSlow(float playerSpeedMultiplier)
@@ -147,12 +153,20 @@ public class PlayerMovement : MonoBehaviour
         // This only changes _laneChangeSpeed. Adjust it more gradually than instantly moving at the maximum lane change speed,
         // to make it feel better.
 
+        bool leftKey, rightKey;
+        if (!DeterministicBugReproduction.Instance.OverrideControl(out leftKey, out rightKey))
+        {
+            leftKey = LeftKey;
+            rightKey = RightKey;
+            DeterministicBugReproduction.Instance.NextFixedUpdateInputs(leftKey, rightKey);
+        }
+
         float? targetLane = null;
-        if (RightKey == LeftKey) // might feel better if remember the most recent one and use that
+        if (rightKey == leftKey) // might feel better if remember the most recent one and use that
             targetLane = null;
-        else if (RightKey)
+        else if (rightKey)
             targetLane = 1;
-        else if (LeftKey)
+        else if (leftKey)
             targetLane = -1;
 
         bool slowDown = currentLane == targetLane || !targetLane.HasValue;
@@ -166,7 +180,7 @@ public class PlayerMovement : MonoBehaviour
         float accelerationTime = _settings.LaneChangeSpeedupTime;
         if (Mathf.Sign(accelerationDirection) != Mathf.Sign(_laneChangeSpeed))
         {
-            if (RightKey || LeftKey)
+            if (rightKey || leftKey)
                 accelerationTime = _settings.LaneChangeTurnaroundTime;
             else
                 accelerationTime = _settings.LaneChangeStoppingTime;

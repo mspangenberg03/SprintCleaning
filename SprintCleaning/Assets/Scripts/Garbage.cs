@@ -13,26 +13,24 @@ public class Garbage : MonoBehaviour
     [SerializeField, Tooltip("Multiplies the player's speed")]
     private float _playerSpeedMultiplier = .3f;
 
-    [SerializeField]
-    private CollectedItems _playerItemData;
+    [SerializeField] private CollectedItems _playerItemData;
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
             GameObject player = other.transform.parent.gameObject;
-            foreach (ToolBase tool in player.GetComponent<PlayerToolManager>().GetToolList())
+            if (player.GetComponent<PlayerToolManager>().HasTool(_type))
             {
-                if(tool._type == _type)
-                {
-                    player.GetComponent<PlayerToolManager>().ToolUsed(tool);
-                    _playerItemData.GarbageCollected(_type);
-                    player.GetComponent<PlayerGarbageCollection>().TextEdit();
-                    Destroy(gameObject);
-                    return;
-                }
+                player.GetComponent<PlayerToolManager>().ToolUsed(_type);
+                _playerItemData.GarbageCollected(_type);
+                player.GetComponent<PlayerGarbageCollection>().TextEdit();
             }
-            player.GetComponent<DirtinessManager>().AddDirtiness(_dirtiness);
-            player.GetComponent<PlayerMovement>().GarbageSlow(_playerSpeedMultiplier);
+            else
+            {
+                player.GetComponent<DirtinessManager>().AddDirtiness(_dirtiness);
+                player.GetComponent<PlayerMovement>().GarbageSlow(_playerSpeedMultiplier);
+            }
             Destroy(gameObject);
         }
     }
