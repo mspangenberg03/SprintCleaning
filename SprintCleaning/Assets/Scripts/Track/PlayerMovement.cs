@@ -12,12 +12,16 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private PlayerMovementSettings _settings;
-    [SerializeField] private TMPro.TextMeshProUGUI _speedText;
+    [SerializeField] private TextMeshProUGUI _speedText;
 
     private float _laneChangeSpeed;
     private float _speedMultiplier = 1f;
     private float _lastGarbageSlowdownTime = float.NegativeInfinity;
-    private TrackGenerator gameManager;
+    private int _priorSpeedTextNumber = -1;
+    private TrackGenerator _gameManager;
+
+    private Vector3 _position = Vector3.zero;
+    private Vector3 _velocity = Vector3.zero;
 
     private float CurrentForwardsSpeed
     {
@@ -45,7 +49,7 @@ public class PlayerMovement : MonoBehaviour
     private void Awake() 
     {
         _settingsStatic = _settings;
-        gameManager = TrackGenerator.Instance;
+        _gameManager = TrackGenerator.Instance;
     }
 
 
@@ -54,11 +58,19 @@ public class PlayerMovement : MonoBehaviour
     {
         _rigidbody.position = TrackGenerator.Instance.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
         _rigidbody.transform.position = _rigidbody.position;
+
+        _position = _rigidbody.position;
     }
 
     private void LateUpdate()
     {
-        _speedText.text = "Speed: " + (int)CurrentForwardsSpeed;
+        // don't update the text when not necessary, to reduce garbage
+        int newSpeedTextNumber = (int)CurrentForwardsSpeed;
+        if (_priorSpeedTextNumber != newSpeedTextNumber)
+        {
+            _priorSpeedTextNumber = newSpeedTextNumber;
+            _speedText.text = "Speed: " + newSpeedTextNumber;
+        }
     }
 
     public void GarbageSlow(float playerSpeedMultiplier)
@@ -80,7 +92,7 @@ public class PlayerMovement : MonoBehaviour
 
         TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
 
-        Vector3 currentPosition = _rigidbody.position - Vector3.up * _settings.PlayerVerticalOffset;
+        Vector3 currentPosition = _position - Vector3.up * _settings.PlayerVerticalOffset;
 
         float t = trackPiece.FindTForClosestPointOnMidline(currentPosition);
         float currentLane = trackPiece.Lane(currentPosition, t);
@@ -88,20 +100,26 @@ public class PlayerMovement : MonoBehaviour
         trackPiece.StoreLane(currentLane);
         Vector3 trackEnd = trackPiece.EndPositionForStoredLane;
 
-        Vector3 forwardsVelocity = ForwardsVelocity(trackPiece, currentPosition, t, out bool goingStraightTowardsEnd, trackEnd);
-        _rigidbody.velocity = forwardsVelocity;
+        Vector3 forwardsVelocity = ForwardsVelocity(trackPiece, t);
+        bool nearEnd = (trackEnd - currentPosition).magnitude <= CurrentForwardsSpeed * Time.deltaTime;
+        _velocity = forwardsVelocity;
 
         _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings.RotationSpeed, forwardsVelocity, _rigidbody.rotation));
 
-        _rigidbody.velocity += LaneChangeVelocity(currentLane, forwardsVelocity);
+        _velocity += LaneChangeVelocity(currentLane, forwardsVelocity);
 
-        if (goingStraightTowardsEnd)// && VectorUtils.VelocityWillOvershoot(forwardsVelocity.To2D().To3D(), currentPosition.To2D().To3D(), trackEnd.To2D().To3D(), Time.deltaTime))
+        // Do the physics integration entirely separate from Unity's physics then just make the rigidbody move there. The rigidbody's only purpose
+        // is to get continuous collision detection and OnTriggerEnter.
+        _position += _velocity * Time.deltaTime;
+        _rigidbody.velocity = (_position - _rigidbody.position) / Time.deltaTime;
+
+        if (nearEnd)
         {
-            gameManager.AddTrackPiece();
+            _gameManager.AddTrackPiece();
         }
     }
 
-    private Vector3 ForwardsVelocity(TrackPiece trackPiece, Vector3 currentPosition, float t, out bool goingStraightTowardsEnd, Vector3 trackEnd)
+    private Vector3 ForwardsVelocity(TrackPiece trackPiece, float t)
     {
         // The derivative of the bezier curve is the direction of the velocity, if timesteps were infinitely small.
         // Use the 2nd derivative to help reduce the error from discrete timesteps.
@@ -109,23 +127,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 secondDerivative = trackPiece.BezierCurveSecondDerivative();
         float estimatedTChangeDuringTimestep = CurrentForwardsSpeed * Time.deltaTime / derivative.magnitude;
         Vector3 averageDerivative = derivative + estimatedTChangeDuringTimestep / 2 * secondDerivative;
-        Vector3 result = CurrentForwardsSpeed * averageDerivative.normalized;
-
-        // The player's y position shifts very slightly even on a flat track. Not sure why, maybe internal physics engine stuff.
-        // Do this to keep the y position's drift in check.
-        Vector3 point = trackPiece.BezierCurve(t);
-        float yDifference = point.y - currentPosition.y;
-        result.y += 10f * yDifference * Time.deltaTime;
-
-        goingStraightTowardsEnd = (trackEnd - currentPosition).magnitude <= CurrentForwardsSpeed * Time.deltaTime;
-        //if (goingStraightTowardsEnd)
-        //{
-        //    float yResult = result.y;
-        //    result = CurrentForwardsSpeed * (trackEnd - currentPosition).normalized;
-        //    result.y = yResult;
-        //}
-
-        return result;
+        return CurrentForwardsSpeed * averageDerivative.normalized;
     }
     
 
@@ -153,8 +155,7 @@ public class PlayerMovement : MonoBehaviour
         // This only changes _laneChangeSpeed. Adjust it more gradually than instantly moving at the maximum lane change speed,
         // to make it feel better.
 
-        bool leftKey, rightKey;
-        if (!DeterministicBugReproduction.Instance.OverrideControl(out leftKey, out rightKey))
+        if (!DeterministicBugReproduction.Instance.OverrideControl(out bool leftKey, out bool rightKey))
         {
             leftKey = LeftKey;
             rightKey = RightKey;
