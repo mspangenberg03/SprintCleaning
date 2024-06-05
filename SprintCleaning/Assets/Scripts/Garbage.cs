@@ -7,6 +7,9 @@ public class Garbage : MonoBehaviour
     [Tooltip("The type of tool needed to collect this piece of garbage")]
     public ToolType _type;
 
+    [Tooltip("The sound this piece of garbage plays on collect")]
+    public AudioSource _garbageAudio;
+
     [SerializeField,Tooltip("How much dirtiness does this garbage add")]
     private int _dirtiness = 10;
 
@@ -22,6 +25,7 @@ public class Garbage : MonoBehaviour
             GameObject player = other.transform.parent.gameObject;
             if (player.GetComponent<PlayerToolManager>().HasTool(_type))
             {
+                _garbageAudio.Play();
                 player.GetComponent<PlayerToolManager>().ToolUsed(_type);
                 _playerItemData.GarbageCollected(_type);
                 player.GetComponent<PlayerGarbageCollection>().TextEdit();
