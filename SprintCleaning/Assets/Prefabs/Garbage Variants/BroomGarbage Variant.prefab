@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -5626339265832897222, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 616a72b3b68a06b468b42ee80689bec1, type: 3}
     - target: {fileID: 3598271509090607832, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
       propertyPath: m_Name
       value: BroomGarbage Variant
@@ -52,6 +56,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8174488750211782505, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
+      propertyPath: impact
+      value: 
+      objectReference: {fileID: 8300000, guid: 616a72b3b68a06b468b42ee80689bec1, type: 3}
     - target: {fileID: 8862338383462339369, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

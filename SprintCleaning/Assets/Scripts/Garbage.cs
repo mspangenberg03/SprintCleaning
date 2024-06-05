@@ -8,6 +8,7 @@ public class Garbage : MonoBehaviour
     public ToolType _type;
 
     [Tooltip("The sound this piece of garbage plays on collect")]
+    public AudioClip impact;
     public AudioSource _garbageAudio;
 
     [SerializeField,Tooltip("How much dirtiness does this garbage add")]
@@ -23,9 +24,10 @@ public class Garbage : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             GameObject player = other.transform.parent.gameObject;
+            _garbageAudio = player.GetComponent<AudioSource>();
             if (player.GetComponent<PlayerToolManager>().HasTool(_type))
             {
-                _garbageAudio.Play();
+                _garbageAudio.PlayOneShot(impact, 1F);
                 player.GetComponent<PlayerToolManager>().ToolUsed(_type);
                 _playerItemData.GarbageCollected(_type);
                 player.GetComponent<PlayerGarbageCollection>().TextEdit();
