@@ -20,16 +20,16 @@ public class TrackGenerator : MonoBehaviour
     // models for track pieces so we don't need to refit the colliders (?).
     [SerializeField] private float _trackObjectsYOffset = 1.5f;
     [SerializeField] private FloatRange _trashCountPerStandardLength;
-    [SerializeField] private FloatRange _toolCountPerStandardLength;
+    //[SerializeField] private FloatRange _toolCountPerStandardLength;
     [System.Serializable] private class FloatRange { public float min; public float max; }
     [SerializeField] private GameObject[] _trashPrefabs;
-    [SerializeField] private GameObject[] _toolPrefabs;
+    //[SerializeField] private GameObject[] _toolPrefabs;
 
     private int _totalTrackPieces;
     private int _priorTrackPieceIndex;
     private int _numStraightSinceLastTurn;
     private float _trashLeftover;
-    private float _toolLeftover;
+    //private float _toolLeftover;
     private List<List<GameObject>> _spawnedObjects = new();
     private List<List<GameObject>> _gameObjectListPool = new();
     public List<TrackPiece> TrackPieces { get; private set; } = new();
@@ -122,16 +122,16 @@ public class TrackGenerator : MonoBehaviour
         trackPiece.StoreLane(0);
         float numStandardLengths = trackPiece.ApproximateCurveLength() / STANDARD_TRACK_PIECE_LENGTH;
         float numTrashFloat = Random.Range(_trashCountPerStandardLength.min, _trashCountPerStandardLength.max) * numStandardLengths + _trashLeftover;
-        float numToolsFloat = Random.Range(_toolCountPerStandardLength.min, _toolCountPerStandardLength.max) * numStandardLengths + _toolLeftover;
+        //float numToolsFloat = Random.Range(_toolCountPerStandardLength.min, _toolCountPerStandardLength.max) * numStandardLengths + _toolLeftover;
         int numTrash = (int)numTrashFloat;
-        int numTools = (int)numToolsFloat;
+        //int numTools = (int)numToolsFloat;
         _trashLeftover = numTrashFloat - numTrash;
-        _toolLeftover = numToolsFloat - numTools;
+        //_toolLeftover = numToolsFloat - numTools;
 
         if (_totalTrackPieces < 5)
         {
             numTrash = 0;
-            numTools = 0;
+            //numTools = 0;
         }
 
         // Add trash pieces
@@ -147,19 +147,19 @@ public class TrackGenerator : MonoBehaviour
         }
 
         // Add tools
-        for (int i = 0; i < numTools; i++)
-        {
-            GameObject prefab = _toolPrefabs[Random.Range(0, _toolPrefabs.Length)]; // Could do a random bag to prevent too many of the same type of trash
-            Vector3 position = ChooseRandomPositionForObjectOnTrack(trackPiece);
-            if (float.IsNaN(position.x))
-            {
-                Debug.LogError("Couldn't find a valid position. The inspector settings _trashCountPerStandardLength and _toolCountPerStandardLength are probably too high.");
-                break; // Couldn't find a valid position
-            }
-            Quaternion rotation = Quaternion.Euler(0, Random.Range(-180f, 180f), 0f);
-            GameObject instantiated = Instantiate(prefab, position, rotation, transform);
-            gameObjectsOnNewTrackPiece.Add(instantiated);
-        }
+        //for (int i = 0; i < numTools; i++)
+        //{
+        //    GameObject prefab = _toolPrefabs[Random.Range(0, _toolPrefabs.Length)]; // Could do a random bag to prevent too many of the same type of trash
+        //    Vector3 position = ChooseRandomPositionForObjectOnTrack(trackPiece);
+        //    if (float.IsNaN(position.x))
+        //    {
+        //        Debug.LogError("Couldn't find a valid position. The inspector settings _trashCountPerStandardLength and _toolCountPerStandardLength are probably too high.");
+        //        break; // Couldn't find a valid position
+        //    }
+        //    Quaternion rotation = Quaternion.Euler(0, Random.Range(-180f, 180f), 0f);
+        //    GameObject instantiated = Instantiate(prefab, position, rotation, transform);
+        //    gameObjectsOnNewTrackPiece.Add(instantiated);
+        //}
     }
 
     private Vector3 ChooseRandomPositionForObjectOnTrack(TrackPiece trackPiece)
