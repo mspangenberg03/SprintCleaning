@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class TrackPiece : MonoBehaviour
 {
+    public const int TRACK_PIECE_LENGTH = 16;
     [field: SerializeField] public Transform StartTransform { get; private set; } // Used for positioning this track piece when creating it
     [field: SerializeField] public Transform EndTransform { get; private set; } // Used for the player's target
 
@@ -107,14 +108,18 @@ public class TrackPiece : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        //if (!Application.isPlaying)
-        //    return;
         Gizmos.color = Color.green;
         DrawOneLane(-1f);
         Gizmos.color = Color.black;
         DrawOneLane(0f);
         Gizmos.color = Color.blue;
         DrawOneLane(1f);
+
+        Gizmos.color = new Color(.5f, 0f, .5f, .1f);
+        for (int i = 0; i < TRACK_PIECE_LENGTH; i++)
+        {
+            DrawPerpendicularLine(i);
+        }
     }
 
     private void DrawOneLane(float lane)
@@ -132,5 +137,14 @@ public class TrackPiece : MonoBehaviour
             Gizmos.DrawLine(priorPoint, nextPoint);
             priorPoint = nextPoint;
         }
+    }
+
+    private void DrawPerpendicularLine(int distanceAlongTrack)
+    {
+        StoreLane(0);
+        float t = (float)distanceAlongTrack / TRACK_PIECE_LENGTH; // opposite of distanceAlongTrack. doesnt matter
+        Vector3 position = BezierCurve(t) + PlayerMovement.Settings.PlayerVerticalOffset * Vector3.up;
+        Vector3 direction = Vector2.Perpendicular(BezierCurveDerivative(t).To2D()).To3D().normalized * PlayerMovement.Settings.DistanceBetweenLanes;
+        Gizmos.DrawLine(position - direction, position + direction);
     }
 }
