@@ -81,13 +81,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Time.time > _lastGarbageSlowdownTime + _settings.AccelerationPauseAfterGarbageSlowdown)
-        {
-            if (_speedMultiplier >= 1f)
-                CurrentForwardsSpeed += _settings.ForwardsAcceleration * Time.deltaTime;
-            else
-                CurrentForwardsSpeed += _settings.ForwardsAccelerationWhileBelowBaseSpeed * Time.deltaTime;
-        }
+        //if (Time.time > _lastGarbageSlowdownTime + _settings.AccelerationPauseAfterGarbageSlowdown)
+        //{
+        //    if (_speedMultiplier >= 1f)
+        //        CurrentForwardsSpeed += _settings.ForwardsAcceleration * Time.deltaTime;
+        //    else
+        //        CurrentForwardsSpeed += _settings.ForwardsAccelerationWhileBelowBaseSpeed * Time.deltaTime;
+        //}
 
         Vector3 priorPosition = _positionOnMidline; 
 

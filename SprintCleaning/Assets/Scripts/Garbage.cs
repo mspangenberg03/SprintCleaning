@@ -19,24 +19,33 @@ public class Garbage : MonoBehaviour
 
     [SerializeField] private CollectedItems _playerItemData;
 
+    private static float _lastTime;
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
             GameObject player = other.transform.parent.gameObject;
             _garbageAudio = player.GetComponent<AudioSource>();
-            if (player.GetComponent<PlayerToolManager>().HasTool(_type))
+
+            if (DevSettings.Instance.CheckTrashCollectionConsistentIntervals)
             {
-                _garbageAudio.PlayOneShot(impact, 1F);
-                player.GetComponent<PlayerToolManager>().ToolUsed(_type);
+                int fixedTimesteps = Mathf.RoundToInt((Time.fixedTime - _lastTime) / Time.fixedDeltaTime);
+                bool expected = false;
+                foreach (int x in DevSettings.Instance.ExpectedFixedUpdatesBetweenTrashCollection)
+                {
+                    if (x == fixedTimesteps)
+                        expected = true;
+                }
+                if (!expected)
+                    Debug.Log("Unexpected number of fixed timesteps between Garbage.OnTriggerEnter: " + fixedTimesteps);
+                _lastTime = Time.fixedTime;
+            }
+            _garbageAudio.PlayOneShot(impact, 1F);
+                //player.GetComponent<PlayerToolManager>().ToolUsed(_type);
                 _playerItemData.GarbageCollected(_type);
                 player.GetComponent<PlayerGarbageCollection>().TextEdit();
-            }
-            else
-            {
-                player.GetComponent<DirtinessManager>().AddDirtiness(_dirtiness);
-                player.GetComponent<PlayerMovement>().GarbageSlow(_playerSpeedMultiplier);
-            }
+
             Destroy(gameObject);
         }
     }

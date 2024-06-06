@@ -16,10 +16,22 @@ PrefabInstance:
       propertyPath: m_PlayOnAwake
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3405549162795125105, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 976206b515547ec4c94b6d94c3935a51, type: 2}
     - target: {fileID: 3598271509090607832, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
       propertyPath: m_Name
       value: BagGarbage Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 3993401155454205292, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
+      propertyPath: _type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3993401155454205292, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
+      propertyPath: impact
+      value: 
+      objectReference: {fileID: 8300000, guid: fc1abaf1bc594ca41af1fe1997ecd6c3, type: 3}
     - target: {fileID: 4638553489226399478, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
       propertyPath: m_LocalPosition.x
       value: 24.189655

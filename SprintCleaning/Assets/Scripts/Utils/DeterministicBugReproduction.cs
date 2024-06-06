@@ -18,9 +18,9 @@ public class DeterministicBugReproduction : MonoBehaviour
         public float[] targetLaneEachFixedUpdate;
     }
 
-    [SerializeField] private bool _reproduceBasedOnSaveData = false;
+    //[SerializeField] private bool _reproduceBasedOnSaveData = false;
 
-    public bool ReproduceBasedOnSaveData => _reproduceBasedOnSaveData;
+    public bool ReproduceBasedOnSaveData => DevSettings.Instance.ReproduceSavedRNGAndInputs;
 
     private DebugSaveData _saveData;
     private List<float> _targetLaneEachFixedUpdate = new();
@@ -36,7 +36,7 @@ public class DeterministicBugReproduction : MonoBehaviour
         _saveLocation = Path.Combine(Application.persistentDataPath, FILE_NAME);
         Debug.Log("Bug reproduction file save location: " + _saveLocation);
 
-        if (_reproduceBasedOnSaveData)
+        if (ReproduceBasedOnSaveData)
         {
             if (File.Exists(_saveLocation))
             {
@@ -62,7 +62,7 @@ public class DeterministicBugReproduction : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (_reproduceBasedOnSaveData)
+        if (ReproduceBasedOnSaveData)
             return;
         // save the data
         _saveData.targetLaneEachFixedUpdate = _targetLaneEachFixedUpdate.ToArray();
@@ -75,7 +75,7 @@ public class DeterministicBugReproduction : MonoBehaviour
 
     public bool OverrideTargetLane(out float targetLane)
     {
-        if (!_reproduceBasedOnSaveData)
+        if (!ReproduceBasedOnSaveData)
         {
             targetLane = 0;
             return false;
@@ -97,7 +97,7 @@ public class DeterministicBugReproduction : MonoBehaviour
 
     public void NextFixedUpdateTargetLane(float targetLane)
     {
-        if (_reproduceBasedOnSaveData)
+        if (ReproduceBasedOnSaveData)
             return;
         _targetLaneEachFixedUpdate.Add(targetLane);
     }

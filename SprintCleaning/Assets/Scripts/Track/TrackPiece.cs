@@ -142,20 +142,20 @@ public class TrackPiece : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.green;
+        Gizmos.color = new Color(1f, 1f, 1f, .3f);
         DrawOneLane(-1f);
-        Gizmos.color = Color.cyan;
+        Gizmos.color = new Color(1f, 1f, 1f, .3f);
         DrawOneLane(0f);
-        Gizmos.color = Color.blue;
+        Gizmos.color = new Color(1f, 1f, 1f, .3f);
         DrawOneLane(1f);
 
-        float alpha = Application.isPlaying ? .05f : 1f;
+        float alpha = Application.isPlaying ? .2f : 1f;
         Gizmos.color = new Color(0f, 0f, 0f, alpha);
         float t = 0;
         for (int i = 0; i < TRACK_PIECE_LENGTH; i++)
         {
             StoreLane(0);
-            t = FindTForDistanceAlongTrack(1f, t);
+            t = FindTForDistanceAlongMidline(1f, t);
             if (t == -1)
             {
                 if (i == TRACK_PIECE_LENGTH - 1)
@@ -186,20 +186,28 @@ public class TrackPiece : MonoBehaviour
         }
     }
 
-    private float FindTForDistanceAlongTrack(float extraDistanceAlongTrack, float startingFromT)
+    public float FindTForDistanceAlongMidline(float extraDistanceAlongTrack, float startingFromT)
     {
         StoreLane(0);
         const int segments = 1000;
         float totalDistance = 0;
         Vector3 priorPosition = BezierCurve(startingFromT);
+        float priorDistance = 0f;
+        float priorT = 0;
         for (int i = 1; i <= segments; i++)
         {
             float nextT = Mathf.Lerp(startingFromT, 1f, (float)i / segments);
             Vector3 nextPosition = BezierCurve(nextT);
             totalDistance += (nextPosition - priorPosition).magnitude;
             if (totalDistance >= extraDistanceAlongTrack)
-                return nextT;
+            {
+                float inverseLerp = Mathf.InverseLerp(priorDistance, totalDistance, extraDistanceAlongTrack);
+                return Mathf.Lerp(priorT, nextT, inverseLerp);
+                //return nextT;
+            }
             priorPosition = nextPosition;
+            priorDistance = totalDistance;
+            priorT = nextT;
         }
 
         return -1;
