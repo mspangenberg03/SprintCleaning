@@ -16,7 +16,6 @@ public class PlayerMovementSettings : ScriptableObject
     [field: SerializeField] public float BaseLaneChangeSpeed { get; private set; } = 6;
     [field: SerializeField] public float LaneChangeSpeedupTime { get; private set; } = .05f;
     [field: SerializeField] public float LaneChangeTurnaroundTime { get; private set; } = .1f;
-    [field: SerializeField] public float LaneChangeStoppingTime { get; private set; } = .15f;
     [field: SerializeField] public float RotationSpeed { get; private set; } = 300f;
 
     [field: SerializeField] public float DistanceBetweenLanes { get; private set; } = 1.5f;
