@@ -10,4 +10,6 @@ public class DevSettingsSO : ScriptableObject
     [Tooltip("How many fixed updates occur between trash collection when CheckTrashCollectionConsistentIntervals is true.\n" +
         "It depends on your monitor's refresh rate so enter play mode and check the numbers which get spammed in the console.")]
     [field: SerializeField] public int[] ExpectedFixedUpdatesBetweenTrashCollection = new int[] { 28, 29 };
+
+    public DevSettingsSO Instance => DevSettings.Instance;
 }

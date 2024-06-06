@@ -41,10 +41,10 @@ public class Garbage : MonoBehaviour
                     Debug.Log("Unexpected number of fixed timesteps between Garbage.OnTriggerEnter: " + fixedTimesteps);
                 _lastTime = Time.fixedTime;
             }
+
             _garbageAudio.PlayOneShot(impact, 1F);
-                //player.GetComponent<PlayerToolManager>().ToolUsed(_type);
-                _playerItemData.GarbageCollected(_type);
-                player.GetComponent<PlayerGarbageCollection>().TextEdit();
+            _playerItemData.GarbageCollected(_type);
+            player.GetComponent<PlayerGarbageCollection>().TextEdit();
 
             Destroy(gameObject);
         }
