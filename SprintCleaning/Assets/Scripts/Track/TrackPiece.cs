@@ -9,6 +9,9 @@ public class TrackPiece : MonoBehaviour
     [field: SerializeField] public Transform StartTransform { get; private set; } // Used for positioning this track piece when creating it
     [field: SerializeField] public Transform EndTransform { get; private set; } // Used for the player's target
 
+    [Header("Info")]
+    [SerializeField] private float _approximateLength;
+
     private Vector3 p0; // start of bezier curve
     private Vector3 p1; // control point of bezier curve
     private Vector3 p2; // end point of bezier curve
@@ -81,6 +84,20 @@ public class TrackPiece : MonoBehaviour
         return p1 + (1 - t) * (1 - t) * (p0 - p1) + t * t * (p2 - p1);
     }
 
+    public (double, double, double) BezierCurveDouble(double t)
+    {
+        // cast to doubles
+        (double p0x, double p0y, double p0z) = (p0.x, p0.y, p0.z);
+        (double p1x, double p1y, double p1z) = (p1.x, p1.y, p1.z);
+        (double p2x, double p2y, double p2z) = (p2.x, p2.y, p2.z);
+
+        return (
+            p1x + (1 - t) * (1 - t) * (p0x - p1x) + t * t * (p2x - p1x),
+            p1y + (1 - t) * (1 - t) * (p0y - p1y) + t * t * (p2y - p1y),
+            p1z + (1 - t) * (1 - t) * (p0z - p1z) + t * t * (p2z - p1z)
+            );
+    }
+
     public Vector3 BezierCurveDerivative(float t)
     {
         return 2 * (1 - t) * (p1 - p0) + 2 * t * (p2 - p1);
@@ -91,34 +108,64 @@ public class TrackPiece : MonoBehaviour
         return 2 * (p2 - 2 * p1 + p0);
     }
 
-    public float ApproximateCurveLength()
+    public float ApproximateMidlineLength()
     {
         const int steps = 100;
-        float result = 0;
+        StoreLane(0);
+        float sum = 0;
         Vector3 priorPoint = BezierCurve(0);
         for (int i = 1; i <= steps; i++)
         {
             float t = ((float)i) / steps;
             Vector3 nextPoint = BezierCurve(t);
-            result += (nextPoint - priorPoint).magnitude;
+            sum += (nextPoint - priorPoint).magnitude;
             priorPoint = nextPoint;
         }
-        return result;
+        return sum;
+    }
+
+    public double ApproximateMidlineLengthForEditor(int steps)
+    {
+        StoreLane(0);
+        double sum = 0;
+        (double x, double y, double z) priorPoint = BezierCurveDouble(0);
+        for (int i = 1; i <= steps; i++)
+        {
+            double t = ((double)i) / steps;
+            (double x, double y, double z) nextPoint = BezierCurveDouble(t);
+            (double dx, double dy, double dz) = (nextPoint.x - priorPoint.x, nextPoint.y - priorPoint.y, nextPoint.z - priorPoint.z);
+            sum += System.Math.Sqrt(dx * dx + dy * dy + dz * dz);
+            priorPoint = nextPoint;
+        }
+        return sum;
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
         DrawOneLane(-1f);
-        Gizmos.color = Color.black;
+        Gizmos.color = Color.cyan;
         DrawOneLane(0f);
         Gizmos.color = Color.blue;
         DrawOneLane(1f);
 
-        Gizmos.color = new Color(.5f, 0f, .5f, .1f);
+        float alpha = Application.isPlaying ? .05f : 1f;
+        Gizmos.color = new Color(0f, 0f, 0f, alpha);
+        float t = 0;
         for (int i = 0; i < TRACK_PIECE_LENGTH; i++)
         {
-            DrawPerpendicularLine(i);
+            StoreLane(0);
+            t = FindTForDistanceAlongTrack(1f, t);
+            if (t == -1)
+            {
+                if (i == TRACK_PIECE_LENGTH - 1)
+                    t = 1f;
+                else
+                    break;
+            }
+            Vector3 position = BezierCurve(t) + PlayerMovement.Settings.PlayerVerticalOffset * Vector3.up;
+            Vector3 direction = Vector2.Perpendicular(BezierCurveDerivative(t).To2D()).To3D().normalized * PlayerMovement.Settings.DistanceBetweenLanes;
+            Gizmos.DrawLine(position - direction, position + direction);
         }
     }
 
@@ -139,12 +186,22 @@ public class TrackPiece : MonoBehaviour
         }
     }
 
-    private void DrawPerpendicularLine(int distanceAlongTrack)
+    private float FindTForDistanceAlongTrack(float extraDistanceAlongTrack, float startingFromT)
     {
         StoreLane(0);
-        float t = (float)distanceAlongTrack / TRACK_PIECE_LENGTH; // opposite of distanceAlongTrack. doesnt matter
-        Vector3 position = BezierCurve(t) + PlayerMovement.Settings.PlayerVerticalOffset * Vector3.up;
-        Vector3 direction = Vector2.Perpendicular(BezierCurveDerivative(t).To2D()).To3D().normalized * PlayerMovement.Settings.DistanceBetweenLanes;
-        Gizmos.DrawLine(position - direction, position + direction);
+        const int segments = 1000;
+        float totalDistance = 0;
+        Vector3 priorPosition = BezierCurve(startingFromT);
+        for (int i = 1; i <= segments; i++)
+        {
+            float nextT = Mathf.Lerp(startingFromT, 1f, (float)i / segments);
+            Vector3 nextPosition = BezierCurve(nextT);
+            totalDistance += (nextPosition - priorPosition).magnitude;
+            if (totalDistance >= extraDistanceAlongTrack)
+                return nextT;
+            priorPosition = nextPosition;
+        }
+
+        return -1;
     }
 }

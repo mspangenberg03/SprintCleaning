@@ -117,8 +117,8 @@ public class TrackGenerator : MonoBehaviour
         _spawnedObjects.Add(gameObjectsOnNewTrackPiece);
 
         // Determine how many trashes and how many tools.
-        trackPiece.StoreLane(0);
-        float numStandardLengths = trackPiece.ApproximateCurveLength() / STANDARD_TRACK_PIECE_LENGTH;
+        
+        float numStandardLengths = (float)(trackPiece.ApproximateMidlineLength() / STANDARD_TRACK_PIECE_LENGTH);
         float numTrashFloat = Random.Range(_trashCountPerStandardLength.min, _trashCountPerStandardLength.max) * numStandardLengths + _trashLeftover;
         int numTrash = (int)numTrashFloat;
         _trashLeftover = numTrashFloat - numTrash;

@@ -34,7 +34,7 @@ public class DeterministicBugReproduction : MonoBehaviour
     {
         Instance = this;
         _saveLocation = Path.Combine(Application.persistentDataPath, FILE_NAME);
-        Debug.Log("Save location: " + _saveLocation);
+        Debug.Log("Bug reproduction file save location: " + _saveLocation);
 
         if (_reproduceBasedOnSaveData)
         {
