@@ -9,9 +9,6 @@ public class TrackPiece : MonoBehaviour
     [field: SerializeField] public Transform StartTransform { get; private set; } // Used for positioning this track piece when creating it
     [field: SerializeField] public Transform EndTransform { get; private set; } // Used for the player's target
 
-    [Header("Info")]
-    [SerializeField] private float _approximateLength;
-
     private Vector3 p0; // start of bezier curve
     private Vector3 p1; // control point of bezier curve
     private Vector3 p2; // end point of bezier curve
