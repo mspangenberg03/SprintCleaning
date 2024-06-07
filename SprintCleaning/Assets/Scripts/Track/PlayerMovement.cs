@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using TMPro;
+using UnityEditor.Build;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -14,14 +15,25 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerMovementSettings _settings;
     [SerializeField] private TextMeshProUGUI _speedText;
 
-    private bool _updatedTargetLaneThisFrame;
-    private Vector3 _positionOnMidline;
-    private float _lanePosition;
-    private float _laneChangeSpeed;
     private float _speedMultiplier = 1f;
     private float _lastGarbageSlowdownTime = float.NegativeInfinity;
     private float _currentTargetLane;
+    private bool _polledTargetLaneChangeInputThisFrame;
+    private bool _polledJumpInputThisFrame;
+    private bool _jumpInput;
+    private float _jumpInputTime = float.NegativeInfinity;
     private TrackGenerator gameManager;
+
+
+    // position & velocity
+
+    private Vector3 _positionOnMidline;
+
+    private float _lanePosition;
+    private float _laneChangeSpeed;
+
+    private float _jumpPosition;
+    private float _jumpSpeed;
 
 
     private float CurrentForwardsSpeed
@@ -63,8 +75,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        CheckUpdateTargetLane();
-        _updatedTargetLaneThisFrame = false;
+        PollTargetLaneChangeInputOncePerFrame();
+        PollJumpInputOncePerFrame();
+        _polledTargetLaneChangeInputThisFrame = false;
+        _polledJumpInputThisFrame = false;
     }
 
     private void LateUpdate()
@@ -81,8 +95,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!DevSettings.Instance.CheckTrashCollectionConsistentIntervals)
+        DevHelper.Instance.GameplayReproducer.StartNextFixedUpdate();
+
+        if (!DevHelper.Instance.TrashCollectionTimingInfo.CheckTrashCollectionConsistentIntervals)
         {
+            // acceleration
             if (Time.time > _lastGarbageSlowdownTime + _settings.AccelerationPauseAfterGarbageSlowdown)
             {
                 if (_speedMultiplier >= 1f)
@@ -92,7 +109,8 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        Vector3 priorPosition = _positionOnMidline; 
+
+        Vector3 priorPositionOnMidline = _positionOnMidline; 
 
         TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
 
@@ -101,6 +119,8 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 midlineVelocity = TrackMidlineVelocity(trackPiece, t);
         _positionOnMidline += midlineVelocity * Time.deltaTime;
+
+        UpdateJumpPosition(_positionOnMidline.y - priorPositionOnMidline.y);
 
         UpdateLanePosition();
 
@@ -112,7 +132,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 approximatedPositionAtLanePosition = trackPiece.BezierCurve(t);
         Vector3 offsetForLanePosition = approximatedPositionAtLanePosition - approximatedPositionOnMidline;
 
-        Vector3 currentPosition = _positionOnMidline + offsetForLanePosition;
+        Vector3 currentPosition = _positionOnMidline + offsetForLanePosition + _jumpPosition * Vector3.up;
 
         _rigidbody.velocity = (currentPosition - _rigidbody.position) / Time.deltaTime;
 
@@ -121,7 +141,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 endPosition = trackPiece.BezierCurve(1f);
         Vector3 endDirection = trackPiece.BezierCurveDerivative(1f);
         endDirection.y = 0;
-        if (VectorUtils.TwoPointsAreOnDifferentSidesOfPlane(priorPosition, _positionOnMidline, endPosition, endDirection))
+        if (VectorUtils.TwoPointsAreOnDifferentSidesOfPlane(priorPositionOnMidline, _positionOnMidline, endPosition, endDirection))
         {
             gameManager.AddTrackPiece();
         }
@@ -138,8 +158,8 @@ public class PlayerMovement : MonoBehaviour
         Vector3 averageDerivative = derivative + estimatedTChangeDuringTimestep / 2 * secondDerivative;
         Vector3 result = CurrentForwardsSpeed * averageDerivative.normalized;
 
-        // The player's y position shifts off the track near the transition between track pieces, so correct for that.
-        // Only need to deal with the y position offset here because of the lane movement.
+        // The y position shifts off the track near the transition between track pieces, so correct for that.
+        // Only need to deal with the y position offset here because the lane movement deals with x and z drift.
         Vector3 point = trackPiece.BezierCurve(t) + _settings.PlayerVerticalOffset * Vector3.up;
         float yDifference = point.y - _positionOnMidline.y;
         result.y += yDifference / Time.deltaTime;
@@ -147,9 +167,13 @@ public class PlayerMovement : MonoBehaviour
         return result;
     }
 
+    #region Lane Changing
     private void UpdateLanePosition()
     {
-        CheckUpdateTargetLane();
+        PollTargetLaneChangeInputOncePerFrame();
+
+        DevHelper.Instance.GameplayReproducer.SaveOrLoadTargetLane(ref _currentTargetLane);
+
         AccelerateLaneChangeSpeed(_lanePosition);
 
         float nextLanePosition = _lanePosition + _laneChangeSpeed / _settings.DistanceBetweenLanes * Time.deltaTime;
@@ -162,14 +186,11 @@ public class PlayerMovement : MonoBehaviour
         _lanePosition = nextLanePosition;
     }
 
-    private void CheckUpdateTargetLane()
+    private void PollTargetLaneChangeInputOncePerFrame()
     {
-        if (_updatedTargetLaneThisFrame)
+        if (_polledTargetLaneChangeInputThisFrame)
             return;
-        _updatedTargetLaneThisFrame = true;
-
-        if (DeterministicBugReproduction.Instance.ReproduceBasedOnSaveData)
-            return;
+        _polledTargetLaneChangeInputThisFrame = true;
 
         if (LeftKey)
             _currentTargetLane--;
@@ -182,15 +203,6 @@ public class PlayerMovement : MonoBehaviour
     {
         // This only changes _laneChangeSpeed. Adjust it more gradually than instantly moving at the maximum lane change speed,
         // to make it feel better. It still instantly stops upon reaching the target lane.
-
-        if (DeterministicBugReproduction.Instance.OverrideTargetLane(out float overrideTargetLane))
-        {
-            _currentTargetLane = overrideTargetLane;
-        }
-        else
-        {
-            DeterministicBugReproduction.Instance.NextFixedUpdateTargetLane(_currentTargetLane);
-        }
 
         float accelerationDirection = Mathf.Sign(_currentTargetLane - currentLane);
 
@@ -211,7 +223,67 @@ public class PlayerMovement : MonoBehaviour
             _laneChangeSpeed = Mathf.Sign(_laneChangeSpeed) * distanceFromTargetLane * Time.deltaTime;
         }
     }
+    #endregion
 
-    
 
+    #region Jumping
+    private void UpdateJumpPosition(float changeInMidlinePositionY)
+    {
+        // The jump position is relative to the midline position, so make it so the player doesn't move upwards/downwards if 
+        // the track goes upwards/downwards while the player is jumping.
+        if (_jumpPosition > 0)
+        {
+            _jumpPosition = _jumpPosition - changeInMidlinePositionY;
+            CheckJumpHitsGround();
+        }
+
+        float gravityAccelerationWhileRising = 2f * _settings.JumpHeight / (_settings.JumpUpDuration * _settings.JumpUpDuration);
+        float gravityAccelerationWhileFalling = 2f * _settings.JumpHeight / (_settings.JumpDownDuration * _settings.JumpDownDuration);
+
+        PollJumpInputOncePerFrame();
+        DevHelper.Instance.GameplayReproducer.SaveOrLoadJump(ref _jumpInput);
+        if (_jumpInput)
+        {
+            _jumpInputTime = Time.time;
+            _jumpInput = false;
+        }
+
+        bool executeJump = (Time.time <= _jumpInputTime + _settings.JumpBufferDuration) && _jumpPosition == 0;
+        if (executeJump)
+        {
+            _jumpSpeed = _settings.JumpUpDuration * gravityAccelerationWhileRising;
+            _jumpInputTime = float.NegativeInfinity;
+        }
+
+        if (_jumpPosition > 0 || executeJump)
+        {
+            float gravity = _jumpSpeed >= 0 ? gravityAccelerationWhileRising : gravityAccelerationWhileFalling;
+            if (executeJump)
+                gravity /= 2;// This seems to be necessary to make the jump height correct.
+            _jumpSpeed -= gravity * Time.deltaTime;
+        }
+        _jumpPosition += _jumpSpeed * Time.deltaTime;
+        CheckJumpHitsGround();
+    }
+
+    private void CheckJumpHitsGround()
+    {
+        if (_jumpPosition <= 0)
+        {
+            _jumpPosition = 0;
+            _jumpSpeed = Mathf.Max(0, _jumpSpeed);
+        }
+    }
+
+    private void PollJumpInputOncePerFrame()
+    {
+        if (_polledJumpInputThisFrame)
+            return;
+        _polledJumpInputThisFrame = true;
+
+        //if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space))
+            _jumpInput = true;
+    }
+    #endregion
 }

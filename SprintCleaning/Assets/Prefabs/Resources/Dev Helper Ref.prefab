@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6854563680444620403}
   - component: {fileID: 4688631923940278339}
   m_Layer: 0
-  m_Name: Dev Settings
+  m_Name: Dev Helper Ref
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

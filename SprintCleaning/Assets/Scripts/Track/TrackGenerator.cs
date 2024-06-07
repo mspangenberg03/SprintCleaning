@@ -130,7 +130,7 @@ public class TrackGenerator : MonoBehaviour
             numTrash = 0;
         }
 
-        if (DevSettings.Instance.CheckTrashCollectionConsistentIntervals)
+        if (DevHelper.Instance.TrashCollectionTimingInfo.CheckTrashCollectionConsistentIntervals)
         {
             // Spawn trash pieces at every position.
             for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += 2)
