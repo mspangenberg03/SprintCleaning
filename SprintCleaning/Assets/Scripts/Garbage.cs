@@ -7,6 +7,7 @@ public class Garbage : MonoBehaviour
     [Tooltip("The type of tool needed to collect this piece of garbage")]
     public ToolType _type;
 
+    public bool _obstacle;
     [Tooltip("The sound this piece of garbage plays on collect")]
     public AudioClip impact;
     public AudioSource _garbageAudio;
@@ -25,17 +26,17 @@ public class Garbage : MonoBehaviour
         {
             GameObject player = other.transform.parent.gameObject;
             _garbageAudio = player.GetComponent<AudioSource>();
-            if (player.GetComponent<PlayerToolManager>().HasTool(_type))
-            {
-                _garbageAudio.PlayOneShot(impact, 1F);
-                player.GetComponent<PlayerToolManager>().ToolUsed(_type);
-                _playerItemData.GarbageCollected(_type);
-                player.GetComponent<PlayerGarbageCollection>().TextEdit();
-            }
-            else
+            if (_obstacle)
             {
                 player.GetComponent<DirtinessManager>().AddDirtiness(_dirtiness);
                 player.GetComponent<PlayerMovement>().GarbageSlow(_playerSpeedMultiplier);
+            }
+            else
+            {
+                _garbageAudio.PlayOneShot(impact, 1F);
+                //player.GetComponent<PlayerToolManager>().ToolUsed(_type);
+                _playerItemData.GarbageCollected(_type);
+                player.GetComponent<PlayerGarbageCollection>().TextEdit();
             }
             Destroy(gameObject);
         }
