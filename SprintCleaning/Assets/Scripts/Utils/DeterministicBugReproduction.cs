@@ -15,15 +15,15 @@ public class DeterministicBugReproduction : MonoBehaviour
     {
         public int seed;
         public float fixedDeltaTime;
-        public bool[] leftArrowKeysEachFixedUpdate;
-        public bool[] rightArrowKeysEachFixedUpdate;
+        public float[] targetLaneEachFixedUpdate;
     }
 
-    [SerializeField] private bool _reproduceBasedOnSaveData = false;
+    //[SerializeField] private bool _reproduceBasedOnSaveData = false;
+
+    public bool ReproduceBasedOnSaveData => DevSettings.Instance.ReproduceSavedRNGAndInputs;
 
     private DebugSaveData _saveData;
-    private List<bool> _leftArrowKeysEachFixedUpdate = new();
-    private List<bool> _rightArrowKeysEachFixedUpdate = new();
+    private List<float> _targetLaneEachFixedUpdate = new();
     private int _fixedUpdateCount;
     private string _saveLocation;
 
@@ -34,16 +34,15 @@ public class DeterministicBugReproduction : MonoBehaviour
     {
         Instance = this;
         _saveLocation = Path.Combine(Application.persistentDataPath, FILE_NAME);
-        Debug.Log("Save location: " + _saveLocation);
+        Debug.Log("Bug reproduction file save location: " + _saveLocation);
 
-        if (_reproduceBasedOnSaveData)
+        if (ReproduceBasedOnSaveData)
         {
             if (File.Exists(_saveLocation))
             {
                 string loadPlayerData = File.ReadAllText(_saveLocation);
                 _saveData = JsonUtility.FromJson<DebugSaveData>(loadPlayerData);
-                _leftArrowKeysEachFixedUpdate = new List<bool>(_saveData.leftArrowKeysEachFixedUpdate);
-                _rightArrowKeysEachFixedUpdate = new List<bool>(_saveData.rightArrowKeysEachFixedUpdate);
+                _targetLaneEachFixedUpdate = new List<float>(_saveData.targetLaneEachFixedUpdate);
             }
             else
             {
@@ -63,11 +62,10 @@ public class DeterministicBugReproduction : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (_reproduceBasedOnSaveData)
+        if (ReproduceBasedOnSaveData)
             return;
         // save the data
-        _saveData.leftArrowKeysEachFixedUpdate = _leftArrowKeysEachFixedUpdate.ToArray();
-        _saveData.rightArrowKeysEachFixedUpdate = _rightArrowKeysEachFixedUpdate.ToArray();
+        _saveData.targetLaneEachFixedUpdate = _targetLaneEachFixedUpdate.ToArray();
         string data = JsonUtility.ToJson(_saveData);
         File.WriteAllText(_saveLocation, data);
 
@@ -75,24 +73,21 @@ public class DeterministicBugReproduction : MonoBehaviour
         _saveData = JsonUtility.FromJson<DebugSaveData>(loadPlayerData);
     }
 
-    public bool OverrideControl(out bool leftKey, out bool rightKey)
+    public bool OverrideTargetLane(out float targetLane)
     {
-        if (!_reproduceBasedOnSaveData)
+        if (!ReproduceBasedOnSaveData)
         {
-            leftKey = false;
-            rightKey = false;
+            targetLane = 0;
             return false;
         }
 
-        if (_fixedUpdateCount >= _leftArrowKeysEachFixedUpdate.Count)
+        if (_fixedUpdateCount >= _targetLaneEachFixedUpdate.Count)
         {
-            leftKey = false;
-            rightKey = false;
+            targetLane = 0;
         }
         else
         {
-            leftKey = _leftArrowKeysEachFixedUpdate[_fixedUpdateCount];
-            rightKey = _rightArrowKeysEachFixedUpdate[_fixedUpdateCount];
+            targetLane = _targetLaneEachFixedUpdate[_fixedUpdateCount];
         }
 
         _fixedUpdateCount++;
@@ -100,11 +95,10 @@ public class DeterministicBugReproduction : MonoBehaviour
         return true;
     }
 
-    public void NextFixedUpdateInputs(bool leftKey, bool rightKey)
+    public void NextFixedUpdateTargetLane(float targetLane)
     {
-        if (_reproduceBasedOnSaveData)
+        if (ReproduceBasedOnSaveData)
             return;
-        _leftArrowKeysEachFixedUpdate.Add(leftKey);
-        _rightArrowKeysEachFixedUpdate.Add(rightKey);
+        _targetLaneEachFixedUpdate.Add(targetLane);
     }
 }
