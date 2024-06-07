@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 607339649198874489fcb7b4a03a65c8, type: 3}
   m_Name: DevHelper
   m_EditorClassIdentifier: 
-  _reproduceGameplay: 1
+  _reproduceGameplay: 0
   <TrashCollectionTimingInfo>k__BackingField:
     <CheckTrashCollectionConsistentIntervals>k__BackingField: 0
     DontLogFixedUpdatesBetweenTrashCollection: 1c0000001d000000
