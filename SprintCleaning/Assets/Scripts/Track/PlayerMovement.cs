@@ -20,7 +20,6 @@ public class PlayerMovement : MonoBehaviour
     private float _lastGarbageSlowdownTime = float.NegativeInfinity;
     private float _currentTargetLane;
     private bool _changingLanes;
-    private float _lastTimeChangingLanes = float.NegativeInfinity;
     
     private float _jumpInputTime = float.NegativeInfinity;
     private TrackGenerator gameManager;
@@ -222,9 +221,6 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         _lanePosition = nextLanePosition;
-
-        if (_changingLanes)
-            _lastTimeChangingLanes = Time.time;
     }
 
     private void CheckLaneChangeInputs()
@@ -254,23 +250,11 @@ public class PlayerMovement : MonoBehaviour
 
         float accelerationTime = _settings.LaneChangeSpeedupTime;
         if (Mathf.Sign(accelerationDirection) != Mathf.Sign(_laneChangeSpeed))
-        {
             accelerationTime = _settings.LaneChangeTurnaroundTime;
-        }
 
         _laneChangeSpeed += _settings.BaseLaneChangeSpeed / accelerationTime * Time.deltaTime * accelerationDirection;
         if (Mathf.Abs(_laneChangeSpeed) > _settings.BaseLaneChangeSpeed)
             _laneChangeSpeed = Mathf.Sign(_laneChangeSpeed) * _settings.BaseLaneChangeSpeed;
-
-
-        float distanceFromTargetLane = Mathf.Abs(_currentTargetLane - currentLane) * _settings.DistanceBetweenLanes;
-        if (distanceFromTargetLane < Mathf.Abs(_laneChangeSpeed * Time.deltaTime))
-        {
-            //_changingLanes = false;
-            //CheckLaneChangeInputs();
-            //if (!_changingLanes)
-            //    _laneChangeSpeed = Mathf.Sign(_laneChangeSpeed) * distanceFromTargetLane * Time.deltaTime;
-        }
     }
     #endregion
 
