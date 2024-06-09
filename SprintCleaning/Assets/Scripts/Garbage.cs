@@ -19,8 +19,6 @@ public class Garbage : MonoBehaviour
 
     [SerializeField] private CollectedItems _playerItemData;
 
-    private static float _lastTime;
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
@@ -28,19 +26,7 @@ public class Garbage : MonoBehaviour
             GameObject player = other.transform.parent.gameObject;
             _garbageAudio = player.GetComponent<AudioSource>();
 
-            if (DevSettings.Instance.CheckTrashCollectionConsistentIntervals)
-            {
-                int fixedTimesteps = Mathf.RoundToInt((Time.fixedTime - _lastTime) / Time.fixedDeltaTime);
-                bool expected = false;
-                foreach (int x in DevSettings.Instance.ExpectedFixedUpdatesBetweenTrashCollection)
-                {
-                    if (x == fixedTimesteps)
-                        expected = true;
-                }
-                if (!expected)
-                    Debug.Log("Unexpected number of fixed timesteps between Garbage.OnTriggerEnter: " + fixedTimesteps);
-                _lastTime = Time.fixedTime;
-            }
+            DevHelper.Instance.CheckLogInfoForTrashCollectionIntervalChecking();
 
             _garbageAudio.PlayOneShot(impact, 1F);
             _playerItemData.GarbageCollected(_type);

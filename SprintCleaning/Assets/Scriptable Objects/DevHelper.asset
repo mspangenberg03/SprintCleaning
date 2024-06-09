@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 607339649198874489fcb7b4a03a65c8, type: 3}
-  m_Name: DevSettings
+  m_Name: DevHelper
   m_EditorClassIdentifier: 
-  <ReproduceSavedRNGAndInputs>k__BackingField: 0
-  <CheckTrashCollectionConsistentIntervals>k__BackingField: 0
-  ExpectedFixedUpdatesBetweenTrashCollection: 18000000
+  _reproduceGameplay: 0
+  <TrashCollectionTimingInfo>k__BackingField:
+    <CheckTrashCollectionConsistentIntervals>k__BackingField: 0
+    DontLogFixedUpdatesBetweenTrashCollection: 1c0000001d000000
