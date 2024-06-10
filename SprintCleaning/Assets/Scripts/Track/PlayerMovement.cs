@@ -13,7 +13,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerMovementSettings _settings;
     [SerializeField] private TextMeshProUGUI _speedText;
 
-    private float _speedMultiplier = 1f;
+    private float _speedMultiplier = 0.5f;
     private float _lastGarbageSlowdownTime = float.NegativeInfinity;
     private float _currentTargetLane;
     private bool _changingLanes;

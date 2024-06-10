@@ -149,13 +149,33 @@ public class TrackGenerator : MonoBehaviour
         }
         else
         {
+            GameObject prefab = _trashPrefabs[0]; // Could do a random bag to prevent too many of the same type of trash
+            for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += 2)
+            {
+                if(i == 0 || i ==8){
+                    prefab = _trashPrefabs[0];
+                }
+                else if(i== 4 || i == 12){
+                    prefab = _trashPrefabs[1];
+                }
+                else{
+                    prefab = _trashPrefabs[2];
+                }
+                Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: i);
+            
+                GameObject instantiated = Instantiate(prefab, position, rotation, transform);
+                gameObjectsOnNewTrackPiece.Add(instantiated);
+            }
+            
+            /*
             // Add trash pieces
             //i += x where x is interval between spawns
-            for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += 6)
+            int[] poslist = [-1,0,1];
+            for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += 1)
             {
                 
                 GameObject prefab = _trashPrefabs[Random.Range(0, (_trashPrefabs.Length - _diff))]; // Could do a random bag to prevent too many of the same type of trash
-                Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: i);
+                Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: i, forceLane: j);
                 if (float.IsNaN(position.x))
                     break; // Couldn't find a valid position
                         //Quaternion rotation = Quaternion.Euler(0, Random.Range(-180f, 180f), 0f);
@@ -163,7 +183,7 @@ public class TrackGenerator : MonoBehaviour
                 gameObjectsOnNewTrackPiece.Add(instantiated);
                 
             }
-            
+            */
         }
 
         
