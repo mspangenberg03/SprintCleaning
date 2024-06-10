@@ -8,6 +8,9 @@ public class TrackGenerator : MonoBehaviour
     private const float STANDARD_TRACK_PIECE_LENGTH = 16f;
 
     [Header("Track")]
+    
+    [Tooltip("Amount of empty spawns, 0 is easiest, 5(placeholder) is no empty spawns")]
+    [SerializeField] private int _diff = 0; 
     [SerializeField] private GameObject[] _trackPrefabs; // index 0 should be the straight track piece
     [SerializeField] private int _numTrackPoints = 10;
     [SerializeField] private float _oddsDontTurn = .8f;
@@ -147,16 +150,20 @@ public class TrackGenerator : MonoBehaviour
         else
         {
             // Add trash pieces
-            for (int i = 0; i < numTrash; i++)
+            //i += x where x is interval between spawns
+            for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += 6)
             {
-                GameObject prefab = _trashPrefabs[Random.Range(0, _trashPrefabs.Length)]; // Could do a random bag to prevent too many of the same type of trash
-                Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation);
+                
+                GameObject prefab = _trashPrefabs[Random.Range(0, (_trashPrefabs.Length - _diff))]; // Could do a random bag to prevent too many of the same type of trash
+                Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: i);
                 if (float.IsNaN(position.x))
                     break; // Couldn't find a valid position
-                           //Quaternion rotation = Quaternion.Euler(0, Random.Range(-180f, 180f), 0f);
+                        //Quaternion rotation = Quaternion.Euler(0, Random.Range(-180f, 180f), 0f);
                 GameObject instantiated = Instantiate(prefab, position, rotation, transform);
                 gameObjectsOnNewTrackPiece.Add(instantiated);
+                
             }
+            
         }
 
         
