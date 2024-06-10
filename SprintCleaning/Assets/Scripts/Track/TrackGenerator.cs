@@ -5,9 +5,12 @@ using UnityEngine;
 
 public class TrackGenerator : MonoBehaviour
 {
-    private const float STANDARD_TRACK_PIECE_LENGTH = 10f;
+    private const float STANDARD_TRACK_PIECE_LENGTH = 16f;
 
     [Header("Track")]
+    
+    [Tooltip("Amount of empty spawns, 0 is easiest, 5(placeholder) is no empty spawns")]
+    [SerializeField] private int _diff = 0; 
     [SerializeField] private GameObject[] _trackPrefabs; // index 0 should be the straight track piece
     [SerializeField] private int _numTrackPoints = 10;
     [SerializeField] private float _oddsDontTurn = .8f;
@@ -121,7 +124,8 @@ public class TrackGenerator : MonoBehaviour
         // Determine how many trashes and how many tools.
         
         float numStandardLengths = (float)(trackPiece.ApproximateMidlineLength() / STANDARD_TRACK_PIECE_LENGTH);
-        float numTrashFloat = Random.Range(_trashCountPerStandardLength.min, _trashCountPerStandardLength.max) * numStandardLengths + _trashLeftover;
+        //float numTrashFloat = Random.Range(_trashCountPerStandardLength.min, _trashCountPerStandardLength.max) * numStandardLengths + _trashLeftover;
+        float numTrashFloat = 8f;
         int numTrash = (int)numTrashFloat;
         _trashLeftover = numTrashFloat - numTrash;
 
@@ -145,17 +149,41 @@ public class TrackGenerator : MonoBehaviour
         }
         else
         {
-            // Add trash pieces
-            for (int i = 0; i < numTrash; i++)
+            GameObject prefab = _trashPrefabs[0]; // Could do a random bag to prevent too many of the same type of trash
+            for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += 2)
             {
-                GameObject prefab = _trashPrefabs[Random.Range(0, _trashPrefabs.Length)]; // Could do a random bag to prevent too many of the same type of trash
-                Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation);
-                if (float.IsNaN(position.x))
-                    break; // Couldn't find a valid position
-                           //Quaternion rotation = Quaternion.Euler(0, Random.Range(-180f, 180f), 0f);
+                if(i == 0 || i ==8){
+                    prefab = _trashPrefabs[0];
+                }
+                else if(i== 4 || i == 12){
+                    prefab = _trashPrefabs[1];
+                }
+                else{
+                    prefab = _trashPrefabs[2];
+                }
+                Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: i);
+            
                 GameObject instantiated = Instantiate(prefab, position, rotation, transform);
                 gameObjectsOnNewTrackPiece.Add(instantiated);
             }
+            
+            /*
+            // Add trash pieces
+            //i += x where x is interval between spawns
+            int[] poslist = [-1,0,1];
+            for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += 1)
+            {
+                
+                GameObject prefab = _trashPrefabs[Random.Range(0, (_trashPrefabs.Length - _diff))]; // Could do a random bag to prevent too many of the same type of trash
+                Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: i, forceLane: j);
+                if (float.IsNaN(position.x))
+                    break; // Couldn't find a valid position
+                        //Quaternion rotation = Quaternion.Euler(0, Random.Range(-180f, 180f), 0f);
+                GameObject instantiated = Instantiate(prefab, position, rotation, transform);
+                gameObjectsOnNewTrackPiece.Add(instantiated);
+                
+            }
+            */
         }
 
         
