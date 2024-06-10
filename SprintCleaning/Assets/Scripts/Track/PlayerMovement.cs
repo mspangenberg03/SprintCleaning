@@ -111,7 +111,19 @@ public class PlayerMovement : MonoBehaviour
         DevHelper.Instance.GameplayReproducer.StartNextFixedUpdate();
         DevHelper.Instance.GameplayReproducer.SaveOrLoadMovementInputs(ref _leftInput, ref _rightInput, ref _leftInputDown, ref _rightInputDown, ref _jumpInput);
         
-
+/*
+        if (!DevHelper.Instance.TrashCollectionTimingInfo.CheckTrashCollectionConsistentIntervals)
+        {
+            // accelerate forwards
+            if (Time.time > _lastGarbageSlowdownTime + _settings.AccelerationPauseAfterGarbageSlowdown)
+            {
+                if (_speedMultiplier >= 1f)
+                    CurrentForwardsSpeed += _settings.ForwardsAcceleration * Time.deltaTime;
+                else
+                    CurrentForwardsSpeed += _settings.ForwardsAccelerationWhileBelowBaseSpeed * Time.deltaTime;
+            }
+        }
+        */
 
         TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
         float t = trackPiece.FindTForClosestPointOnMidline(_positionOnMidline);
