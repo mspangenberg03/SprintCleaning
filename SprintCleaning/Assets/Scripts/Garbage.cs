@@ -25,18 +25,13 @@ public class Garbage : MonoBehaviour
         {
             GameObject player = other.transform.parent.gameObject;
             _garbageAudio = player.GetComponent<AudioSource>();
-            if (player.GetComponent<PlayerToolManager>().HasTool(_type))
-            {
-                _garbageAudio.PlayOneShot(impact, 1F);
-                player.GetComponent<PlayerToolManager>().ToolUsed(_type);
-                _playerItemData.GarbageCollected(_type);
-                player.GetComponent<PlayerGarbageCollection>().TextEdit();
-            }
-            else
-            {
-                player.GetComponent<DirtinessManager>().AddDirtiness(_dirtiness);
-                player.GetComponent<PlayerMovement>().GarbageSlow(_playerSpeedMultiplier);
-            }
+
+            DevHelper.Instance.CheckLogInfoForTrashCollectionIntervalChecking();
+
+            _garbageAudio.PlayOneShot(impact, 1F);
+            _playerItemData.GarbageCollected(_type);
+            player.GetComponent<PlayerGarbageCollection>().TextEdit();
+
             Destroy(gameObject);
         }
     }

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using TMPro;
 
@@ -12,22 +11,46 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private PlayerMovementSettings _settings;
-    [SerializeField] private TMPro.TextMeshProUGUI _speedText;
+    [SerializeField] private TextMeshProUGUI _speedText;
 
-    private float _laneChangeSpeed;
     private float _speedMultiplier = 1f;
     private float _lastGarbageSlowdownTime = float.NegativeInfinity;
+    private float _currentTargetLane;
+    private bool _changingLanes;
+    
+    private float _jumpInputTime = float.NegativeInfinity;
     private TrackGenerator gameManager;
+
+    // input polling (in case of frames w/o fixed update)
+    private bool _polledInputThisFrame;
+    private bool _leftInput;
+    private bool _rightInput;
+    private bool _leftInputDown;
+    private bool _rightInputDown;
+    private bool _jumpInput;
+
+    // position & velocity
+
+    private Vector3 _positionOnMidline;
+
+    private float _lanePosition;
+    private float _laneChangeSpeed;
+
+    private float _jumpPosition;
+    private float _jumpSpeed;
+
 
     private float CurrentForwardsSpeed
     {
         get => _settings.BaseForwardsSpeed * _speedMultiplier;
         set => _speedMultiplier = Mathf.Clamp(value, _settings.MinForwardsSpeed, _settings.MaxForwardsSpeed) / _settings.BaseForwardsSpeed;
     }
-    private float CurrentFullLaneChangeSpeed => Mathf.Min(_settings.LaneChangeSpeedCap, _settings.BaseLaneChangeSpeed * _speedMultiplier);
 
-    private bool LeftKey => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
-    private bool RightKey => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
+    private bool LeftInput => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
+    private bool RightInput => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
+    private bool LeftInputDown => Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow);
+    private bool RightInputDown => Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow);
+    private bool JumpInput => Input.GetKey(KeyCode.Space);
 
     private static PlayerMovementSettings _settingsStatic;
     public static PlayerMovementSettings Settings 
@@ -52,8 +75,20 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        _rigidbody.position = TrackGenerator.Instance.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
-        _rigidbody.transform.position = _rigidbody.position;
+        _positionOnMidline = TrackGenerator.Instance.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
+        _rigidbody.position = _positionOnMidline;
+        _rigidbody.transform.position = _positionOnMidline;
+    }
+
+    private void Update()
+    {
+        if (_polledInputThisFrame) // fixed update ran
+        {
+            _leftInput = false;
+            _rightInput = false;
+        }
+        PollInputsOncePerFrame();
+        _polledInputThisFrame = false;
     }
 
     private void LateUpdate()
@@ -68,41 +103,84 @@ public class PlayerMovement : MonoBehaviour
         _lastGarbageSlowdownTime = Time.time;
     }
 
+
+
     private void FixedUpdate()
     {
-        if (Time.time > _lastGarbageSlowdownTime + _settings.AccelerationPauseAfterGarbageSlowdown)
+        PollInputsOncePerFrame();
+        DevHelper.Instance.GameplayReproducer.StartNextFixedUpdate();
+        DevHelper.Instance.GameplayReproducer.SaveOrLoadMovementInputs(ref _leftInput, ref _rightInput, ref _leftInputDown, ref _rightInputDown, ref _jumpInput);
+        
+
+        if (!DevHelper.Instance.TrashCollectionTimingInfo.CheckTrashCollectionConsistentIntervals)
         {
-            if (_speedMultiplier >= 1f)
-                CurrentForwardsSpeed += _settings.ForwardsAcceleration * Time.deltaTime;
-            else
-                CurrentForwardsSpeed += _settings.ForwardsAccelerationWhileBelowBaseSpeed * Time.deltaTime;
+            // accelerate forwards
+            if (Time.time > _lastGarbageSlowdownTime + _settings.AccelerationPauseAfterGarbageSlowdown)
+            {
+                if (_speedMultiplier >= 1f)
+                    CurrentForwardsSpeed += _settings.ForwardsAcceleration * Time.deltaTime;
+                else
+                    CurrentForwardsSpeed += _settings.ForwardsAccelerationWhileBelowBaseSpeed * Time.deltaTime;
+            }
         }
 
         TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
+        float t = trackPiece.FindTForClosestPointOnMidline(_positionOnMidline);
 
-        Vector3 currentPosition = _rigidbody.position - Vector3.up * _settings.PlayerVerticalOffset;
+        Vector3 midlineVelocity = TrackMidlineVelocity(trackPiece, t);
 
-        float t = trackPiece.FindTForClosestPointOnMidline(currentPosition);
-        float currentLane = trackPiece.Lane(currentPosition, t);
+        Vector3 priorPositionOnMidline = _positionOnMidline; 
+        _positionOnMidline += midlineVelocity * Time.deltaTime;
 
-        trackPiece.StoreLane(currentLane);
-        Vector3 trackEnd = trackPiece.EndPositionForStoredLane;
+        UpdateJumpPosition(_positionOnMidline.y - priorPositionOnMidline.y);
 
-        Vector3 forwardsVelocity = ForwardsVelocity(trackPiece, currentPosition, t, out bool goingStraightTowardsEnd, trackEnd);
-        _rigidbody.velocity = forwardsVelocity;
+        UpdateLanePosition();
 
-        _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings.RotationSpeed, forwardsVelocity, _rigidbody.rotation));
+        _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings.RotationSpeed, midlineVelocity, _rigidbody.rotation));
 
-        _rigidbody.velocity += LaneChangeVelocity(currentLane, forwardsVelocity);
+        trackPiece.StoreLane(0);
+        Vector3 approximatedPositionOnMidline = trackPiece.BezierCurve(t); // should use _positionOnMidline instead. Some other code uses the same approximation so update that too.
+        trackPiece.StoreLane(_lanePosition);
+        Vector3 approximatedPositionAtLanePosition = trackPiece.BezierCurve(t);
+        Vector3 offsetForLanePosition = approximatedPositionAtLanePosition - approximatedPositionOnMidline;
 
-        if (goingStraightTowardsEnd)// && VectorUtils.VelocityWillOvershoot(forwardsVelocity.To2D().To3D(), currentPosition.To2D().To3D(), trackEnd.To2D().To3D(), Time.deltaTime))
+        Vector3 currentPosition = _positionOnMidline + offsetForLanePosition + _jumpPosition * Vector3.up;
+
+        _rigidbody.velocity = (currentPosition - _rigidbody.position) / Time.deltaTime;
+
+
+        trackPiece.StoreLane(0);
+        Vector3 endPosition = trackPiece.BezierCurve(1f);
+        Vector3 endDirection = trackPiece.BezierCurveDerivative(1f);
+        endDirection.y = 0;
+        if (VectorUtils.TwoPointsAreOnDifferentSidesOfPlane(priorPositionOnMidline, _positionOnMidline, endPosition, endDirection))
         {
             gameManager.AddTrackPiece();
         }
     }
 
-    private Vector3 ForwardsVelocity(TrackPiece trackPiece, Vector3 currentPosition, float t, out bool goingStraightTowardsEnd, Vector3 trackEnd)
+    private void PollInputsOncePerFrame()
     {
+        if (_polledInputThisFrame)
+            return;
+        _polledInputThisFrame = true;
+
+        if (LeftInput)
+            _leftInput = true;
+        if (RightInput)
+            _rightInput = true;
+        if (LeftInputDown)
+            _leftInputDown = true;
+        if (RightInputDown)
+            _rightInputDown = true;
+        if (JumpInput)
+            _jumpInput = true;
+    }
+
+
+    private Vector3 TrackMidlineVelocity(TrackPiece trackPiece, float t)
+    {
+        trackPiece.StoreLane(0);
         // The derivative of the bezier curve is the direction of the velocity, if timesteps were infinitely small.
         // Use the 2nd derivative to help reduce the error from discrete timesteps.
         Vector3 derivative = trackPiece.BezierCurveDerivative(t);
@@ -111,86 +189,122 @@ public class PlayerMovement : MonoBehaviour
         Vector3 averageDerivative = derivative + estimatedTChangeDuringTimestep / 2 * secondDerivative;
         Vector3 result = CurrentForwardsSpeed * averageDerivative.normalized;
 
-        // The player's y position shifts very slightly even on a flat track. Not sure why, maybe internal physics engine stuff.
-        // Do this to keep the y position's drift in check.
-        Vector3 point = trackPiece.BezierCurve(t);
-        float yDifference = point.y - currentPosition.y;
-        result.y += 10f * yDifference * Time.deltaTime;
-
-        goingStraightTowardsEnd = (trackEnd - currentPosition).magnitude <= CurrentForwardsSpeed * Time.deltaTime;
-        //if (goingStraightTowardsEnd)
-        //{
-        //    float yResult = result.y;
-        //    result = CurrentForwardsSpeed * (trackEnd - currentPosition).normalized;
-        //    result.y = yResult;
-        //}
+        // The y position shifts off the track near the transition between track pieces, so correct for that.
+        // Only need to deal with the y position offset here because the lane movement deals with x and z drift.
+        Vector3 point = trackPiece.BezierCurve(t) + _settings.PlayerVerticalOffset * Vector3.up;
+        float yDifference = point.y - _positionOnMidline.y;
+        result.y += yDifference / Time.deltaTime;
 
         return result;
     }
-    
 
-    private Vector3 LaneChangeVelocity(float currentLane, Vector3 forwardsVelocity)
+    #region Lane Changing
+    private void UpdateLanePosition()
     {
-        AccelerateLaneChangeSpeed(currentLane);
+        CheckLaneChangeInputs();
 
-        Vector3 laneChangeDirection = -Vector2.Perpendicular(forwardsVelocity.To2D()).normalized.To3D();
-        Vector3 laneChangeVelocity = _laneChangeSpeed * laneChangeDirection;
+        AccelerateLaneChangeSpeed(_lanePosition);
 
-        float nextLane = currentLane + _laneChangeSpeed / _settings.DistanceBetweenLanes * Time.deltaTime;
-        if (nextLane < -1f || nextLane > 1f)
+        float nextLanePosition = _lanePosition + _laneChangeSpeed / _settings.DistanceBetweenLanes * Time.deltaTime;
+        if (Mathf.Sign(nextLanePosition - _currentTargetLane) != Mathf.Sign(_lanePosition - _currentTargetLane) || _lanePosition == _currentTargetLane)
         {
             // don't overshoot
-            nextLane = nextLane < -1f ? -1f : 1f;
-            _laneChangeSpeed = (nextLane - currentLane) * _settings.DistanceBetweenLanes / Time.deltaTime;
-            laneChangeVelocity = _laneChangeSpeed * laneChangeDirection;
+            _changingLanes = false;
+            CheckLaneChangeInputs();
+            if (!_changingLanes)
+            {
+                nextLanePosition = _currentTargetLane;
+                _laneChangeSpeed = 0;
+            }
         }
+        _lanePosition = nextLanePosition;
+    }
 
-        return laneChangeVelocity;
+    private void CheckLaneChangeInputs()
+    {
+        float priorTargetLane = _currentTargetLane;
+
+        if (_leftInputDown || (_leftInput && !_changingLanes && _settings.AllowMultipleLaneChangeByHoldingDown))
+            _currentTargetLane--;
+
+        if (_rightInputDown || (_rightInput && !_changingLanes && _settings.AllowMultipleLaneChangeByHoldingDown))
+            _currentTargetLane++;
+
+        _currentTargetLane = Mathf.Clamp(_currentTargetLane, -1, 1);
+        if (_currentTargetLane != priorTargetLane)
+            _changingLanes = true;
+
+        _leftInputDown = false;
+        _rightInputDown = false;
     }
 
     private void AccelerateLaneChangeSpeed(float currentLane)
     {
         // This only changes _laneChangeSpeed. Adjust it more gradually than instantly moving at the maximum lane change speed,
-        // to make it feel better.
+        // to make it feel better. It still instantly stops upon reaching the target lane.
 
-        bool leftKey, rightKey;
-        if (!DeterministicBugReproduction.Instance.OverrideControl(out leftKey, out rightKey))
-        {
-            leftKey = LeftKey;
-            rightKey = RightKey;
-            DeterministicBugReproduction.Instance.NextFixedUpdateInputs(leftKey, rightKey);
-        }
-
-        float? targetLane = null;
-        if (rightKey == leftKey) // might feel better if remember the most recent one and use that
-            targetLane = null;
-        else if (rightKey)
-            targetLane = 1;
-        else if (leftKey)
-            targetLane = -1;
-
-        bool slowDown = currentLane == targetLane || !targetLane.HasValue;
-
-        float accelerationDirection;
-        if (slowDown)
-            accelerationDirection = -Mathf.Sign(_laneChangeSpeed);
-        else
-            accelerationDirection = Mathf.Sign(targetLane.Value - currentLane);
+        float accelerationDirection = Mathf.Sign(_currentTargetLane - currentLane);
 
         float accelerationTime = _settings.LaneChangeSpeedupTime;
         if (Mathf.Sign(accelerationDirection) != Mathf.Sign(_laneChangeSpeed))
+            accelerationTime = _settings.LaneChangeTurnaroundTime;
+
+        _laneChangeSpeed += _settings.BaseLaneChangeSpeed / accelerationTime * Time.deltaTime * accelerationDirection;
+        if (Mathf.Abs(_laneChangeSpeed) > _settings.BaseLaneChangeSpeed)
+            _laneChangeSpeed = Mathf.Sign(_laneChangeSpeed) * _settings.BaseLaneChangeSpeed;
+    }
+    #endregion
+
+
+    #region Jumping
+    private void UpdateJumpPosition(float changeInMidlinePositionY)
+    {
+        // The jump position is relative to the midline position, so make it so the player doesn't move upwards/downwards if 
+        // the track goes upwards/downwards while the player is jumping.
+        if (_jumpPosition > 0)
         {
-            if (rightKey || leftKey)
-                accelerationTime = _settings.LaneChangeTurnaroundTime;
-            else
-                accelerationTime = _settings.LaneChangeStoppingTime;
+            _jumpPosition = _jumpPosition - changeInMidlinePositionY;
+            CheckJumpHitsGround();
         }
 
-        float laneChangeSpeedSignBefore = Mathf.Sign(_laneChangeSpeed);
-        _laneChangeSpeed += CurrentFullLaneChangeSpeed / accelerationTime * Time.deltaTime * accelerationDirection;
-        if (Mathf.Abs(_laneChangeSpeed) > CurrentFullLaneChangeSpeed)
-            _laneChangeSpeed = Mathf.Sign(_laneChangeSpeed) * CurrentFullLaneChangeSpeed;
-        if (slowDown && (laneChangeSpeedSignBefore != Mathf.Sign(_laneChangeSpeed)))
-            _laneChangeSpeed = 0;
+        float gravityAccelerationWhileRising = 2f * _settings.JumpHeight / (_settings.JumpUpDuration * _settings.JumpUpDuration);
+        float gravityAccelerationWhileFalling = 2f * _settings.JumpHeight / (_settings.JumpDownDuration * _settings.JumpDownDuration);
+
+        if (_jumpInput)
+        {
+            _jumpInputTime = Time.time;
+            _jumpInput = false;
+        }
+
+        bool executeJump = (Time.time <= _jumpInputTime + _settings.JumpBufferDuration) && _jumpPosition == 0;
+        if (executeJump)
+        {
+            _jumpSpeed = _settings.JumpUpDuration * gravityAccelerationWhileRising;
+            _jumpInputTime = float.NegativeInfinity;
+        }
+
+        if (_jumpPosition > 0 || executeJump)
+        {
+            float gravity = _jumpSpeed >= 0 ? gravityAccelerationWhileRising : gravityAccelerationWhileFalling;
+            if (executeJump)
+                gravity /= 2;// This seems to be necessary to make the jump height correct.
+            _jumpSpeed -= gravity * Time.deltaTime;
+        }
+        _jumpPosition += _jumpSpeed * Time.deltaTime;
+        CheckJumpHitsGround();
     }
+
+    private void CheckJumpHitsGround()
+    {
+        if (_jumpPosition <= 0)
+        {
+            _jumpPosition = 0;
+            _jumpSpeed = Mathf.Max(0, _jumpSpeed);
+        }
+    }
+
+
+    #endregion
+
+    
 }

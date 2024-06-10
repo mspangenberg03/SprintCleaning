@@ -12,10 +12,18 @@ PrefabInstance:
       propertyPath: m_audioClip
       value: 
       objectReference: {fileID: 8300000, guid: 616a72b3b68a06b468b42ee80689bec1, type: 3}
+    - target: {fileID: 3405549162795125105, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6f1f26b69aae1304c9ddb45f3007dfbe, type: 2}
     - target: {fileID: 3598271509090607832, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
       propertyPath: m_Name
       value: BroomGarbage Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 3993401155454205292, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
+      propertyPath: impact
+      value: 
+      objectReference: {fileID: 8300000, guid: 616a72b3b68a06b468b42ee80689bec1, type: 3}
     - target: {fileID: 4638553489226399478, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
       propertyPath: m_LocalPosition.x
       value: 21.780956

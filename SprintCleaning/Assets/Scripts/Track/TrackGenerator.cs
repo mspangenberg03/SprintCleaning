@@ -23,13 +23,12 @@ public class TrackGenerator : MonoBehaviour
     [SerializeField] private FloatRange _toolCountPerStandardLength;
     [System.Serializable] private class FloatRange { public float min; public float max; }
     [SerializeField] private GameObject[] _trashPrefabs;
-    [SerializeField] private GameObject[] _toolPrefabs;
 
+    private GameObject _trashPrefabForCheckingConsistentIntervals;
     private int _totalTrackPieces;
     private int _priorTrackPieceIndex;
     private int _numStraightSinceLastTurn;
     private float _trashLeftover;
-    private float _toolLeftover;
     private List<List<GameObject>> _spawnedObjects = new();
     private List<List<GameObject>> _gameObjectListPool = new();
     public List<TrackPiece> TrackPieces { get; private set; } = new();
@@ -51,6 +50,7 @@ public class TrackGenerator : MonoBehaviour
 
     void Awake()
     {
+        _trashPrefabForCheckingConsistentIntervals = _trashPrefabs[Random.Range(0, _trashPrefabs.Length)];
         _instance = this;
         for (int i = 0; i < _numTrackPoints; i++)
         {
@@ -119,50 +119,49 @@ public class TrackGenerator : MonoBehaviour
         _spawnedObjects.Add(gameObjectsOnNewTrackPiece);
 
         // Determine how many trashes and how many tools.
-        trackPiece.StoreLane(0);
-        float numStandardLengths = trackPiece.ApproximateCurveLength() / STANDARD_TRACK_PIECE_LENGTH;
+        
+        float numStandardLengths = (float)(trackPiece.ApproximateMidlineLength() / STANDARD_TRACK_PIECE_LENGTH);
         float numTrashFloat = Random.Range(_trashCountPerStandardLength.min, _trashCountPerStandardLength.max) * numStandardLengths + _trashLeftover;
-        float numToolsFloat = Random.Range(_toolCountPerStandardLength.min, _toolCountPerStandardLength.max) * numStandardLengths + _toolLeftover;
         int numTrash = (int)numTrashFloat;
-        int numTools = (int)numToolsFloat;
         _trashLeftover = numTrashFloat - numTrash;
-        _toolLeftover = numToolsFloat - numTools;
 
         if (_totalTrackPieces < 5)
         {
             numTrash = 0;
-            numTools = 0;
         }
 
-        // Add trash pieces
-        for (int i = 0; i < numTrash; i++)
+        if (DevHelper.Instance.TrashCollectionTimingInfo.CheckTrashCollectionConsistentIntervals)
         {
-            GameObject prefab = _trashPrefabs[Random.Range(0, _trashPrefabs.Length)]; // Could do a random bag to prevent too many of the same type of trash
-            Vector3 position = ChooseRandomPositionForObjectOnTrack(trackPiece);
-            if (float.IsNaN(position.x))
-                break; // Couldn't find a valid position
-            Quaternion rotation = Quaternion.Euler(0, Random.Range(-180f, 180f), 0f);
-            GameObject instantiated = Instantiate(prefab, position, rotation, transform);
-            gameObjectsOnNewTrackPiece.Add(instantiated);
-        }
-
-        // Add tools
-        for (int i = 0; i < numTools; i++)
-        {
-            GameObject prefab = _toolPrefabs[Random.Range(0, _toolPrefabs.Length)]; // Could do a random bag to prevent too many of the same type of trash
-            Vector3 position = ChooseRandomPositionForObjectOnTrack(trackPiece);
-            if (float.IsNaN(position.x))
+            // Spawn trash pieces at every position.
+            for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += 2)
             {
-                Debug.LogError("Couldn't find a valid position. The inspector settings _trashCountPerStandardLength and _toolCountPerStandardLength are probably too high.");
-                break; // Couldn't find a valid position
+                for (int j = -1; j <= 1; j++)
+                {
+                    Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: i, forceLane: j);
+                    GameObject instantiated = Instantiate(_trashPrefabForCheckingConsistentIntervals, position, rotation, transform);
+                    gameObjectsOnNewTrackPiece.Add(instantiated);
+                }
             }
-            Quaternion rotation = Quaternion.Euler(0, Random.Range(-180f, 180f), 0f);
-            GameObject instantiated = Instantiate(prefab, position, rotation, transform);
-            gameObjectsOnNewTrackPiece.Add(instantiated);
         }
+        else
+        {
+            // Add trash pieces
+            for (int i = 0; i < numTrash; i++)
+            {
+                GameObject prefab = _trashPrefabs[Random.Range(0, _trashPrefabs.Length)]; // Could do a random bag to prevent too many of the same type of trash
+                Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation);
+                if (float.IsNaN(position.x))
+                    break; // Couldn't find a valid position
+                           //Quaternion rotation = Quaternion.Euler(0, Random.Range(-180f, 180f), 0f);
+                GameObject instantiated = Instantiate(prefab, position, rotation, transform);
+                gameObjectsOnNewTrackPiece.Add(instantiated);
+            }
+        }
+
+        
     }
 
-    private Vector3 ChooseRandomPositionForObjectOnTrack(TrackPiece trackPiece)
+    private Vector3 ChooseRandomPositionAndRotationForObjectOnTrack(TrackPiece trackPiece, out Quaternion rotation, float forceDistanceAlongMidline = -1f, float forceLane = -2f)
     {
         int attemptsLeft = 100;
         while (true)
@@ -171,10 +170,34 @@ public class TrackGenerator : MonoBehaviour
             if (attemptsLeft == 0)
                 break;
 
-            float lane = Random.Range(-1f, 1f);
-            float t = Random.value;
+            float lane = Random.Range(-1, 2);
+
+            if (forceLane != -2f)
+                lane = forceLane;
+
+            float distanceAlongMidline = Random.Range(0, TrackPiece.TRACK_PIECE_LENGTH);
+            if (forceDistanceAlongMidline != -1f)
+                distanceAlongMidline = forceDistanceAlongMidline;
+            float t = trackPiece.FindTForDistanceAlongMidline(distanceAlongMidline, 0f);
+
+
+            // Convert positions on the midline to positions on the lane in the same way which the player movement decides where the player's position is.
+
+            trackPiece.StoreLane(0);
+            Vector3 midlinePosition = trackPiece.BezierCurve(t) + Vector3.up * _trackObjectsYOffset;
+
+            Vector3 approximatedPositionOnMidline = trackPiece.BezierCurve(t);
             trackPiece.StoreLane(lane);
-            Vector3 position = trackPiece.BezierCurve(t) + Vector3.up * _trackObjectsYOffset;
+            Vector3 approximatedPositionAtLanePosition = trackPiece.BezierCurve(t);
+            Vector3 offsetForLanePosition = approximatedPositionAtLanePosition - approximatedPositionOnMidline;
+
+            Vector3 position = midlinePosition + offsetForLanePosition;
+            
+
+            Vector3 direction = trackPiece.BezierCurveDerivative(t);
+            Vector3 directionOnPlane = new Vector3(direction.x, 0, direction.z);
+            float directionAngle = Quaternion.FromToRotation(Vector3.forward, directionOnPlane).eulerAngles.y;
+            rotation = Quaternion.Euler(0f, directionAngle, 0f);
 
             bool invalid = false;
             for (int i = 0; i < _spawnedObjects.Count; i++)
@@ -193,9 +216,10 @@ public class TrackGenerator : MonoBehaviour
                     break;
             }
 
-            if (!invalid)
+            if (!invalid || forceDistanceAlongMidline != -1f)
                 return position;
         }
+        rotation = Quaternion.identity;
         return new Vector3(float.NaN, float.NaN, float.NaN);
     }
 
@@ -211,20 +235,25 @@ public class TrackGenerator : MonoBehaviour
     {
         int index;
 
-        if (_numStraightSinceLastTurn < _minStraightBetweenTurns || Random.value < _oddsDontTurn)
-        {
-            // Track doesn't turn
+        if (_trackPrefabs.Length == 1)
             index = 0;
-            _numStraightSinceLastTurn++;
-        }
         else
         {
-            // Track turns
-            _numStraightSinceLastTurn = 0;
-            do
+            if (_numStraightSinceLastTurn < _minStraightBetweenTurns || Random.value < _oddsDontTurn)
             {
-                index = Random.Range(1, _trackPrefabs.Length);
-            } while (index == _priorTrackPieceIndex);
+                // Track doesn't turn
+                index = 0;
+                _numStraightSinceLastTurn++;
+            }
+            else
+            {
+                // Track turns
+                _numStraightSinceLastTurn = 0;
+                do
+                {
+                    index = Random.Range(1, _trackPrefabs.Length);
+                } while (index == _priorTrackPieceIndex);
+            }
         }
 
         _priorTrackPieceIndex = index;

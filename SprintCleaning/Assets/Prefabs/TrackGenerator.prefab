@@ -48,14 +48,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _trackPrefabs:
   - {fileID: 8436985586966843200, guid: 8bb2a798dd0b81b48a4a239534d025ec, type: 3}
-  - {fileID: 8589974252934845640, guid: df471b59619600344af10887dc0a1eeb, type: 3}
-  - {fileID: 8077653236005777457, guid: 61a56f14fd0f90f42bdbb09d3b39ec28, type: 3}
   - {fileID: 6221956084416107605, guid: ee67fbf2631f503419efad82417c6a6e, type: 3}
-  - {fileID: 1641981354471546479, guid: 2c5af1c4aa87bd4429c8b00015ef1c9b, type: 3}
-  - {fileID: 139109404602557050, guid: 5fcb0bb6d433a8041bd4eae6de610692, type: 3}
+  - {fileID: 8154570279409064104, guid: 63bdb2544d3f2bb44a2618bcb2b0aa69, type: 3}
   - {fileID: 2007551459213979358, guid: 4bfd1ed85f90b134fad13ebbdeb3b311, type: 3}
-  - {fileID: 7340645871352052559, guid: 893a9649cb0274d448c6e99c6124535c, type: 3}
+  - {fileID: 8077653236005777457, guid: 61a56f14fd0f90f42bdbb09d3b39ec28, type: 3}
+  - {fileID: 407651357389730200, guid: 55f09af61cf08334099a8f72ac7f4baa, type: 3}
   - {fileID: 7290087389331728689, guid: 37f2c1bccdd93c148a8ccb365392a385, type: 3}
+  - {fileID: 5870286290506024139, guid: 42bb25729c0fb3a4388963f2c84162f3, type: 3}
+  - {fileID: 1641981354471546479, guid: 2c5af1c4aa87bd4429c8b00015ef1c9b, type: 3}
   _numTrackPoints: 20
   _oddsDontTurn: 0.7
   _minStraightBetweenTurns: 2
@@ -72,11 +72,6 @@ MonoBehaviour:
   - {fileID: 5889100143449206652, guid: c40c73e8c8806c64aa7f0b2f190c752b, type: 3}
   - {fileID: 531514119308221982, guid: 37d0712457ceae149ae4b04ce1b892fa, type: 3}
   - {fileID: 531514119308221982, guid: 34d84bfc1b356ca4789142730372eca9, type: 3}
-  _toolPrefabs:
-  - {fileID: 1997853173736980697, guid: a5c6b2319db257f469740d8fd585983a, type: 3}
-  - {fileID: 3618007095663537576, guid: b7e1e94b03ba1d440b00c6f240c937bd, type: 3}
-  - {fileID: 1226523630981635959, guid: ee8be1f4a16064a42b371f4e6d54f39a, type: 3}
-  - {fileID: 1226523630981635959, guid: c4ef4991b132f2a40a798496b363186e, type: 3}
 --- !u!114 &576300050288940725
 MonoBehaviour:
   m_ObjectHideFlags: 0
