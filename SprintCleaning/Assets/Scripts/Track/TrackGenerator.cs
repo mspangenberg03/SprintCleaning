@@ -22,16 +22,15 @@ public class TrackGenerator : MonoBehaviour
     // To do that, will need to use physics layers and add colliders to the track pieces. Might as well wait until we have
     // models for track pieces so we don't need to refit the colliders (?).
     [SerializeField] private float _trackObjectsYOffset = 1.5f;
-    [SerializeField] private FloatRange _trashCountPerStandardLength;
-    [SerializeField] private FloatRange _toolCountPerStandardLength;
-    [System.Serializable] private class FloatRange { public float min; public float max; }
-    [SerializeField] private GameObject[] _trashPrefabs;
+    [SerializeField] private int _minGarbageOnTrackPiece = 4;
+    [SerializeField] private int _maxGarbageOnTrackPiece = 16;
+    [Header("Beat strengths filled from 1st to last.")]
+    [SerializeField] private GarbageSpawningBeatStrength[] _beatStrengths;
 
     private GameObject _trashPrefabForCheckingConsistentIntervals;
     private int _totalTrackPieces;
     private int _priorTrackPieceIndex;
     private int _numStraightSinceLastTurn;
-    private float _trashLeftover;
     private List<List<GameObject>> _spawnedObjects = new();
     private List<List<GameObject>> _gameObjectListPool = new();
     public List<TrackPiece> TrackPieces { get; private set; } = new();
@@ -53,7 +52,7 @@ public class TrackGenerator : MonoBehaviour
 
     void Awake()
     {
-        _trashPrefabForCheckingConsistentIntervals = _trashPrefabs[Random.Range(0, _trashPrefabs.Length)];
+        _trashPrefabForCheckingConsistentIntervals = _beatStrengths[0].GarbagePrefabs[0];
         _instance = this;
         for (int i = 0; i < _numTrackPoints; i++)
         {
@@ -87,7 +86,7 @@ public class TrackGenerator : MonoBehaviour
         instantiated.transform.position += positionChange;
 
         TrackPieces.Add(newTrackPiece);
-        AddTrashAndTools(newTrackPiece);
+        AddTrash(newTrackPiece);
 
         if (TrackPieces.Count > _numTrackPoints)
         {
@@ -108,7 +107,7 @@ public class TrackGenerator : MonoBehaviour
 
     }
 
-    private void AddTrashAndTools(TrackPiece trackPiece)
+    private void AddTrash(TrackPiece trackPiece)
     {
         // Create or reuse a list to store the objects on this trackPiece
         List<GameObject> gameObjectsOnNewTrackPiece;
@@ -121,18 +120,12 @@ public class TrackGenerator : MonoBehaviour
         }
         _spawnedObjects.Add(gameObjectsOnNewTrackPiece);
 
-        // Determine how many trashes and how many tools.
-        
-        float numStandardLengths = (float)(trackPiece.ApproximateMidlineLength() / STANDARD_TRACK_PIECE_LENGTH);
-        //float numTrashFloat = Random.Range(_trashCountPerStandardLength.min, _trashCountPerStandardLength.max) * numStandardLengths + _trashLeftover;
-        float numTrashFloat = 8f;
-        int numTrash = (int)numTrashFloat;
-        _trashLeftover = numTrashFloat - numTrash;
-
+        int numTrash = Random.Range(_minGarbageOnTrackPiece, _maxGarbageOnTrackPiece + 1);
         if (_totalTrackPieces < 5)
-        {
             numTrash = 0;
-        }
+
+        foreach (GarbageSpawningBeatStrength g in _beatStrengths)
+            g.StartNextTrackPiece();
 
         if (DevHelper.Instance.TrashCollectionTimingInfo.CheckTrashCollectionConsistentIntervals)
         {
@@ -149,23 +142,45 @@ public class TrackGenerator : MonoBehaviour
         }
         else
         {
-            GameObject prefab = _trashPrefabs[0]; // Could do a random bag to prevent too many of the same type of trash
-            for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += 2)
+            for (int i = 0; i < numTrash; i++)
             {
-                if(i == 0 || i ==8){
-                    prefab = _trashPrefabs[0];
+                bool success = false;
+                for (int j = 0; j < _beatStrengths.Length; j++)
+                {
+                    GarbageSpawningBeatStrength beatStrength = _beatStrengths[j];
+                    beatStrength.Next(out bool allFull, out int beatToSpawnAt, out GameObject prefab);
+                    if (!allFull)
+                    {
+                        Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: beatToSpawnAt, forceLane: Random.Range(-1, 2));
+                        GameObject instantiated = Instantiate(prefab, position, rotation, transform);
+                        gameObjectsOnNewTrackPiece.Add(instantiated);
+                        success = true;
+                        break;
+                    }
                 }
-                else if(i== 4 || i == 12){
-                    prefab = _trashPrefabs[1];
-                }
-                else{
-                    prefab = _trashPrefabs[2];
-                }
-                Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: i);
-            
-                GameObject instantiated = Instantiate(prefab, position, rotation, transform);
-                gameObjectsOnNewTrackPiece.Add(instantiated);
+                if (!success)
+                    throw new System.Exception("Failed to find a position to spawn. This is a bug or the inspector settings have more trash spawn than the number of beats.");
             }
+
+
+
+            //GameObject prefab;
+            //for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += 2)
+            //{
+            //    if(i == 0 || i ==8){
+            //        prefab = _trashPrefabs[0];
+            //    }
+            //    else if(i== 4 || i == 12){
+            //        prefab = _trashPrefabs[1];
+            //    }
+            //    else{
+            //        prefab = _trashPrefabs[2];
+            //    }
+            //    Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: i);
+            
+            //    GameObject instantiated = Instantiate(prefab, position, rotation, transform);
+            //    gameObjectsOnNewTrackPiece.Add(instantiated);
+            //}
             
             /*
             // Add trash pieces

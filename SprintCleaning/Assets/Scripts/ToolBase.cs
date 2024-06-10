@@ -6,7 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class ToolBase
 {
-    public ToolType _type;
+    public GarbageType _type;
     [Tooltip("How many times the tool can be used")]
     public int _durablity = 5;
     [Tooltip("UI informations")]
@@ -17,11 +17,13 @@ public class ToolBase
 
 
 }
-public enum ToolType
+public enum GarbageType
 {
-    Broom,
-    GarbageBag,
-    Mop,
-    Purple,
-    Yellow
+    Kick,
+    Hat,
+    Snare,
+    Cymbal,
+    TomLow,
+    TomMed,
+    TomHigh,
 }

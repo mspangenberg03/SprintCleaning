@@ -15,7 +15,7 @@ public class CollectedItems : ScriptableObject
     private int _totalMopGarbageCount = 0;
     private int _totalPurpleGarbageCount = 0;
     private int _totalYellowGarbageCount = 0;
-    public Dictionary<ToolType, int> _counts;
+    public Dictionary<GarbageType, int> _counts;
     public void Awake()
     {
 #if UNITY_EDITOR
@@ -29,23 +29,23 @@ public class CollectedItems : ScriptableObject
         }
 #endif
 
-        _counts = new Dictionary<ToolType, int>
+        _counts = new Dictionary<GarbageType, int>
         {
-            { ToolType.Broom, _totalBroomGarbageCount },
-            { ToolType.Mop, _totalMopGarbageCount },
-            { ToolType.GarbageBag, _totalBagGarbageCount },
-            { ToolType.Purple, _totalPurpleGarbageCount },
-            { ToolType.Yellow, _totalYellowGarbageCount },
+            { GarbageType.Kick, _totalBroomGarbageCount },
+            { GarbageType.Snare, _totalMopGarbageCount },
+            { GarbageType.Hat, _totalBagGarbageCount },
+            { GarbageType.Cymbal, _totalPurpleGarbageCount },
+            { GarbageType.TomHigh, _totalYellowGarbageCount },
         };
     }
-    public void GarbageCollected(ToolType garbage)
+    public void GarbageCollected(GarbageType garbage)
     {
         _counts[garbage]++;
-        _totalBagGarbageCount = _counts[ToolType.GarbageBag];
-        _totalBroomGarbageCount = _counts[ToolType.Broom];
-        _totalMopGarbageCount = _counts[ToolType.Mop];
-        _totalPurpleGarbageCount = _counts[ToolType.Purple];
-        _totalYellowGarbageCount = _counts[ToolType.Yellow];
+        _totalBagGarbageCount = _counts[GarbageType.Hat];
+        _totalBroomGarbageCount = _counts[GarbageType.Kick];
+        _totalMopGarbageCount = _counts[GarbageType.Snare];
+        _totalPurpleGarbageCount = _counts[GarbageType.Cymbal];
+        _totalYellowGarbageCount = _counts[GarbageType.TomHigh];
     }
 
 }
