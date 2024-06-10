@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TrackGenerator : MonoBehaviour
 {
-    private const float STANDARD_TRACK_PIECE_LENGTH = 10f;
+    private const float STANDARD_TRACK_PIECE_LENGTH = 16f;
 
     [Header("Track")]
     [SerializeField] private GameObject[] _trackPrefabs; // index 0 should be the straight track piece
@@ -121,7 +121,8 @@ public class TrackGenerator : MonoBehaviour
         // Determine how many trashes and how many tools.
         
         float numStandardLengths = (float)(trackPiece.ApproximateMidlineLength() / STANDARD_TRACK_PIECE_LENGTH);
-        float numTrashFloat = Random.Range(_trashCountPerStandardLength.min, _trashCountPerStandardLength.max) * numStandardLengths + _trashLeftover;
+        //float numTrashFloat = Random.Range(_trashCountPerStandardLength.min, _trashCountPerStandardLength.max) * numStandardLengths + _trashLeftover;
+        float numTrashFloat = 8f;
         int numTrash = (int)numTrashFloat;
         _trashLeftover = numTrashFloat - numTrash;
 
