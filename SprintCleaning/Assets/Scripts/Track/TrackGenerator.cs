@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class TrackGenerator : MonoBehaviour
 {
-    private const float STANDARD_TRACK_PIECE_LENGTH = 16f;
-
     [Header("Track")]
     
     [Tooltip("Amount of empty spawns, 0 is easiest, 5(placeholder) is no empty spawns")]
@@ -121,7 +119,7 @@ public class TrackGenerator : MonoBehaviour
         _spawnedObjects.Add(gameObjectsOnNewTrackPiece);
 
         int numTrash = Random.Range(_minGarbageOnTrackPiece, _maxGarbageOnTrackPiece + 1);
-        if (_totalTrackPieces < 5)
+        if (_totalTrackPieces < 2)
             numTrash = 0;
 
         foreach (GarbageSpawningBeatStrength g in _beatStrengths)
@@ -130,7 +128,7 @@ public class TrackGenerator : MonoBehaviour
         if (DevHelper.Instance.TrashCollectionTimingInfo.CheckTrashCollectionConsistentIntervals)
         {
             // Spawn trash pieces at every position.
-            for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += 2)
+            for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += TrackPiece.TRACK_PIECE_LENGTH / 16)
             {
                 for (int j = -1; j <= 1; j++)
                 {
@@ -151,7 +149,8 @@ public class TrackGenerator : MonoBehaviour
                     beatStrength.Next(out bool allFull, out int beatToSpawnAt, out GameObject prefab);
                     if (!allFull)
                     {
-                        Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: beatToSpawnAt, forceLane: Random.Range(-1, 2));
+                        Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation
+                            , forceDistanceAlongMidline: beatToSpawnAt * TrackPiece.TRACK_PIECE_LENGTH / 16, forceLane: Random.Range(-1, 2));
                         GameObject instantiated = Instantiate(prefab, position, rotation, transform);
                         gameObjectsOnNewTrackPiece.Add(instantiated);
                         success = true;

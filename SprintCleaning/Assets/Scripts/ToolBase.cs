@@ -26,4 +26,6 @@ public enum GarbageType
     TomLow,
     TomMed,
     TomHigh,
+
+    Count
 }

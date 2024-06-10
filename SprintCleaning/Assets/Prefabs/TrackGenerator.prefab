@@ -56,9 +56,9 @@ MonoBehaviour:
   - {fileID: 7290087389331728689, guid: 37f2c1bccdd93c148a8ccb365392a385, type: 3}
   - {fileID: 5870286290506024139, guid: 42bb25729c0fb3a4388963f2c84162f3, type: 3}
   - {fileID: 1641981354471546479, guid: 2c5af1c4aa87bd4429c8b00015ef1c9b, type: 3}
-  _numTrackPoints: 20
-  _oddsDontTurn: 0.7
-  _minStraightBetweenTurns: 2
+  _numTrackPoints: 10
+  _oddsDontTurn: 0.5
+  _minStraightBetweenTurns: 1
   _minObjectSeparation: 3
   _trackObjectsYOffset: 1.5
   _minGarbageOnTrackPiece: 4

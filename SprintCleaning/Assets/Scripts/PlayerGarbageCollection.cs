@@ -22,11 +22,11 @@ public class PlayerGarbageCollection : MonoBehaviour
     {
         if (_garbageText != null)
         {
-            _garbageText.text = "Broom Garbage: " + _playerItemData._counts[GarbageType.Kick]
-                + "\n" + "Mop Garbage: " + _playerItemData._counts[GarbageType.Snare]
-                + "\n" + "Bag Garbage: " + _playerItemData._counts[GarbageType.Hat]
-                + "\n" + "Purple Garbage: " + _playerItemData._counts[GarbageType.Cymbal]
-                ;
+            string text = "";
+            for (int i = 0; i < (int)(GarbageType.Count); i++)
+                text += (GarbageType)i + ": " + _playerItemData._counts[(GarbageType)i] + "\n";
+
+            _garbageText.text = text;
         }
 
     }
