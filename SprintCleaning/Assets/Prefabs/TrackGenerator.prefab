@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 310c3ee7b7264a44682df7ac81514824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _diff: 0
   _trackPrefabs:
   - {fileID: 8436985586966843200, guid: 8bb2a798dd0b81b48a4a239534d025ec, type: 3}
   - {fileID: 6221956084416107605, guid: ee67fbf2631f503419efad82417c6a6e, type: 3}
@@ -56,22 +57,33 @@ MonoBehaviour:
   - {fileID: 7290087389331728689, guid: 37f2c1bccdd93c148a8ccb365392a385, type: 3}
   - {fileID: 5870286290506024139, guid: 42bb25729c0fb3a4388963f2c84162f3, type: 3}
   - {fileID: 1641981354471546479, guid: 2c5af1c4aa87bd4429c8b00015ef1c9b, type: 3}
-  _numTrackPoints: 20
-  _oddsDontTurn: 0.7
-  _minStraightBetweenTurns: 2
+  _numTrackPoints: 10
+  _oddsDontTurn: 0.5
+  _minStraightBetweenTurns: 1
   _minObjectSeparation: 3
   _trackObjectsYOffset: 1.5
-  _trashCountPerStandardLength:
-    min: 0.225
-    max: 0.3
-  _toolCountPerStandardLength:
-    min: 0.151875
-    max: 0.1947116
-  _trashPrefabs:
-  - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
-  - {fileID: 5889100143449206652, guid: c40c73e8c8806c64aa7f0b2f190c752b, type: 3}
-  - {fileID: 531514119308221982, guid: 37d0712457ceae149ae4b04ce1b892fa, type: 3}
-  - {fileID: 531514119308221982, guid: 34d84bfc1b356ca4789142730372eca9, type: 3}
+  _minGarbageOnTrackPiece: 4
+  _maxGarbageOnTrackPiece: 16
+  _beatStrengths:
+  - <Beats>k__BackingField: 0000000008000000
+    <GarbagePrefabs>k__BackingField:
+    - {fileID: 5889100143449206652, guid: c40c73e8c8806c64aa7f0b2f190c752b, type: 3}
+  - <Beats>k__BackingField: 040000000c000000
+    <GarbagePrefabs>k__BackingField:
+    - {fileID: 531514119308221982, guid: 37d0712457ceae149ae4b04ce1b892fa, type: 3}
+  - <Beats>k__BackingField: 02000000060000000a0000000e000000
+    <GarbagePrefabs>k__BackingField:
+    - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
+    - {fileID: 5349597445174181553, guid: e1f500c872e29dd42a11d84677af6e77, type: 3}
+    - {fileID: 8398012589345326481, guid: dbdb9ff453c05234bb421778ec6a5d09, type: 3}
+    - {fileID: 7774771380143810795, guid: adb627a9bfd126c4a9e9a96de38bc987, type: 3}
+  - <Beats>k__BackingField: 01000000030000000500000007000000090000000b0000000d0000000f000000
+    <GarbagePrefabs>k__BackingField:
+    - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
+    - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
+    - {fileID: 5349597445174181553, guid: e1f500c872e29dd42a11d84677af6e77, type: 3}
+    - {fileID: 7774771380143810795, guid: adb627a9bfd126c4a9e9a96de38bc987, type: 3}
+    - {fileID: 8398012589345326481, guid: dbdb9ff453c05234bb421778ec6a5d09, type: 3}
 --- !u!114 &576300050288940725
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5,7 +5,7 @@ using UnityEngine;
 public class Garbage : MonoBehaviour
 {
     [Tooltip("The type of tool needed to collect this piece of garbage")]
-    public ToolType _type;
+    public GarbageType _type;
 
     [Tooltip("The sound this piece of garbage plays on collect")]
     public AudioClip impact;

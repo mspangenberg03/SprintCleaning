@@ -255,7 +255,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4.5033884, y: 1, z: 18.013554}
+  m_LocalScale: {x: 18.01355, y: 1, z: 72.054214}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1613808228811558833}
@@ -278,4 +278,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <StartTransform>k__BackingField: {fileID: 851312232666066661}
   <EndTransform>k__BackingField: {fileID: 7303150843018231031}
-  _approximateLength: 0

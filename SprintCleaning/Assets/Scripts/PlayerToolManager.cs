@@ -11,7 +11,7 @@ public class PlayerToolManager : MonoBehaviour
 
     public List<ToolBase> _heldTools = new();
 
-    public void ToolUsed(ToolType toolType)
+    public void ToolUsed(GarbageType toolType)
     {
         int index = -1;
         for (int i = 0; i < _heldTools.Count; i++)
@@ -58,7 +58,7 @@ public class PlayerToolManager : MonoBehaviour
         _toolBar.UpdateDisplayedInfo(_heldTools);
     }
 
-    public bool HasTool(ToolType toolType)
+    public bool HasTool(GarbageType toolType)
     {
         foreach (ToolBase tool in _heldTools)
         {

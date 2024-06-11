@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TrackPiece : MonoBehaviour
 {
-    public const int TRACK_PIECE_LENGTH = 16;
+    public const int TRACK_PIECE_LENGTH = 64;
     [field: SerializeField] public Transform StartTransform { get; private set; } // Used for positioning this track piece when creating it
     [field: SerializeField] public Transform EndTransform { get; private set; } // Used for the player's target
 
