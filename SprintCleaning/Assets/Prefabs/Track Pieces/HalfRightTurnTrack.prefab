@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 8.58004, y: 1, z: 17.16008}
+  m_LocalScale: {x: 34.32016, y: 1, z: 68.64032}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1829591976384932627}
@@ -50,7 +50,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <StartTransform>k__BackingField: {fileID: 2628184281704622118}
   <EndTransform>k__BackingField: {fileID: 6112475764211463990}
-  _approximateLength: 0
 --- !u!1 &2627306799593333903
 GameObject:
   m_ObjectHideFlags: 0

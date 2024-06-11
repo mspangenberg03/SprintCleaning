@@ -9,6 +9,6 @@ public class ToolUI : ScriptableObject
     [SerializeField] private Sprite _sprite;
     public Sprite Sprite { get { return _sprite; } }
 
-    [SerializeField] private ToolType _toolType;
-    public ToolType ToolType { get { return _toolType; } }
+    [SerializeField] private GarbageType _toolType;
+    public GarbageType ToolType { get { return _toolType; } }
 }
