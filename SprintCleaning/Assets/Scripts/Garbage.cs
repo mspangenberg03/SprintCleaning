@@ -9,6 +9,8 @@ public class Garbage : MonoBehaviour
 
     [Tooltip("The sound this piece of garbage plays on collect")]
     public AudioClip impact;
+
+    public bool _obstacle;
     public AudioSource _garbageAudio;
 
     [SerializeField,Tooltip("How much dirtiness does this garbage add")]
@@ -25,12 +27,18 @@ public class Garbage : MonoBehaviour
         {
             GameObject player = other.transform.parent.gameObject;
             _garbageAudio = player.GetComponent<AudioSource>();
-
+            _garbageAudio.PlayOneShot(impact, 1F);
+            if (_obstacle)
+            {
+                player.GetComponent<DirtinessManager>().AddDirtiness(30);
+            }
+            else{
+                _playerItemData.GarbageCollected(_type);
+                player.GetComponent<PlayerGarbageCollection>().TextEdit();
+            }
             DevHelper.Instance.CheckLogInfoForTrashCollectionIntervalChecking();
 
-            _garbageAudio.PlayOneShot(impact, 1F);
-            _playerItemData.GarbageCollected(_type);
-            player.GetComponent<PlayerGarbageCollection>().TextEdit();
+            
 
             Destroy(gameObject);
         }
