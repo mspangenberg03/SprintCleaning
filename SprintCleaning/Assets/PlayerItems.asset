@@ -12,3 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b05cd620389b3734a9490bf8e50a2fbf, type: 3}
   m_Name: PlayerItems
   m_EditorClassIdentifier: 
+  _resetInEditorOnAwake: 1
+  _score: 0
+  _streakValue: 30
+  _regularStreakDecrease: 5
+  _streakMultiplier: 1
+  _streakThresholds: 320000005000000078000000

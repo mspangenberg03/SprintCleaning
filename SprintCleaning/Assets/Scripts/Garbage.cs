@@ -11,13 +11,13 @@ public class Garbage : MonoBehaviour
     public AudioClip impact;
     public AudioSource _garbageAudio;
 
-    [SerializeField,Tooltip("How much dirtiness does this garbage add")]
-    private int _dirtiness = 10;
+    [SerializeField,Tooltip("The score this garbage add")]
+    private int _score = 1;
 
-    [SerializeField, Tooltip("Multiplies the player's speed")]
-    private float _playerSpeedMultiplier = .3f;
+    [SerializeField, Tooltip("The value that collecting this garbage add to the current streak value")]
+    private int _streakAddValue = 10;
 
-    [SerializeField] private CollectedItems _playerItemData;
+    [SerializeField] private PlayerData _playerData;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -29,8 +29,9 @@ public class Garbage : MonoBehaviour
             DevHelper.Instance.CheckLogInfoForTrashCollectionIntervalChecking();
 
             _garbageAudio.PlayOneShot(impact, 1F);
-            _playerItemData.GarbageCollected(_type);
+            _playerData.GarbageCollected(_type);
             player.GetComponent<PlayerGarbageCollection>().TextEdit();
+            _playerData.ÄddScoreOnGarbageCollection(_score, _streakAddValue);
 
             Destroy(gameObject);
         }
