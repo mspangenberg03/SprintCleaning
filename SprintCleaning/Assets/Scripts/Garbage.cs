@@ -9,6 +9,8 @@ public class Garbage : MonoBehaviour
 
     [Tooltip("The sound this piece of garbage plays on collect")]
     public AudioClip impact;
+
+    [SerializeField] private bool _obstacle;
     public AudioSource _garbageAudio;
 
     [SerializeField,Tooltip("The score this garbage add")]
@@ -25,13 +27,22 @@ public class Garbage : MonoBehaviour
         {
             GameObject player = other.transform.parent.gameObject;
             _garbageAudio = player.GetComponent<AudioSource>();
-
+            _garbageAudio.PlayOneShot(impact, 1F);
+            if (_obstacle)
+            {
+                player.GetComponent<Game_Over>().GameOver();
+            }
+            else{
+                _playerItemData.GarbageCollected(_type);
+                player.GetComponent<PlayerGarbageCollection>().TextEdit();
+            }
             DevHelper.Instance.CheckLogInfoForTrashCollectionIntervalChecking();
 
             _garbageAudio.PlayOneShot(impact, 1F);
             _playerData.GarbageCollected(_type);
             player.GetComponent<PlayerGarbageCollection>().TextEdit();
-            _playerData.ÄddScoreOnGarbageCollection(_score, _streakAddValue);
+            _playerData.ï¿½ddScoreOnGarbageCollection(_score, _streakAddValue);
+            
 
             Destroy(gameObject);
         }

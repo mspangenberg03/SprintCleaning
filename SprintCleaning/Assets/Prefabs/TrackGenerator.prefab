@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 608179131147895185}
   - component: {fileID: 1360909279564036929}
   - component: {fileID: 576300050288940725}
+  - component: {fileID: -2036229910219731075}
   m_Layer: 0
   m_Name: TrackGenerator
   m_TagString: Untagged
@@ -76,6 +77,8 @@ MonoBehaviour:
     - {fileID: 5349597445174181553, guid: e1f500c872e29dd42a11d84677af6e77, type: 3}
     - {fileID: 8398012589345326481, guid: dbdb9ff453c05234bb421778ec6a5d09, type: 3}
     - {fileID: 7774771380143810795, guid: adb627a9bfd126c4a9e9a96de38bc987, type: 3}
+    - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
+    - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
   - <Beats>k__BackingField: 01000000030000000500000007000000090000000b0000000d0000000f000000
     <GarbagePrefabs>k__BackingField:
     - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
@@ -83,6 +86,10 @@ MonoBehaviour:
     - {fileID: 5349597445174181553, guid: e1f500c872e29dd42a11d84677af6e77, type: 3}
     - {fileID: 7774771380143810795, guid: adb627a9bfd126c4a9e9a96de38bc987, type: 3}
     - {fileID: 8398012589345326481, guid: dbdb9ff453c05234bb421778ec6a5d09, type: 3}
+    - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
+    - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
+    - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
+    - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
 --- !u!114 &576300050288940725
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,3 +105,15 @@ MonoBehaviour:
   _comment: 'Not using all the tools / garbage types
 
 '
+--- !u!114 &-2036229910219731075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5132789170982312905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18e0be66587dc2d4abf7f88dd65533f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
