@@ -1,24 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class TrackGenerator : MonoBehaviour
 {
     [Header("Track")]
-    
-    [Tooltip("Amount of empty spawns, 0 is easiest, 5(placeholder) is no empty spawns")]
-    [SerializeField] private int _diff = 0; 
     [SerializeField] private GameObject[] _trackPrefabs; // index 0 should be the straight track piece
-    [SerializeField] private int _numTrackPoints = 10;
+    [SerializeField] private int _numTrackPieces = 10;
     [SerializeField] private float _oddsDontTurn = .8f;
     [SerializeField] private float _minStraightBetweenTurns = 2;
     [Header("Objects on Track")]
-    [SerializeField] private float _minObjectSeparation; // objects meaning trash and tools
-    //[SerializeField] private float _minDistanceFromTrackLayerCollider; 
-    // ^ will need this to prevent spawning inside the track at the edge of flat and upwards slope.
-    // To do that, will need to use physics layers and add colliders to the track pieces. Might as well wait until we have
-    // models for track pieces so we don't need to refit the colliders (?).
     [SerializeField] private float _trackObjectsYOffset = 1.5f;
     [SerializeField] private int _minGarbageOnTrackPiece = 4;
     [SerializeField] private int _maxGarbageOnTrackPiece = 16;
@@ -26,7 +17,6 @@ public class TrackGenerator : MonoBehaviour
     [SerializeField] private GarbageSpawningBeatStrength[] _beatStrengths;
 
     private GameObject _trashPrefabForCheckingConsistentIntervals;
-    private int _totalTrackPieces;
     private int _priorTrackPieceIndex;
     private int _numStraightSinceLastTurn;
     private List<List<GameObject>> _spawnedObjects = new();
@@ -52,7 +42,7 @@ public class TrackGenerator : MonoBehaviour
     {
         _trashPrefabForCheckingConsistentIntervals = _beatStrengths[0].GarbagePrefabs[0];
         _instance = this;
-        for (int i = 0; i < _numTrackPoints; i++)
+        for (int i = 0; i < _numTrackPieces; i++)
         {
             AddTrackPiece();
         }
@@ -65,7 +55,6 @@ public class TrackGenerator : MonoBehaviour
             CreateFirstTrackPiece();
             return;
         }
-        _totalTrackPieces++;
 
         //Creates a trackPiece following the last created
         GameObject prefab = RandomTrackPiecePrefab();
@@ -86,7 +75,7 @@ public class TrackGenerator : MonoBehaviour
         TrackPieces.Add(newTrackPiece);
         AddTrash(newTrackPiece);
 
-        if (TrackPieces.Count > _numTrackPoints)
+        if (TrackPieces.Count > _numTrackPieces)
         {
             // destroy the earliest track piece and all objects spawned on it
             Destroy(TrackPieces[0].gameObject);
@@ -119,7 +108,7 @@ public class TrackGenerator : MonoBehaviour
         _spawnedObjects.Add(gameObjectsOnNewTrackPiece);
 
         int numTrash = Random.Range(_minGarbageOnTrackPiece, _maxGarbageOnTrackPiece + 1);
-        if (_totalTrackPieces < 2)
+        if (TrackPieces.Count < 2)
             numTrash = 0;
 
         foreach (GarbageSpawningBeatStrength g in _beatStrengths)
@@ -132,7 +121,7 @@ public class TrackGenerator : MonoBehaviour
             {
                 for (int j = -1; j <= 1; j++)
                 {
-                    Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: i, forceLane: j);
+                    Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, distanceAlongMidline: i, lane: j);
                     GameObject instantiated = Instantiate(_trashPrefabForCheckingConsistentIntervals, position, rotation, transform);
                     gameObjectsOnNewTrackPiece.Add(instantiated);
                 }
@@ -150,7 +139,7 @@ public class TrackGenerator : MonoBehaviour
                     if (!allFull)
                     {
                         Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation
-                            , forceDistanceAlongMidline: beatToSpawnAt * TrackPiece.TRACK_PIECE_LENGTH / 16, forceLane: Random.Range(-1, 2));
+                            , distanceAlongMidline: beatToSpawnAt * TrackPiece.TRACK_PIECE_LENGTH / 16, lane: Random.Range(-1, 2));
                         GameObject instantiated = Instantiate(prefab, position, rotation, transform);
                         gameObjectsOnNewTrackPiece.Add(instantiated);
                         success = true;
@@ -160,109 +149,36 @@ public class TrackGenerator : MonoBehaviour
                 if (!success)
                     throw new System.Exception("Failed to find a position to spawn. This is a bug or the inspector settings have more trash spawn than the number of beats.");
             }
-
-
-
-            //GameObject prefab;
-            //for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += 2)
-            //{
-            //    if(i == 0 || i ==8){
-            //        prefab = _trashPrefabs[0];
-            //    }
-            //    else if(i== 4 || i == 12){
-            //        prefab = _trashPrefabs[1];
-            //    }
-            //    else{
-            //        prefab = _trashPrefabs[2];
-            //    }
-            //    Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: i);
-            
-            //    GameObject instantiated = Instantiate(prefab, position, rotation, transform);
-            //    gameObjectsOnNewTrackPiece.Add(instantiated);
-            //}
-            
-            /*
-            // Add trash pieces
-            //i += x where x is interval between spawns
-            int[] poslist = [-1,0,1];
-            for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += 1)
-            {
-                
-                GameObject prefab = _trashPrefabs[Random.Range(0, (_trashPrefabs.Length - _diff))]; // Could do a random bag to prevent too many of the same type of trash
-                Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, forceDistanceAlongMidline: i, forceLane: j);
-                if (float.IsNaN(position.x))
-                    break; // Couldn't find a valid position
-                        //Quaternion rotation = Quaternion.Euler(0, Random.Range(-180f, 180f), 0f);
-                GameObject instantiated = Instantiate(prefab, position, rotation, transform);
-                gameObjectsOnNewTrackPiece.Add(instantiated);
-                
-            }
-            */
         }
 
         
     }
 
-    private Vector3 ChooseRandomPositionAndRotationForObjectOnTrack(TrackPiece trackPiece, out Quaternion rotation, float forceDistanceAlongMidline = -1f, float forceLane = -2f)
+    private Vector3 ChooseRandomPositionAndRotationForObjectOnTrack(TrackPiece trackPiece, out Quaternion rotation, float distanceAlongMidline, float lane)
     {
-        int attemptsLeft = 100;
-        while (true)
-        {
-            attemptsLeft--;
-            if (attemptsLeft == 0)
-                break;
-
-            float lane = Random.Range(-1, 2);
-
-            if (forceLane != -2f)
-                lane = forceLane;
-
-            float distanceAlongMidline = Random.Range(0, TrackPiece.TRACK_PIECE_LENGTH);
-            if (forceDistanceAlongMidline != -1f)
-                distanceAlongMidline = forceDistanceAlongMidline;
-            float t = trackPiece.FindTForDistanceAlongMidline(distanceAlongMidline, 0f);
+        float t = trackPiece.FindTForDistanceAlongMidline(distanceAlongMidline, 0f);
 
 
-            // Convert positions on the midline to positions on the lane in the same way which the player movement decides where the player's position is.
+        // Convert positions on the midline to positions on the lane in the same way which the player movement decides where the player's position is.
 
-            trackPiece.StoreLane(0);
-            Vector3 midlinePosition = trackPiece.BezierCurve(t) + Vector3.up * _trackObjectsYOffset;
+        trackPiece.StoreLane(0);
+        Vector3 midlinePosition = trackPiece.BezierCurve(t) + Vector3.up * _trackObjectsYOffset;
 
-            Vector3 approximatedPositionOnMidline = trackPiece.BezierCurve(t);
-            trackPiece.StoreLane(lane);
-            Vector3 approximatedPositionAtLanePosition = trackPiece.BezierCurve(t);
-            Vector3 offsetForLanePosition = approximatedPositionAtLanePosition - approximatedPositionOnMidline;
+        Vector3 approximatedPositionOnMidline = trackPiece.BezierCurve(t);
+        trackPiece.StoreLane(lane);
+        Vector3 approximatedPositionAtLanePosition = trackPiece.BezierCurve(t);
+        Vector3 offsetForLanePosition = approximatedPositionAtLanePosition - approximatedPositionOnMidline;
 
-            Vector3 position = midlinePosition + offsetForLanePosition;
+        Vector3 position = midlinePosition + offsetForLanePosition;
             
 
-            Vector3 direction = trackPiece.BezierCurveDerivative(t);
-            Vector3 directionOnPlane = new Vector3(direction.x, 0, direction.z);
-            float directionAngle = Quaternion.FromToRotation(Vector3.forward, directionOnPlane).eulerAngles.y;
-            rotation = Quaternion.Euler(0f, directionAngle, 0f);
+        Vector3 direction = trackPiece.BezierCurveDerivative(t);
+        Vector3 directionOnPlane = new Vector3(direction.x, 0, direction.z);
+        float directionAngle = Quaternion.FromToRotation(Vector3.forward, directionOnPlane).eulerAngles.y;
+        rotation = Quaternion.Euler(0f, directionAngle, 0f);
 
-            bool invalid = false;
-            for (int i = 0; i < _spawnedObjects.Count; i++)
-            {
-                foreach (GameObject g in _spawnedObjects[i])
-                {
-                    if (g == null)
-                        continue; // it was destroyed
-                    if ((g.transform.position - position).sqrMagnitude < _minObjectSeparation * _minObjectSeparation)
-                    {
-                        invalid = true;
-                        break;
-                    }
-                }
-                if (invalid)
-                    break;
-            }
-
-            if (!invalid || forceDistanceAlongMidline != -1f)
-                return position;
-        }
-        rotation = Quaternion.identity;
-        return new Vector3(float.NaN, float.NaN, float.NaN);
+           
+        return position;
     }
 
     private void CreateFirstTrackPiece()
