@@ -20,7 +20,7 @@ public class TrackGenerator : MonoBehaviour
     private int _priorTrackPieceIndex;
     private int _numStraightSinceLastTurn;
     private List<List<GameObject>> _spawnedObjects = new();
-    private List<List<GameObject>> _gameObjectListPool = new();
+    private ObjectPool<List<GameObject>> _listPool = new();
     public List<TrackPiece> TrackPieces { get; private set; } = new();
 
     private static TrackGenerator _instance;
@@ -55,7 +55,6 @@ public class TrackGenerator : MonoBehaviour
             CreateFirstTrackPiece();
             return;
         }
-
         //Creates a trackPiece following the last created
         GameObject prefab = RandomTrackPiecePrefab();
 
@@ -81,14 +80,13 @@ public class TrackGenerator : MonoBehaviour
             Destroy(TrackPieces[0].gameObject);
             TrackPieces.RemoveAt(0);
 
-            List<GameObject> objectsToDestroy = _spawnedObjects[0];
-            foreach (GameObject g in objectsToDestroy)
+            foreach (GameObject g in _spawnedObjects[0])
             {
                 if (g != null) // could've been destroyed by the player already
                     Destroy(g);
             }
-            objectsToDestroy.Clear();
-            _gameObjectListPool.Add(objectsToDestroy);
+            _spawnedObjects[0].Clear();
+            _listPool.ReturnToPool(_spawnedObjects[0]);
             _spawnedObjects.RemoveAt(0);
         }
 
@@ -97,18 +95,11 @@ public class TrackGenerator : MonoBehaviour
     private void AddTrash(TrackPiece trackPiece)
     {
         // Create or reuse a list to store the objects on this trackPiece
-        List<GameObject> gameObjectsOnNewTrackPiece;
-        if (_gameObjectListPool.Count == 0)
-            gameObjectsOnNewTrackPiece = new List<GameObject>();
-        else
-        {
-            gameObjectsOnNewTrackPiece = _gameObjectListPool[_gameObjectListPool.Count - 1];
-            _gameObjectListPool.RemoveAt(_gameObjectListPool.Count - 1);
-        }
+        List<GameObject> gameObjectsOnNewTrackPiece = _listPool.ProduceObject();
         _spawnedObjects.Add(gameObjectsOnNewTrackPiece);
 
         int numTrash = Random.Range(_minGarbageOnTrackPiece, _maxGarbageOnTrackPiece + 1);
-        if (TrackPieces.Count < 2)
+        if (TrackPieces.Count < 3)
             numTrash = 0;
 
         foreach (GarbageSpawningBeatStrength g in _beatStrengths)
@@ -183,8 +174,9 @@ public class TrackGenerator : MonoBehaviour
 
     private void CreateFirstTrackPiece()
     {
-        GameObject newTrackPiece = Instantiate(RandomTrackPiecePrefab()
-            , Vector3.down * PlayerMovement.Settings.PlayerVerticalOffset, Quaternion.identity);
+        GameObject newTrackPiece = Instantiate(RandomTrackPiecePrefab(), transform);
+        newTrackPiece.transform.position = Vector3.down * PlayerMovement.Settings.PlayerVerticalOffset;
+        newTrackPiece.transform.rotation = Quaternion.identity;
 
         TrackPieces.Add(newTrackPiece.GetComponent<TrackPiece>());
     }
