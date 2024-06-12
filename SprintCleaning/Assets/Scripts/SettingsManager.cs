@@ -16,7 +16,7 @@ public class SettingsManager : MonoBehaviour
         {
             if(source != null)
             {
-                source.volume = PlayerPrefs.GetFloat("AudioSettings");
+                source.volume = PlayerPrefs.GetFloat("AudioSettings", MainMenu.DEFAULT_VOLUME);
             }
         }
         //Sets the resolution to what was selected in the setting menu

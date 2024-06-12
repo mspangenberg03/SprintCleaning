@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f39a5fb73d97a5a42a36bf8acfd22120, type: 3}
   m_Name: Player Movement Settings
   m_EditorClassIdentifier: 
-  <BaseForwardsSpeed>k__BackingField: 10
-  <MinForwardsSpeed>k__BackingField: 10
+  <BaseForwardsSpeed>k__BackingField: 15
+  <MinForwardsSpeed>k__BackingField: 15
   <MaxForwardsSpeed>k__BackingField: 35
   <ForwardsAcceleration>k__BackingField: 0.4
   <ForwardsAccelerationWhileBelowBaseSpeed>k__BackingField: 3
   <AccelerationPauseAfterGarbageSlowdown>k__BackingField: 3
-  <BaseLaneChangeSpeed>k__BackingField: 15
-  <LaneChangeSpeedupTime>k__BackingField: 0.05
-  <LaneChangeTurnaroundTime>k__BackingField: 0.075
+  <BaseLaneChangeSpeed>k__BackingField: 25
+  <LaneChangeSpeedupTime>k__BackingField: 0.025
+  <LaneChangeTurnaroundTime>k__BackingField: 0.025
   <AllowMultipleLaneChangeByHoldingDown>k__BackingField: 0
   <JumpHeight>k__BackingField: 3.5
   <JumpUpDuration>k__BackingField: 0.45

@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+    public const float DEFAULT_VOLUME = .5f;
+
     [SerializeField]
     private GameObject _mainMenuPanel;
     [SerializeField]
@@ -27,8 +29,10 @@ public class MainMenu : MonoBehaviour
     private int index;
     private void Start()
     {
-        _audioSlider.value = PlayerPrefs.GetFloat("AudioSettings");
-        Camera.main.GetComponent<AudioSource>().volume = _audioSlider.value;
+        float volume = PlayerPrefs.GetFloat("AudioSettings", DEFAULT_VOLUME);
+        _audioSlider.value = volume;
+        Camera.main.GetComponent<AudioSource>().volume = volume;
+
         _fullscreenToggle.isOn = Screen.fullScreen;
         _dropdown = _resolutionDropdownText.transform.parent.GetComponent<TMP_Dropdown>();
         index = PlayerPrefs.GetInt("Index",0);
