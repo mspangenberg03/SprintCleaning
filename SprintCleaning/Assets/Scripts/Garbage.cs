@@ -33,7 +33,7 @@ public class Garbage : MonoBehaviour
                 player.GetComponent<Game_Over>().GameOver();
             }
             else{
-                _playerItemData.GarbageCollected(_type);
+                _playerData.GarbageCollected(_type);
                 player.GetComponent<PlayerGarbageCollection>().TextEdit();
             }
             DevHelper.Instance.CheckLogInfoForTrashCollectionIntervalChecking();
@@ -41,7 +41,7 @@ public class Garbage : MonoBehaviour
             _garbageAudio.PlayOneShot(impact, 1F);
             _playerData.GarbageCollected(_type);
             player.GetComponent<PlayerGarbageCollection>().TextEdit();
-            _playerData.�ddScoreOnGarbageCollection(_score, _streakAddValue);
+            _playerData.AddScoreOnGarbageCollection(_score, _streakAddValue);
             
 
             Destroy(gameObject);

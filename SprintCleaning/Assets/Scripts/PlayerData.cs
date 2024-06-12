@@ -50,7 +50,7 @@ public class PlayerData : ScriptableObject
         _counts[garbage]++;
     }
 
-    public void ÄddScoreOnGarbageCollection(int scoreToAdd, int streakValueToAdd)
+    public void AddScoreOnGarbageCollection(int scoreToAdd, int streakValueToAdd)
     {
         CheckStreakMultiplier();
         _score += (scoreToAdd * _streakMultiplier);
