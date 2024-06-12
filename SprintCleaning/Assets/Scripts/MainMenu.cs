@@ -83,4 +83,8 @@ public class MainMenu : MonoBehaviour
         index = _dropdown.value;
         PlayerPrefs.SetInt("Index", index);
     }
+    public void OpenGarbageSellingMenu()
+    {
+        SceneManager.LoadScene("SellingMenu");
+    }
 }
