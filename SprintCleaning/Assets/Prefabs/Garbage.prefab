@@ -151,7 +151,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _type: 0
-  impact: {fileID: 0}
+  impact: {fileID: 8300000, guid: 616a72b3b68a06b468b42ee80689bec1, type: 3}
+  _obstacle: 0
   _garbageAudio: {fileID: 0}
   _dirtiness: 10
   _playerSpeedMultiplier: 0.3
