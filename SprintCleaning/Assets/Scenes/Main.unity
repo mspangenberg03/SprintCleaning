@@ -664,6 +664,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1540360272 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2887168222166899384, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+  m_PrefabInstance: {fileID: 5555699909272759551}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1623511382 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6132711351885811144, guid: b601506cee11a44488015984e6ec7f4c, type: 3}
@@ -812,6 +823,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2887168222166899384, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+      propertyPath: m_text
+      value: 'Score: 0
+
+        StreakValue: 30
+
+        Streak: 1
+
+'
+      objectReference: {fileID: 0}
     - target: {fileID: 6029570124216557578, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -892,6 +913,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6819884067327339067, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 296.6564
+      objectReference: {fileID: 0}
+    - target: {fileID: 6819884067327339067, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -148.32825
+      objectReference: {fileID: 0}
     - target: {fileID: 7913676833513205611, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: m_Name
       value: GeneralUI
@@ -968,6 +997,14 @@ PrefabInstance:
       propertyPath: _dirtinessText
       value: 
       objectReference: {fileID: 1765331876}
+    - target: {fileID: 3205953339151722299, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+      propertyPath: _scoreText
+      value: 
+      objectReference: {fileID: 1540360272}
+    - target: {fileID: 3205953339151722299, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+      propertyPath: _playerData
+      value: 
+      objectReference: {fileID: 11400000, guid: a4d552aa22ccde841848f0e8f2245245, type: 2}
     - target: {fileID: 3205953339151722299, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
       propertyPath: _garbageText
       value: 
