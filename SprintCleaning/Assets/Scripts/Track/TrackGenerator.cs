@@ -19,8 +19,10 @@ public class TrackGenerator : MonoBehaviour
     private GameObject _trashPrefabForCheckingConsistentIntervals;
     private int _priorTrackPieceIndex;
     private int _numStraightSinceLastTurn;
+    private int _laneChosenAtLastBeatOfPriorTrackPiece = -2;
+    private int[] _laneChosenAtEachBeat = new int[16];
     private List<List<GameObject>> _spawnedObjects = new();
-    private ObjectPool<List<GameObject>> _listPool = new();
+    private ObjectPool<List<GameObject>> _poolOfListsOfGameObjects = new();
     public List<TrackPiece> TrackPieces { get; private set; } = new();
 
     private static TrackGenerator _instance;
@@ -86,7 +88,7 @@ public class TrackGenerator : MonoBehaviour
                     Destroy(g);
             }
             _spawnedObjects[0].Clear();
-            _listPool.ReturnToPool(_spawnedObjects[0]);
+            _poolOfListsOfGameObjects.ReturnToPool(_spawnedObjects[0]);
             _spawnedObjects.RemoveAt(0);
         }
 
@@ -95,55 +97,92 @@ public class TrackGenerator : MonoBehaviour
     private void AddTrash(TrackPiece trackPiece)
     {
         // Create or reuse a list to store the objects on this trackPiece
-        List<GameObject> gameObjectsOnNewTrackPiece = _listPool.ProduceObject();
+        List<GameObject> gameObjectsOnNewTrackPiece = _poolOfListsOfGameObjects.ProduceObject();
         _spawnedObjects.Add(gameObjectsOnNewTrackPiece);
 
         int numTrash = Random.Range(_minGarbageOnTrackPiece, _maxGarbageOnTrackPiece + 1);
         if (TrackPieces.Count < 3)
-            numTrash = 0;
+            numTrash = 0; // so the player doesn't immediately encounter trash.
 
+        if (!DevHelper.Instance.TrashCollectionTimingInfo.CheckTrashCollectionConsistentIntervals)
+            GenerateTrash(numTrash, trackPiece, gameObjectsOnNewTrackPiece);
+        else
+            GenerateTrashAtEveryPosition(trackPiece, gameObjectsOnNewTrackPiece);
+    }
+
+    private void GenerateTrash(int numTrash, TrackPiece trackPiece, List<GameObject> gameObjectsOnNewTrackPiece)
+    {
+        _laneChosenAtLastBeatOfPriorTrackPiece = _laneChosenAtEachBeat[^1];
+        for (int i = 0; i < _laneChosenAtEachBeat.Length; i++)
+            _laneChosenAtEachBeat[i] = -2;
         foreach (GarbageSpawningBeatStrength g in _beatStrengths)
             g.StartNextTrackPiece();
 
-        if (DevHelper.Instance.TrashCollectionTimingInfo.CheckTrashCollectionConsistentIntervals)
+        for (int i = 0; i < numTrash; i++)
         {
-            // Spawn trash pieces at every position.
-            for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += TrackPiece.TRACK_PIECE_LENGTH / 16)
+            bool success = false;
+            for (int j = 0; j < _beatStrengths.Length; j++)
             {
-                for (int j = -1; j <= 1; j++)
-                {
-                    Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, distanceAlongMidline: i, lane: j);
-                    GameObject instantiated = Instantiate(_trashPrefabForCheckingConsistentIntervals, position, rotation, transform);
-                    gameObjectsOnNewTrackPiece.Add(instantiated);
-                }
-            }
-        }
-        else
-        {
-            for (int i = 0; i < numTrash; i++)
-            {
-                bool success = false;
-                for (int j = 0; j < _beatStrengths.Length; j++)
-                {
-                    GarbageSpawningBeatStrength beatStrength = _beatStrengths[j];
-                    beatStrength.Next(out bool allFull, out int beatToSpawnAt, out GameObject prefab);
-                    if (!allFull)
-                    {
-                        Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation
-                            , distanceAlongMidline: beatToSpawnAt * TrackPiece.TRACK_PIECE_LENGTH / 16, lane: Random.Range(-1, 2));
-                        GameObject instantiated = Instantiate(prefab, position, rotation, transform);
-                        gameObjectsOnNewTrackPiece.Add(instantiated);
-                        success = true;
-                        break;
-                    }
-                }
-                if (!success)
-                    throw new System.Exception("Failed to find a position to spawn. This is a bug or the inspector settings have more trash spawn than the number of beats.");
-            }
-        }
+                GarbageSpawningBeatStrength beatStrength = _beatStrengths[j];
+                beatStrength.Next(out bool allFull, out int beatToSpawnAt, out GameObject prefab);
+                if (allFull)
+                    continue; // this inner for loop is just to find the first beatStrength which isn't full
 
-        
+                int lane;
+                bool invalid;
+                do
+                {
+                    lane = Random.Range(-1, 2);
+                    invalid = LaneIsInvalid(beatToSpawnAt, lane);
+                } while (invalid);
+
+                _laneChosenAtEachBeat[beatToSpawnAt] = lane;
+
+                Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation
+                    , distanceAlongMidline: beatToSpawnAt * TrackPiece.TRACK_PIECE_LENGTH / 16, lane);
+                GameObject instantiated = Instantiate(prefab, position, rotation, transform);
+                gameObjectsOnNewTrackPiece.Add(instantiated);
+                success = true;
+                break;
+            }
+            if (!success)
+                throw new System.Exception("Failed to find a position to spawn. This is a bug or the inspector settings have more trash spawn than the number of beats.");
+        }
     }
+
+    private bool LaneIsInvalid(int beat, int laneAtBeat)
+    {
+        if (DistanceFromLaneAtBeat(beat - 1, laneAtBeat) > 1)
+            return true;
+        if (DistanceFromLaneAtBeat(beat + 1, laneAtBeat) > 1)
+            return true;
+        return false;
+
+        int DistanceFromLaneAtBeat(int beat, int lane)
+        {
+            if (beat == -1)
+                return System.Math.Abs(lane - _laneChosenAtLastBeatOfPriorTrackPiece);
+            if (beat == _laneChosenAtEachBeat.Length)
+                return 0;
+            if (_laneChosenAtEachBeat[beat] == -2) // the lane at this beat hasn't been chosen
+                return 0;
+            return System.Math.Abs(lane - _laneChosenAtEachBeat[beat]);
+        }
+    }
+
+    private void GenerateTrashAtEveryPosition(TrackPiece trackPiece, List<GameObject> gameObjectsOnNewTrackPiece)
+    {
+        for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += TrackPiece.TRACK_PIECE_LENGTH / 16)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                Vector3 position = ChooseRandomPositionAndRotationForObjectOnTrack(trackPiece, out Quaternion rotation, distanceAlongMidline: i, lane: j);
+                GameObject instantiated = Instantiate(_trashPrefabForCheckingConsistentIntervals, position, rotation, transform);
+                gameObjectsOnNewTrackPiece.Add(instantiated);
+            }
+        }
+    }
+
 
     private Vector3 ChooseRandomPositionAndRotationForObjectOnTrack(TrackPiece trackPiece, out Quaternion rotation, float distanceAlongMidline, float lane)
     {
