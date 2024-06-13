@@ -4,11 +4,11 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 [CreateAssetMenu]
-public class ToolUI : ScriptableObject
+public class PowerUpUI : ScriptableObject
 {
     [SerializeField] private Sprite _sprite;
     public Sprite Sprite { get { return _sprite; } }
 
-    [SerializeField] private GarbageType _toolType;
-    public GarbageType ToolType { get { return _toolType; } }
+    [SerializeField] private PowerUpType _PowerUpType;
+    public  PowerUpType PowerUpType{ get { return _PowerUpType; } }
 }

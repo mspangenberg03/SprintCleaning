@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class PickUpTool : MonoBehaviour
+public class PickUpPowerUp : MonoBehaviour
 {
     [field:SerializeField]
-    public ToolBase ToolInfo { get; private set; }
+    public PowerUpBase PowerUpInfo { get; private set; }
 
     private int _overlappingColliders = 0; // This way, even if the player has multiple colliders, it'll behave as 1 collider gameplay-wise.
     private void OnTriggerEnter(Collider other)
@@ -15,7 +15,7 @@ public class PickUpTool : MonoBehaviour
         {
             if (_overlappingColliders == 0)
             {
-                other.transform.parent.GetComponent<PlayerToolManager>().TryAddTool(this);
+                other.transform.parent.GetComponent<PlayerPowerUpManager>().TryAddPowerUp(this);
             }
             _overlappingColliders++;
         }
