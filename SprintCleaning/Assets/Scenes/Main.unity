@@ -1048,6 +1048,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _maxGarbageOnTrackPiece
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
       propertyPath: _trashPrefabs.Array.size
       value: 8
       objectReference: {fileID: 0}
