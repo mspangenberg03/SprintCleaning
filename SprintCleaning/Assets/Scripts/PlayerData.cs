@@ -16,7 +16,7 @@ public class PlayerData : ScriptableObject
     public Dictionary<GarbageType, int> _counts;
 
     [Tooltip("Total score")]
-    public int _score = 0;
+    public int _score ;
 
     public int _streakValue = 30;
 
