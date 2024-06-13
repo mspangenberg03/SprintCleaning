@@ -102,6 +102,6 @@ MonoBehaviour:
   impact: {fileID: 8300000, guid: 616a72b3b68a06b468b42ee80689bec1, type: 3}
   _obstacle: 0
   _garbageAudio: {fileID: 0}
-  _dirtiness: 10
-  _playerSpeedMultiplier: 0.3
-  _playerItemData: {fileID: 11400000, guid: a4d552aa22ccde841848f0e8f2245245, type: 2}
+  _score: 1
+  _streakAddValue: 10
+  _playerData: {fileID: 11400000, guid: a4d552aa22ccde841848f0e8f2245245, type: 2}
