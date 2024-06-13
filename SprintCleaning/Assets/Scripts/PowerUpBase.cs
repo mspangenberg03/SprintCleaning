@@ -19,7 +19,7 @@ public class PowerUpBase
 }
 public enum PowerUpType
 {
-
+    temp
 }
 public enum GarbageType
 {
