@@ -83,7 +83,9 @@ public class MainMenu : MonoBehaviour
         int height = int.Parse(str[1]);
         PlayerPrefs.SetInt("Width", width);
         PlayerPrefs.SetInt("Height", height);
+#if !UNITY_WEBGL
         Screen.SetResolution(width, height,_fullscreenToggle.isOn);
+#endif
         index = _dropdown.value;
         PlayerPrefs.SetInt("Index", index);
     }

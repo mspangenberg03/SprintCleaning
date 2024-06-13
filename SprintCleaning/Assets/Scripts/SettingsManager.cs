@@ -20,7 +20,9 @@ public class SettingsManager : MonoBehaviour
             }
         }
         //Sets the resolution to what was selected in the setting menu
+#if !UNITY_WEBGL
         Screen.SetResolution(PlayerPrefs.GetInt("Width"), PlayerPrefs.GetInt("Height"),Screen.fullScreen);
+#endif
         
     }
 }
