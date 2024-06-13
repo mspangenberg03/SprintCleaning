@@ -415,9 +415,13 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8448965212638815764, guid: b601506cee11a44488015984e6ec7f4c, type: 3}
+      propertyPath: m_Name
+      value: PowerUpBar
+      objectReference: {fileID: 0}
     - target: {fileID: 8596773370809885767, guid: b601506cee11a44488015984e6ec7f4c, type: 3}
       propertyPath: m_Name
-      value: ToolUI
+      value: PowerUpUI
       objectReference: {fileID: 0}
     - target: {fileID: 9152096191969069409, guid: b601506cee11a44488015984e6ec7f4c, type: 3}
       propertyPath: m_AnchorMax.x
