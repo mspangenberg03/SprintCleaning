@@ -4,18 +4,22 @@ using TMPro;
 using UnityEngine;
 
 [System.Serializable]
-public class ToolBase
+public class PowerUpBase
 {
-    public GarbageType _type;
-    [Tooltip("How many times the tool can be used")]
+    public PowerUpType _type;
+    [Tooltip("How many times the PowerUp can be used")]
     public int _durablity = 5;
     [Tooltip("UI informations")]
-    [SerializeField] public ToolUI _toolUI;
+    [SerializeField] public PowerUpUI _PowerUpUI;
 
-    [System.NonSerialized] public int _toolUses; // How many times the player used the tool
+    [System.NonSerialized] public int _PowerUpUses; // How many times the player used the PowerUp
 
 
 
+}
+public enum PowerUpType
+{
+    temp
 }
 public enum GarbageType
 {
