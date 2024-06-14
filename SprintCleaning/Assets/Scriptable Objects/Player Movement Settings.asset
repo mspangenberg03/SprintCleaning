@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f39a5fb73d97a5a42a36bf8acfd22120, type: 3}
   m_Name: Player Movement Settings
   m_EditorClassIdentifier: 
-  <BaseForwardsSpeed>k__BackingField: 15
-  <MinForwardsSpeed>k__BackingField: 15
+  <BaseForwardsSpeed>k__BackingField: 16
+  <MinForwardsSpeed>k__BackingField: 16
   <MaxForwardsSpeed>k__BackingField: 35
   <ForwardsAcceleration>k__BackingField: 0.4
   <ForwardsAccelerationWhileBelowBaseSpeed>k__BackingField: 3
