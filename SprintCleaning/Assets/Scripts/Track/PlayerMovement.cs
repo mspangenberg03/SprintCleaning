@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using TMPro;
 
 public class PlayerMovement : MonoBehaviour
@@ -12,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private PlayerMovementSettings _settings;
     [SerializeField] private TextMeshProUGUI _speedText;
+    [SerializeField] private AudioMixer gameAudioMixer;
 
     private float _speedMultiplier = 1f;
     private float _lastGarbageSlowdownTime = float.NegativeInfinity;
@@ -219,6 +221,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         _lanePosition = nextLanePosition;
+
     }
 
     private void CheckLaneChangeInputs()
@@ -233,8 +236,33 @@ public class PlayerMovement : MonoBehaviour
 
         _currentTargetLane = Mathf.Clamp(_currentTargetLane, -1, 1);
         if (_currentTargetLane != priorTargetLane)
+	{
             _changingLanes = true;
-
+	// Testing code pls remove later
+	Debug.Log("_lanePosition = " + _lanePosition);
+	if (_currentTargetLane < 0)
+	{
+	    StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak1Volume", 0.5f, 1.0f));
+	    StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak2Volume", 0.5f, 1.0f));
+	    StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak3Volume", 0.5f, 0.0f));
+	    StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak4Volume", 0.5f, 0.0f));
+	}
+	if (_currentTargetLane == 0)
+	{
+	    StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak1Volume", 0.5f, 1.0f));
+	    StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak2Volume", 0.5f, 1.0f));
+	    StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak3Volume", 0.5f, 1.0f));
+	    StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak4Volume", 0.5f, 0.0f));
+	}
+	if (_currentTargetLane > 0)
+	{
+	    StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak1Volume", 0.5f, 1.0f));
+	    StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak2Volume", 0.5f, 1.0f));
+	    StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak3Volume", 0.5f, 1.0f));
+	    StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak4Volume", 0.5f, 1.0f));
+	}
+	//end of testing code
+        }
         _leftInputDown = false;
         _rightInputDown = false;
     }
