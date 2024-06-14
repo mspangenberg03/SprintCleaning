@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using TMPro;
 
+[DefaultExecutionOrder(-10)]
 public class PlayerMovement : MonoBehaviour
 {
     private const int TARGET_POINT_INDEX = 1;
@@ -16,7 +17,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private AudioMixer gameAudioMixer;
 
     private float _speedMultiplier = 1f;
-    private float _lastGarbageSlowdownTime = float.NegativeInfinity;
     private float _currentTargetLane;
     private bool _changingLanes;
     
@@ -40,7 +40,6 @@ public class PlayerMovement : MonoBehaviour
 
     private float _jumpPosition;
     private float _jumpSpeed;
-
 
     private float CurrentForwardsSpeed
     {
@@ -77,6 +76,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
+        
         _positionOnMidline = TrackGenerator.Instance.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
         _rigidbody.position = _positionOnMidline;
         _rigidbody.transform.position = _positionOnMidline;
@@ -102,33 +102,25 @@ public class PlayerMovement : MonoBehaviour
     {
         _speedMultiplier *= playerSpeedMultiplier;
         _speedMultiplier = Mathf.Max(_settings.MinForwardsSpeed / _settings.BaseForwardsSpeed, _speedMultiplier);
-        _lastGarbageSlowdownTime = Time.time;
     }
-
-
 
     private void FixedUpdate()
     {
+        if (AudioSettings.dspTime < GameplayMusic.Instance.AudioStartTime)
+        {
+            return;
+        }
+
         PollInputsOncePerFrame();
         DevHelper.Instance.GameplayReproducer.StartNextFixedUpdate();
         DevHelper.Instance.GameplayReproducer.SaveOrLoadMovementInputs(ref _leftInput, ref _rightInput, ref _leftInputDown, ref _rightInputDown, ref _jumpInput);
-        
-/*
-        if (!DevHelper.Instance.TrashCollectionTimingInfo.CheckTrashCollectionConsistentIntervals)
-        {
-            // accelerate forwards
-            if (Time.time > _lastGarbageSlowdownTime + _settings.AccelerationPauseAfterGarbageSlowdown)
-            {
-                if (_speedMultiplier >= 1f)
-                    CurrentForwardsSpeed += _settings.ForwardsAcceleration * Time.deltaTime;
-                else
-                    CurrentForwardsSpeed += _settings.ForwardsAccelerationWhileBelowBaseSpeed * Time.deltaTime;
-            }
-        }
-        */
 
         TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
         float t = trackPiece.FindTForClosestPointOnMidline(_positionOnMidline);
+
+        //double time = ((double)GameplayMusic.Instance._musicSources[0].timeSamples) / GameplayMusic.Instance._musicSources[0].clip.frequency;
+        //Debug.Log(t + " " + time);
+
 
         Vector3 midlineVelocity = TrackMidlineVelocity(trackPiece, t);
 
