@@ -19,12 +19,14 @@ public class PlayerGarbageCollection : MonoBehaviour
 
     [SerializeField]
     private float _streakDecreaseInterval = 1f;
+    private ParticleSystem _particle;
 
     
     private void Start()
     {
         _playerData.Awake();
         InvokeRepeating(nameof(DecreaseStreak), 1f, _streakDecreaseInterval);
+        _particle = GetComponent<ParticleSystem>();
     }
     public void TextEdit()
     {
@@ -52,5 +54,4 @@ public class PlayerGarbageCollection : MonoBehaviour
         _playerData.DecreaseStreak();
         TextEdit();
     }
-
 }

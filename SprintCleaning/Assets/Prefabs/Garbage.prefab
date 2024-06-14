@@ -105,3 +105,4 @@ MonoBehaviour:
   _score: 1
   _streakAddValue: 10
   _playerData: {fileID: 11400000, guid: a4d552aa22ccde841848f0e8f2245245, type: 2}
+  _particle: {fileID: 7589221725531870563, guid: 9d95feb8ebfdd58418faa524c5fc0c4d, type: 3}

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Garbage : MonoBehaviour
@@ -20,6 +21,7 @@ public class Garbage : MonoBehaviour
     private int _streakAddValue = 10;
 
     [SerializeField] private PlayerData _playerData;
+    [SerializeField] private GameObject _particle;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -41,6 +43,7 @@ public class Garbage : MonoBehaviour
             _garbageAudio.PlayOneShot(impact, 1F);
             _playerData.GarbageCollected(_type);
             player.GetComponent<PlayerGarbageCollection>().TextEdit();
+            Instantiate(_particle, player.transform.position,Quaternion.identity,player.gameObject.transform);
             _playerData.AddScoreOnGarbageCollection(_score, _streakAddValue);
             
 
