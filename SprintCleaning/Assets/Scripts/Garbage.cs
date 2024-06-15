@@ -43,7 +43,9 @@ public class Garbage : MonoBehaviour
             _garbageAudio.PlayOneShot(impact, 1F);
             _playerData.GarbageCollected(_type);
             player.GetComponent<PlayerGarbageCollection>().TextEdit();
-            Instantiate(_particle, gameObject.transform.position,Quaternion.identity,null);
+            GameObject particleObject = Instantiate(_particle, gameObject.transform.position,Quaternion.identity);
+            Vector3 forward = player.transform.forward;
+            particleObject.transform.rotation = new Quaternion(forward.x,forward.y,forward.z,1);
             _playerData.AddScoreOnGarbageCollection(_score, _streakAddValue);
             
 
