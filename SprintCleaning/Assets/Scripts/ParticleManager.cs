@@ -9,7 +9,7 @@ public class ParticleManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GetComponent<ParticleSystem>().startLifetime = _particleLifespan;
+        //GetComponent<ParticleSystem>().startLifetime = _particleLifespan;
         StartCoroutine(Lifetime());
     }
     IEnumerator Lifetime()
