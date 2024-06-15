@@ -43,7 +43,7 @@ public class Garbage : MonoBehaviour
             _garbageAudio.PlayOneShot(impact, 1F);
             _playerData.GarbageCollected(_type);
             player.GetComponent<PlayerGarbageCollection>().TextEdit();
-            Instantiate(_particle, player.transform.position,Quaternion.identity,player.gameObject.transform);
+            Instantiate(_particle, gameObject.transform.position,Quaternion.identity,null);
             _playerData.AddScoreOnGarbageCollection(_score, _streakAddValue);
             
 
