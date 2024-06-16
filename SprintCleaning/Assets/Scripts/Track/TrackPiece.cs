@@ -1,9 +1,8 @@
-using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TrackPiece : MonoBehaviour, IPoolable
+public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolable
 {
     public const int TRACK_PIECE_LENGTH = 64;
     [field: SerializeField] public Transform StartTransform { get; private set; } // Used for positioning this track piece when creating it
@@ -15,7 +14,16 @@ public class TrackPiece : MonoBehaviour, IPoolable
 
     public Vector3 EndPositionForStoredLane => p2;
 
-    void IPoolable.ResetUponReturnToPool() { }
+    public List<Garbage> GarbageOnThisTrackPiece { get; set; } = new();
+
+    public void InitializeUponInstantiated(PoolOfMonoBehaviour<TrackPiece> poolOfMonoBehaviour) { }
+    public void InitializeUponProduced() { }
+    public void OnReturnToPool()
+    {
+        foreach (Garbage x in GarbageOnThisTrackPiece)
+            x.ReturnToPool();
+        GarbageOnThisTrackPiece.Clear();
+    }
 
     public void StoreLane(float lane)
     {

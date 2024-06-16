@@ -20,16 +20,12 @@ public class GarbageSpawningBeatStrength
         }
     }
 
-    public void Next(out bool allFull, out int beatToSpawnAt, out GameObject prefab)
-    {
-        allFull = _remainingBeats.Count == 0;
-        if (allFull)
-        {
-            beatToSpawnAt = -1;
-            prefab = null;
-            return;
-        }
+    public bool IsFull() => _remainingBeats.Count == 0;
 
+    public void Next(out int beatToSpawnAt, out GameObject prefab)
+    {
+        if (IsFull())
+            throw new System.Exception("already full");
         int index = Random.Range(0, _remainingBeats.Count);
         beatToSpawnAt = _remainingBeats[index];
         _remainingBeats.RemoveAt(index);

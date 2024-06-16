@@ -11,14 +11,14 @@ public class TrackPiecesGenerator
     [SerializeField] private float _minStraightBetweenTurns = 2;
 
     private int _numTrackPieces;
-    private ArrayOfPoolsOfMonoBehaviourOnGameObject<TrackPiece> _trackPiecePools;
+    private ArrayOfPoolsOfMonoBehaviour<TrackPiece> _trackPiecePools;
     private int _priorTrackPieceIndex;
     private int _numStraightSinceLastTurn;
     private List<TrackPiece> _trackPieces;
 
     public void Initialize(Transform instantiatedGameObjectsParent, List<TrackPiece> trackPieces, int numTrackPieces)
     {
-        _trackPiecePools = new ArrayOfPoolsOfMonoBehaviourOnGameObject<TrackPiece>(_trackPrefabs, instantiatedGameObjectsParent);
+        _trackPiecePools = new ArrayOfPoolsOfMonoBehaviour<TrackPiece>(_trackPrefabs, instantiatedGameObjectsParent);
         _trackPieces = trackPieces;
         _numTrackPieces = numTrackPieces;
     }
@@ -27,7 +27,7 @@ public class TrackPiecesGenerator
     {
         int prefabIndex = NextTrackPieceIndex();
 
-        TrackPiece newTrackPiece = _trackPiecePools.Produce(prefabIndex, Vector3.down * PlayerMovement.Settings.PlayerVerticalOffset, Quaternion.identity, out _);
+        TrackPiece newTrackPiece = _trackPiecePools.Produce(prefabIndex, Vector3.down * PlayerMovement.Settings.PlayerVerticalOffset, Quaternion.identity);
 
         if (_trackPieces.Count > 0)
         {
@@ -46,18 +46,8 @@ public class TrackPiecesGenerator
 
         if (_trackPieces.Count > _numTrackPieces)
         {
-            _trackPiecePools.ReturnToPool(_trackPieces[0]);
+            _trackPiecePools.ReturnToPool(_trackPieces[0]); // This also returns the objects on the track to the pool, via TrackPiece.OnReturnToPool().
             _trackPieces.RemoveAt(0);
-
-            // need to do this elsewhere now
-            //foreach (GameObject g in _spawnedObjects[0])
-            //{
-            //    if (g != null) // could've been destroyed by the player already
-            //        Object.Destroy(g);
-            //}
-            //_spawnedObjects[0].Clear();
-            //_poolOfListsOfGameObjects.ReturnToPool(_spawnedObjects[0]);
-            //_spawnedObjects.RemoveAt(0);
         }
 
         return newTrackPiece;

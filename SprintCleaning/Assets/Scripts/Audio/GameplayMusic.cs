@@ -20,6 +20,8 @@ public class GameplayMusic : MonoBehaviour
 
     public double AudioStartTime { get; private set; }
 
+    public static double CurrentAudioTime => ((double)Instance._musicSources[0].timeSamples) / Instance._musicSources[0].clip.frequency;
+
     private void Awake()
     {
         _instance = this;

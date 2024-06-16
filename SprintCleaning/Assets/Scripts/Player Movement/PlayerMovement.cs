@@ -116,9 +116,8 @@ public class PlayerMovement : MonoBehaviour
         TrackPiece trackPiece = _trackGenerator.TrackPieces[TARGET_POINT_INDEX];
         float t = trackPiece.FindTForClosestPointOnMidline(_positionOnMidline);
 
-        //System.Threading.Thread.MemoryBarrier();
-        //double time = ((double)GameplayMusic.Instance._musicSources[0].timeSamples) / GameplayMusic.Instance._musicSources[0].clip.frequency;
-        //Debug.Log(t + " " + time);
+        if (DevHelper.Instance.LogAudioTimeAndPlayerProgressAlongTrack)
+            Debug.Log("t (meaningless unless near 0 or 1) & audio time (doesn't update constantly): " + t + " " + GameplayMusic.CurrentAudioTime);
 
 
         Vector3 midlineVelocity = TrackMidlineVelocity(trackPiece, t);
@@ -133,7 +132,7 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody.MoveRotation(PlayerMovementProcessor.NextRotation(_settings.RotationSpeed, midlineVelocity, _rigidbody.rotation));
 
         trackPiece.StoreLane(0);
-        Vector3 approximatedPositionOnMidline = trackPiece.BezierCurve(t); // should use _positionOnMidline instead. Some other code uses the same approximation so update that too.
+        Vector3 approximatedPositionOnMidline = trackPiece.BezierCurve(t);
         trackPiece.StoreLane(_lanePosition);
         Vector3 approximatedPositionAtLanePosition = trackPiece.BezierCurve(t);
         Vector3 offsetForLanePosition = approximatedPositionAtLanePosition - approximatedPositionOnMidline;
