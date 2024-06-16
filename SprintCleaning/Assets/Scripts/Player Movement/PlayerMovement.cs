@@ -19,7 +19,7 @@ public class PlayerMovement : MonoBehaviour
     private bool _changingLanes;
     
     private float _jumpInputTime = float.NegativeInfinity;
-    private TrackGenerator gameManager;
+    private TrackGenerator _trackGenerator;
 
     // input polling (in case of frames w/o fixed update)
     private bool _polledInputThisFrame;
@@ -67,17 +67,16 @@ public class PlayerMovement : MonoBehaviour
     private void Awake() 
     {
         _settingsStatic = _settings;
-        gameManager = TrackGenerator.Instance;
+        _trackGenerator = TrackGenerator.Instance;
     }
 
 
 
     private void Start()
     {
-        
-        _positionOnMidline = TrackGenerator.Instance.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
+        _positionOnMidline = _trackGenerator.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
         _rigidbody.position = _positionOnMidline;
-        _rigidbody.transform.position = _positionOnMidline;
+        _rigidbody.transform.position = _rigidbody.position;
     }
 
     private void Update()
@@ -104,6 +103,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        System.Threading.Thread.MemoryBarrier(); // Just in case. Probably don't need this but it might make dspTime more up to date.
         if (AudioSettings.dspTime < GameplayMusic.Instance.AudioStartTime)
         {
             return;
@@ -113,9 +113,10 @@ public class PlayerMovement : MonoBehaviour
         DevHelper.Instance.GameplayReproducer.StartNextFixedUpdate();
         DevHelper.Instance.GameplayReproducer.SaveOrLoadMovementInputs(ref _leftInput, ref _rightInput, ref _leftInputDown, ref _rightInputDown, ref _jumpInput);
 
-        TrackPiece trackPiece = TrackGenerator.Instance.TrackPieces[TARGET_POINT_INDEX];
+        TrackPiece trackPiece = _trackGenerator.TrackPieces[TARGET_POINT_INDEX];
         float t = trackPiece.FindTForClosestPointOnMidline(_positionOnMidline);
 
+        //System.Threading.Thread.MemoryBarrier();
         //double time = ((double)GameplayMusic.Instance._musicSources[0].timeSamples) / GameplayMusic.Instance._musicSources[0].clip.frequency;
         //Debug.Log(t + " " + time);
 
@@ -148,7 +149,7 @@ public class PlayerMovement : MonoBehaviour
         endDirection.y = 0;
         if (VectorUtils.TwoPointsAreOnDifferentSidesOfPlane(priorPositionOnMidline, _positionOnMidline, endPosition, endDirection))
         {
-            gameManager.AddTrackPiece();
+            _trackGenerator.AddTrackPiece();
         }
     }
 

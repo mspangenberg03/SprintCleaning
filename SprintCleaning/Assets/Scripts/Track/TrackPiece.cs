@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TrackPiece : MonoBehaviour
+public class TrackPiece : MonoBehaviour, IPoolable
 {
     public const int TRACK_PIECE_LENGTH = 64;
     [field: SerializeField] public Transform StartTransform { get; private set; } // Used for positioning this track piece when creating it
@@ -14,6 +14,8 @@ public class TrackPiece : MonoBehaviour
     private Vector3 p2; // end point of bezier curve
 
     public Vector3 EndPositionForStoredLane => p2;
+
+    void IPoolable.ResetUponReturnToPool() { }
 
     public void StoreLane(float lane)
     {
