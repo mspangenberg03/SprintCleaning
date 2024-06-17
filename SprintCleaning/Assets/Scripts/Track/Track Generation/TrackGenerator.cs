@@ -71,4 +71,9 @@ public class TrackGenerator : MonoBehaviour
                 _trackObjectsGenerator.AddTrash(newTrackPiece.Prior.Prior, TrackPieces.Count);
         }
     }
+
+    public void AfterPlayerMovement()
+    {
+        _trackObjectsGenerator.CheckSpawnTrash();
+    }
 }

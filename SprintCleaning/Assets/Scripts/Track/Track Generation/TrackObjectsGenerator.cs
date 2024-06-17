@@ -5,6 +5,9 @@ using UnityEngine;
 [System.Serializable]
 public class TrackObjectsGenerator
 {
+    [SerializeField] private float _minTimeSeeObjectOnTrack = 5;
+    [SerializeField] private float _maxTimeSeeObjectOnTrack = 10;
+    [SerializeField] private float _oddsSpawnImmediately = .5f;
     [SerializeField] private float _trackObjectsYOffset = 1.5f;
     [SerializeField] private int _minGarbageOnTrackPiece = 4;
     [SerializeField] private int _maxGarbageOnTrackPiece = 16;
@@ -14,12 +17,13 @@ public class TrackObjectsGenerator
 
     private DictionaryOfPoolsOfMonoBehaviour<Garbage> _pools;
     private List<(int, GameObject)> _selectedBeatsAndPrefabs = new();
+    private List<(float time, Vector3 position, Quaternion rotation, TrackPiece trackPiece, GameObject prefab)> _plannedSpawns = new(); // should probably use a priority queue for this, and make this data a struct or class
     private int _priorLane;
     private int _priorBeat = -1;
     private int _consecutiveBeatsWithLaneChange;
     private System.Comparison<(int, GameObject)> _comparisonDelegateInstance = (a, b) => a.Item1 - b.Item1;
 
-    public static TrackPiece TrackPieceGeneratingObjectsOn { get; private set; }
+    //public static TrackPiece TrackPieceGeneratingObjectsOn { get; private set; }
 
     public void Initialize(Transform poolFolder, Transform outOfPoolFolder)
     {
@@ -33,7 +37,7 @@ public class TrackObjectsGenerator
 
     public void AddTrash(TrackPiece trackPiece, int numTrackPieces)
     {
-        TrackPieceGeneratingObjectsOn = trackPiece;
+        //TrackPieceGeneratingObjectsOn = trackPiece;
 
         int numTrash = Random.Range(_minGarbageOnTrackPiece, _maxGarbageOnTrackPiece + 1);
         if (numTrackPieces < 5)
@@ -43,6 +47,21 @@ public class TrackObjectsGenerator
             GenerateTrashAtSomeBeats(numTrash, trackPiece);
         else
             GenerateTrashAtEveryPosition(trackPiece);
+
+        
+    }
+
+    public void CheckSpawnTrash()
+    {
+        for (int i = _plannedSpawns.Count - 1; i >= 0; i--)
+        {
+            if (Time.fixedTime >= _plannedSpawns[i].time)
+            {
+                (_, Vector3 position, Quaternion rotation, TrackPiece trackPieceFromEarlier, GameObject prefab) = _plannedSpawns[i];
+                _plannedSpawns.RemoveAt(i);
+                CreateGarbage(prefab, position, rotation, trackPieceFromEarlier);
+            }
+        }
     }
 
     
@@ -62,9 +81,48 @@ public class TrackObjectsGenerator
             float distanceAlongMidline = beat * TrackPiece.TRACK_PIECE_LENGTH / 16;
             CalcPositionAndRotationForObjectOnTrack(trackPiece, distanceAlongMidline, lane, out Vector3 position, out Quaternion rotation);
 
-            Garbage newGarbage = _pools.Produce(prefab, position, rotation);
-            trackPiece.GarbageOnThisTrackPiece.Add(newGarbage);
+            if (Random.value < _oddsSpawnImmediately)
+            {
+                CreateGarbage(prefab, position, rotation, trackPiece);
+            }
+            else
+            {
+                float warningTime = Random.Range(_minTimeSeeObjectOnTrack, _maxTimeSeeObjectOnTrack); // when do throwing from windows, need to take that delay into account here
+
+                // For distance, don't need to deal with what fraction of a track piece the player has traversed, because this code runs when the player is at the border between two track pieces.
+                float distance = ((float)beat) / 16 * TrackPiece.TRACK_PIECE_LENGTH;
+                TrackPiece x = trackPiece.Prior;
+                while (x != null && x != TrackGenerator.Instance.TrackPieces[0])
+                {
+                    distance += TrackPiece.TRACK_PIECE_LENGTH;
+                    x = x.Prior;
+                }
+
+
+
+                float timeUntilReachBeat = distance / PlayerMovement.Settings.BaseForwardsSpeed;
+                float spawnDelay = timeUntilReachBeat - warningTime;
+                if (spawnDelay <= 0)
+                    CreateGarbage(prefab, position, rotation, trackPiece);
+                else
+                    _plannedSpawns.Insert(0, (Time.fixedTime + spawnDelay, position, rotation, trackPiece, prefab));
+
+                
+            }
         }
+    }
+
+    private void CreateGarbage(GameObject prefab, Vector3 position, Quaternion rotation, TrackPiece trackPiece)
+    {
+        Garbage newGarbage = _pools.Produce(prefab, position, rotation);
+        newGarbage.OnTrackPiece = trackPiece;
+#if UNITY_EDITOR
+        if (newGarbage.InPool())
+            throw new System.Exception("The garbage is still in the pool.");
+        if (trackPiece.GarbageOnThisTrackPiece.Contains(newGarbage))
+            throw new System.Exception("The garbage is already in the list.");
+#endif
+        trackPiece.GarbageOnThisTrackPiece.Add(newGarbage);
     }
 
     private void SelectBeatsAndPrefabs(int numTrash)
@@ -138,7 +196,13 @@ public class TrackObjectsGenerator
             {
                 CalcPositionAndRotationForObjectOnTrack(trackPiece, i, j, out Vector3 position, out Quaternion rotation);
                 Garbage newGarbage = _pools.Produce(prefab, position, rotation);
+                newGarbage.OnTrackPiece = trackPiece;
+#if UNITY_EDITOR
+                if (trackPiece.GarbageOnThisTrackPiece.Contains(newGarbage))
+                    throw new System.Exception("The garbage is already in the list.");
+#endif
                 trackPiece.GarbageOnThisTrackPiece.Add(newGarbage);
+                
             }
         }
     }

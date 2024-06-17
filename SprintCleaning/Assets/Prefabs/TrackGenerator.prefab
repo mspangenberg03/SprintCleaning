@@ -60,6 +60,9 @@ MonoBehaviour:
     _oddsDontTurn: 0.5
     _minStraightBetweenTurns: 1
   _trackObjectsGenerator:
+    _minTimeSeeObjectOnTrack: 2
+    _maxTimeSeeObjectOnTrack: 3
+    _oddsSpawnImmediately: 0.25
     _trackObjectsYOffset: 1.5
     _minGarbageOnTrackPiece: 4
     _maxGarbageOnTrackPiece: 16

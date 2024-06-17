@@ -23,12 +23,9 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
     public List<Garbage> GarbageOnThisTrackPiece { get; set; } = new();
     public List<Building> BuildingsByThisTrackPiece { get; set; } = new();
 
-    public float _test = float.NaN;
-
     public void InitializeUponInstantiated(PoolOfMonoBehaviour<TrackPiece> poolOfMonoBehaviour) { }
     public void InitializeUponProduced()
     {
-        _test = float.NaN;
         List<TrackPiece> currentTrackPieces = TrackGenerator.Instance.TrackPieces;
         if (currentTrackPieces.Count > 0)
         {
@@ -36,6 +33,10 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
             Prior = prior;
             prior.Next = this;
         }
+#if UNITY_EDITOR
+        if (GarbageOnThisTrackPiece.Count > 0)
+            throw new System.Exception("Count should be 0 when produced");
+#endif
     }
     public void OnReturnToPool()
     {
@@ -57,7 +58,6 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
 
     public void StoreLane(float lane)
     {
-        _test = lane;
         Vector3 startDirection = StartTransform.forward;
         Vector3 endDirection = EndTransform.forward;
         p0 = StartTransform.position + lane * PlayerMovement.Settings.DistanceBetweenLanes * StartTransform.right;
@@ -72,9 +72,6 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
             p1 = VectorUtils.LinesIntersectionPoint2D(p0.To2D(), p0.To2D() + startDirection.To2D(), p2.To2D(), p2.To2D() + endDirection.To2D()).To3D();
             p1.y = (p0.y + p2.y) / 2;
         }
-
-        if (p0 == Vector3.zero && p1 == Vector3.zero && p2 == Vector3.zero)
-            Debug.LogError("juyhgjuyhgf " + lane + " " + StartTransform.position.DetailedString() + " " + EndTransform.position.DetailedString());
     }
 
     public float FindTForClosestPointOnMidline(Vector3 point)
@@ -319,4 +316,22 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
 
         return -1;
     }
+
+    //public float DistanceAlongMidlineAtT(float t)
+    //{
+    //    StoreLane(0);
+
+    //    const int segments = 1000;
+    //    float totalDistance = 0;
+    //    Vector3 priorPosition = BezierCurve(t);
+    //    for (int i = 0; i <= segments; i++)
+    //    {
+    //        float nextT = Mathf.Lerp(0, t, (float)i / segments);
+    //        Vector3 nextPosition = BezierCurve(nextT);
+    //        totalDistance += (nextPosition - priorPosition).magnitude;
+    //        priorPosition = nextPosition;
+    //    }
+
+    //    return totalDistance;
+    //}
 }

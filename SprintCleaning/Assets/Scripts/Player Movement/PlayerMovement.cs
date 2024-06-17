@@ -150,6 +150,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _trackGenerator.AddTrackPiece();
         }
+        _trackGenerator.AfterPlayerMovement();
     }
 
     private void PollInputsOncePerFrame()

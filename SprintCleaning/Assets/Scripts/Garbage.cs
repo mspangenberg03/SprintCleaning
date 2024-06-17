@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 {
+    
+
     [Tooltip("The type of tool needed to collect this piece of garbage")]
     public GarbageType _type;
 
@@ -22,7 +24,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     [SerializeField] private PlayerData _playerData;
 
     private PoolOfMonoBehaviour<Garbage> _pool;
-    private TrackPiece _onTrackPiece;
+    public TrackPiece OnTrackPiece { get; set; }
 
     public void InitializeUponInstantiated(PoolOfMonoBehaviour<Garbage> pool)
     {
@@ -30,10 +32,13 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     }
     public void InitializeUponProduced() 
     {
-        _onTrackPiece = TrackObjectsGenerator.TrackPieceGeneratingObjectsOn;
+
     }
 
-    public void OnReturnToPool() { }
+    public void OnReturnToPool() 
+    {
+
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -66,10 +71,28 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 
 
             ReturnToPool();
-            _onTrackPiece.GarbageOnThisTrackPiece.Remove(this);
+#if UNITY_EDITOR
+            if (!OnTrackPiece.GarbageOnThisTrackPiece.Contains(this))
+                throw new System.Exception("not contained");
+#endif
+            OnTrackPiece.GarbageOnThisTrackPiece.Remove(this);
+#if UNITY_EDITOR
+            if (OnTrackPiece.GarbageOnThisTrackPiece.Contains(this))
+                throw new System.Exception("jhtgfbvc");
+#endif
         }
     }
 
-    public void ReturnToPool() => _pool.ReturnToPool(this);
+    public void ReturnToPool()
+    {
+#if UNITY_EDITOR
+        if (InPool())
+            throw new System.Exception("Already in pool");
+#endif
+
+        _pool.ReturnToPool(this);
+    }
+
+    public bool InPool() => _pool.InPool(this);
     
 }

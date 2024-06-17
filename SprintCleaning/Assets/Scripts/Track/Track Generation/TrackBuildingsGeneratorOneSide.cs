@@ -58,9 +58,10 @@ public class TrackBuildingsGeneratorOneSide
         while (infiniteLoopCheck > 0 && TryAddBuilding())
             infiniteLoopCheck--;
 
+#if UNITY_EDITOR
         if (_currentPiece == null)
             throw new System.Exception("_currentPiece is null");
-
+#endif
     }
 
     private bool TryAddBuilding()

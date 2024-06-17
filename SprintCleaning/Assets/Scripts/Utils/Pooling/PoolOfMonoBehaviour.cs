@@ -51,6 +51,10 @@ public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour
         else
         {
             result = _pool.Pop();
+#if UNITY_EDITOR
+            if (_rootOfEachPrefabInstance[result].activeSelf)
+                throw new System.Exception("_rootOfEachPrefabInstance[result].activeSelf");
+#endif
             Transform rootTransform = _rootOfEachPrefabInstance[result].transform;
             rootTransform.parent = _outOfPoolFolder;
             rootTransform.position = position;
@@ -81,4 +85,6 @@ public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour
         rootTransform.parent = _poolFolder;
         _pool.Push(toReturn);
     }
+
+    public bool InPool(T x) => _pool.Contains(x);
 }
