@@ -36,7 +36,7 @@ public class TrackObjectsGenerator
         TrackPieceGeneratingObjectsOn = trackPiece;
 
         int numTrash = Random.Range(_minGarbageOnTrackPiece, _maxGarbageOnTrackPiece + 1);
-        if (numTrackPieces < 3)
+        if (numTrackPieces < 5)
             numTrash = 0; // so the player doesn't immediately encounter trash.
 
         if (!DevHelper.Instance.TrashCollectionTimingInfo.CheckTrashCollectionConsistentIntervals)

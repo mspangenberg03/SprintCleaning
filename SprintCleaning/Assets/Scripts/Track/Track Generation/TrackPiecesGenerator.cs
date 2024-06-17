@@ -56,12 +56,11 @@ public class TrackPiecesGenerator
     {
         int index;
 
-        if (_trackPrefabs.Length == 1)
+        if (_trackPrefabs.Length == 1 || _trackPieces.Count == 0)
             index = 0;
         else
         {
-            if (_numStraightSinceLastTurn < _minStraightBetweenTurns || Random.value < _oddsDontTurn
-                || _trackPieces.Count == 0)
+            if (_numStraightSinceLastTurn < _minStraightBetweenTurns || Random.value < _oddsDontTurn)
             {
                 // Track doesn't turn
                 index = 0;
