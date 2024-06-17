@@ -24,6 +24,8 @@ public class GameplayMusic : MonoBehaviour
 
     private void Awake()
     {
+        DevHelper devHelper = DevHelper.Instance; // just to initialize it before any code uses the RNG
+
         _instance = this;
         //System.Threading.Thread.MemoryBarrier();
         AudioStartTime = AudioSettings.dspTime + .5;

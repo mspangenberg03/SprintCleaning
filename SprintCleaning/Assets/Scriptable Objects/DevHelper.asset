@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DevHelper
   m_EditorClassIdentifier: 
   _reproduceGameplay: 0
-  _dontOverrideControls: 0
+  _dontOverrideControlsWhenReproduceGameplay: 0
   <LogAudioTimeAndPlayerProgressAlongTrack>k__BackingField: 0
   <LogUnexpectedTrashCollectionTimings>k__BackingField: 0
   <TrashCollectionTimingInfo>k__BackingField:

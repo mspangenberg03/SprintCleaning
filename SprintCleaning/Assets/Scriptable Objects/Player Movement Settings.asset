@@ -18,9 +18,9 @@ MonoBehaviour:
   <ForwardsAcceleration>k__BackingField: 0.4
   <ForwardsAccelerationWhileBelowBaseSpeed>k__BackingField: 3
   <AccelerationPauseAfterGarbageSlowdown>k__BackingField: 3
-  <BaseLaneChangeSpeed>k__BackingField: 50
-  <LaneChangeSpeedupTime>k__BackingField: 0.025
-  <LaneChangeTurnaroundTime>k__BackingField: 0.025
+  <BaseLaneChangeSpeed>k__BackingField: 38
+  <LaneChangeSpeedupTime>k__BackingField: 0.00001
+  <LaneChangeTurnaroundTime>k__BackingField: 0.00001
   <AllowMultipleLaneChangeByHoldingDown>k__BackingField: 0
   <JumpHeight>k__BackingField: 3.5
   <JumpUpDuration>k__BackingField: 0.45

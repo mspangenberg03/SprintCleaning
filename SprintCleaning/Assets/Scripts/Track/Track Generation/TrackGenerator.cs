@@ -7,6 +7,11 @@ public class TrackGenerator : MonoBehaviour
     [SerializeField] private int _numTrackPieces = 10;
     [SerializeField] private TrackPiecesGenerator _trackPiecesGenerator;
     [SerializeField] private TrackObjectsGenerator _trackObjectsGenerator;
+    [SerializeField] private BuildingsGeneratorInspectorSettings _buildingsGeneratorSettings;
+
+    private TrackBuildingsGeneratorOneSide _rightBuildingsGenerator;
+    private TrackBuildingsGeneratorOneSide _leftBuildingsGenerator;
+
     public List<TrackPiece> TrackPieces { get; private set; } = new();
 
     private static TrackGenerator _instance;
@@ -43,6 +48,8 @@ public class TrackGenerator : MonoBehaviour
 
         _trackPiecesGenerator.Initialize(trackPiecePoolFolder, trackPieceFolder, TrackPieces, _numTrackPieces);
         _trackObjectsGenerator.Initialize(trackObjectPoolFolder, trackObjectFolder);
+        _rightBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, false, _buildingsGeneratorSettings);
+        _leftBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, true, _buildingsGeneratorSettings);
 
         for (int i = 0; i < _numTrackPieces; i++)
             AddTrackPiece();
@@ -51,6 +58,17 @@ public class TrackGenerator : MonoBehaviour
     public void AddTrackPiece()
     {
         TrackPiece newTrackPiece = _trackPiecesGenerator.AddTrackPiece();
-        _trackObjectsGenerator.AddTrash(newTrackPiece, TrackPieces.Count);
+        if (newTrackPiece.Prior != null)
+        {
+            // Generate buildings 1 track piece later so can check for overlap with the next track piece.
+            // Generating garbage 2 track pieces later so if the nearest throwing point to a garbage's point on the track is on a building from the next track piece,
+            // that building will already exist.
+
+            _rightBuildingsGenerator.AddBuildings(newTrackPiece.Prior);
+            _leftBuildingsGenerator.AddBuildings(newTrackPiece.Prior);
+
+            if (newTrackPiece.Prior.Prior != null)
+                _trackObjectsGenerator.AddTrash(newTrackPiece.Prior.Prior, TrackPieces.Count);
+        }
     }
 }

@@ -67,4 +67,55 @@ public class VectorUtils : MonoBehaviour
         return Mathf.Sign(value1) != Mathf.Sign(value2);
 
     }
+
+    public static Vector2 ClosestPointOnLine2D(Vector2 point, Vector2 linePoint1, Vector2 linePoint2)
+    {
+        return ClosestPointOnLineOrSegment2D(point, linePoint1, linePoint2, false);
+    }
+
+    public static Vector2 ClosestPointOnSegment2D(Vector2 point, Vector2 segmentPoint1, Vector2 segmentPoint2)
+    {
+        return ClosestPointOnLineOrSegment2D(point, segmentPoint1, segmentPoint2, true);
+    }
+    public static Vector2 ClosestPointOnLineOrSegment2D(Vector2 point, Vector2 segmentPoint1, Vector2 segmentPoint2, bool segment)
+    {
+        // stack overflow shortest distance between a point and a line segment
+        Vector2 a = segmentPoint1;
+        Vector2 b = segmentPoint2;
+
+        Vector2 bMinusA = b - a;
+        Vector2 pointMinusA = point - a;
+
+        float sqrLength = bMinusA.sqrMagnitude;
+        if (sqrLength == 0)
+            return a;
+
+        float t = Vector2.Dot(pointMinusA, bMinusA) / sqrLength;
+        if (segment)
+            t = Mathf.Clamp01(t);
+        return a + t * bMinusA;
+    }
+
+    // TODO: prevent buildings from overlapping
+    //public static bool PolygonsOverlap2D(Vector2[][] twoPolygons)
+    //{
+    //    // https://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
+
+    //    for (int i = 0; i < twoPolygons.Length; i++)
+    //    {
+    //        Vector2[] poly = twoPolygons[i];
+    //        for (int j = 0; j < poly.Length; j++)
+    //        {
+    //            int nextIndex = (j + 1) % poly.Length;
+    //            Vector2 p1 = poly[j];
+    //            Vector2 p2 = poly[nextIndex];
+    //            Vector2 normal = new Vector2(p2.y - p1.y, p1.x - p2.x);
+    //            float minA = float.NaN;
+    //            float maxA = float.NaN;
+    //            for (int k = 0; k < )
+    //        }
+    //    }
+
+    //}
+
 }

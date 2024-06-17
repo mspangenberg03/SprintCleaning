@@ -5,7 +5,6 @@ using UnityEngine;
 [System.Serializable]
 public class TrackPiecesGenerator
 {
-    [Header("Track")]
     [SerializeField] private GameObject[] _trackPrefabs; // index 0 should be the straight track piece
     [SerializeField] private float _oddsDontTurn = .8f;
     [SerializeField] private float _minStraightBetweenTurns = 2;
@@ -29,11 +28,11 @@ public class TrackPiecesGenerator
 
         TrackPiece newTrackPiece = _trackPiecePools.Produce(prefabIndex, Vector3.down * PlayerMovement.Settings.PlayerVerticalOffset, Quaternion.identity);
 
-        if (_trackPieces.Count > 0)
+        if (newTrackPiece.Prior != null)
         {
             // Choose a position and rotation such that the Start transform of the new track piece has the same position and rotation as the prior
             // track piece's End transform.
-            Transform continueFrom = _trackPieces[^1].EndTransform;
+            Transform continueFrom = newTrackPiece.Prior.EndTransform;
 
             Vector3 rotationChange = continueFrom.rotation.eulerAngles - newTrackPiece.StartTransform.rotation.eulerAngles;
             newTrackPiece.transform.Rotate(rotationChange);
