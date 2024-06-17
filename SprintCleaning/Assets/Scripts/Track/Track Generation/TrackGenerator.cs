@@ -23,8 +23,26 @@ public class TrackGenerator : MonoBehaviour
     void Awake()
     {
         _instance = this;
-        _trackPiecesGenerator.Initialize(transform, TrackPieces, _numTrackPieces);
-        _trackObjectsGenerator.Initialize(transform);
+
+        Transform trackPieceFolder = new GameObject("Track Pieces").transform;
+        Transform trackObjectFolder = new GameObject("Track Objects").transform;
+        Transform buildingFolder = new GameObject("Buildings").transform;
+
+        Transform trackPiecePoolFolder = new GameObject("Track Pieces Pool").transform;
+        Transform trackObjectPoolFolder = new GameObject("Track Objects Pool").transform;
+        Transform buildingPoolFolder = new GameObject("Buildings Pool").transform;
+
+        trackPieceFolder.parent = transform;
+        trackObjectFolder.parent = transform;
+        buildingFolder.parent = transform;
+
+        trackPiecePoolFolder.parent = transform;
+        trackObjectPoolFolder.parent = transform;
+        buildingPoolFolder.parent = transform;
+
+
+        _trackPiecesGenerator.Initialize(trackPiecePoolFolder, trackPieceFolder, TrackPieces, _numTrackPieces);
+        _trackObjectsGenerator.Initialize(trackObjectPoolFolder, trackObjectFolder);
 
         for (int i = 0; i < _numTrackPieces; i++)
             AddTrackPiece();

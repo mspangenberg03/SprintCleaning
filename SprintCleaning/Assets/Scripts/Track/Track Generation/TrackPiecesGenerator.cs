@@ -16,9 +16,9 @@ public class TrackPiecesGenerator
     private int _numStraightSinceLastTurn;
     private List<TrackPiece> _trackPieces;
 
-    public void Initialize(Transform instantiatedGameObjectsParent, List<TrackPiece> trackPieces, int numTrackPieces)
+    public void Initialize(Transform poolFolder, Transform outOfPoolFolder, List<TrackPiece> trackPieces, int numTrackPieces)
     {
-        _trackPiecePools = new ArrayOfPoolsOfMonoBehaviour<TrackPiece>(_trackPrefabs, instantiatedGameObjectsParent);
+        _trackPiecePools = new ArrayOfPoolsOfMonoBehaviour<TrackPiece>(_trackPrefabs, poolFolder, outOfPoolFolder);
         _trackPieces = trackPieces;
         _numTrackPieces = numTrackPieces;
     }

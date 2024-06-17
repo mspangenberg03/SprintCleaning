@@ -19,15 +19,17 @@ public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour
 
 
     private GameObject _prefab;
-    private Transform _instantiatedGameObjectsParent;
+    private Transform _poolFolder;
+    private Transform _outOfPoolFolder;
     private Stack<T> _pool = new();
     private Dictionary<T, GameObject> _rootOfEachPrefabInstance = new();
 
 
-    public PoolOfMonoBehaviour(GameObject prefab, Transform instantiatedGameObjectsParent)
+    public PoolOfMonoBehaviour(GameObject prefab, Transform poolFolder, Transform outOfPoolFolder)
     {
         _prefab = prefab;
-        _instantiatedGameObjectsParent = instantiatedGameObjectsParent;
+        _poolFolder = poolFolder;
+        _outOfPoolFolder = outOfPoolFolder;
     }
 
     /// <summary>
@@ -41,7 +43,7 @@ public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour
         T result;
         if (_pool.Count == 0)
         {
-            GameObject instantiated = Object.Instantiate(_prefab, position, rotation, _instantiatedGameObjectsParent);
+            GameObject instantiated = Object.Instantiate(_prefab, position, rotation, _outOfPoolFolder);
             result = instantiated.GetComponentInChildren<T>(); // The script can be on the prefab's root gameObject.
             result.InitializeUponInstantiated(this);
             _rootOfEachPrefabInstance.Add(result, instantiated);
@@ -49,12 +51,14 @@ public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour
         else
         {
             result = _pool.Pop();
-            _rootOfEachPrefabInstance[result].transform.position = position;
-            _rootOfEachPrefabInstance[result].transform.rotation = rotation;
+            Transform rootTransform = _rootOfEachPrefabInstance[result].transform;
+            rootTransform.parent = _outOfPoolFolder;
+            rootTransform.position = position;
+            rootTransform.rotation = rotation;
         }
         result.InitializeUponProduced();
-        GameObject prefabInstanceRootGameObject = _rootOfEachPrefabInstance[result];
-        prefabInstanceRootGameObject.SetActive(true);
+        GameObject rootGameObject = _rootOfEachPrefabInstance[result];
+        rootGameObject.SetActive(true);
         return result;
     }
 
@@ -73,6 +77,8 @@ public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour
 
         toReturn.OnReturnToPool();
         _rootOfEachPrefabInstance[toReturn].SetActive(false);
+        Transform rootTransform = _rootOfEachPrefabInstance[toReturn].transform;
+        rootTransform.parent = _poolFolder;
         _pool.Push(toReturn);
     }
 }

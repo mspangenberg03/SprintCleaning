@@ -7,12 +7,12 @@ public class ArrayOfPoolsOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoB
     private PoolOfMonoBehaviour<T>[] _pools;
     private Dictionary<T, PoolOfMonoBehaviour<T>> _poolOfEachInstance = new();
 
-    public ArrayOfPoolsOfMonoBehaviour(GameObject[] prefabs, Transform instantiatedGameObjectsParent)
+    public ArrayOfPoolsOfMonoBehaviour(GameObject[] prefabs, Transform poolFolder, Transform outOfPoolFolder)
     {
         _pools = new PoolOfMonoBehaviour<T>[prefabs.Length];
         for (int i = 0; i < prefabs.Length; i++)
         {
-            _pools[i] = new PoolOfMonoBehaviour<T>(prefabs[i], instantiatedGameObjectsParent);
+            _pools[i] = new PoolOfMonoBehaviour<T>(prefabs[i], poolFolder, outOfPoolFolder);
         }
     }
 

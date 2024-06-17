@@ -21,9 +21,9 @@ public class TrackObjectsGenerator
 
     public static TrackPiece TrackPieceGeneratingObjectsOn { get; private set; }
 
-    public void Initialize(Transform instantiatedGameObjectsParent)
+    public void Initialize(Transform poolFolder, Transform outOfPoolFolder)
     {
-        _pools = new DictionaryOfPoolsOfMonoBehaviour<Garbage>(instantiatedGameObjectsParent);
+        _pools = new DictionaryOfPoolsOfMonoBehaviour<Garbage>(poolFolder, outOfPoolFolder);
         foreach (GarbageSpawningBeatStrength x in _beatStrengths)
         {
             foreach (GameObject prefab in x.GarbagePrefabs)
