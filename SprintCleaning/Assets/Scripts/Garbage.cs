@@ -19,8 +19,6 @@ public class Garbage : MonoBehaviour
     [SerializeField, Tooltip("The value that collecting this garbage add to the current streak value")]
     private int _streakAddValue = 10;
 
-    [SerializeField] private ScoreManager _scoreManager;
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
@@ -33,15 +31,15 @@ public class Garbage : MonoBehaviour
                 player.GetComponent<Game_Over>().GameOver();
             }
             else{
-                _scoreManager.GarbageCollected(_type);
+                ScoreManager.Instance.GarbageCollected(_type);
                 player.GetComponent<PlayerGarbageCollection>().TextEdit();
             }
             DevHelper.Instance.CheckLogInfoForTrashCollectionIntervalChecking();
 
             _garbageAudio.PlayOneShot(impact, 1F);
-            _scoreManager.GarbageCollected(_type);
+            ScoreManager.Instance.GarbageCollected(_type);
             player.GetComponent<PlayerGarbageCollection>().TextEdit();
-            _scoreManager.AddScoreOnGarbageCollection(_score, _streakAddValue);
+            ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
             
 
             Destroy(gameObject);

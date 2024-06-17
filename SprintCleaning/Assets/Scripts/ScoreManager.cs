@@ -21,30 +21,48 @@ public class ScoreManager : MonoBehaviour
     [SerializeField]
     private int[] _streakThresholds;
 
+    public int[] StreakThresholds => _streakThresholds;
+
     [SerializeField]
     private StreakBar _streakBar;
 
-    //public void Awake()
-    //{
-    //    if (_counts == null)
-    //    {
-    //        _counts = new Dictionary<GarbageType, int>();
-    //        for (int i = 0; i < (int)(GarbageType.Count); i++)
-    //            _counts.Add((GarbageType)i, 0);
-    //    }
+    private static ScoreManager _instance;
+    public static ScoreManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<ScoreManager>();
+            }
+            return _instance;
+        }
+    }
 
-    //    #if UNITY_EDITOR
-    //    if (_resetInEditorOnAwake)
-    //    {
-    //        for (int i = 0; i < (int)(GarbageType.Count); i++)
-    //        {
-    //            _counts[(GarbageType)i] = 0;
-    //        }
-    //        _score = 0;
-    //        _streakValue = 30;
-    //    }
-    //#endif
-    //}
+    public void Awake()
+    {
+
+        _instance = this;
+
+        if (_counts == null)
+        {
+            _counts = new Dictionary<GarbageType, int>();
+            for (int i = 0; i < (int)(GarbageType.Count); i++)
+                _counts.Add((GarbageType)i, 0);
+        }
+
+        _streakBar._current = _streakValue;
+
+        //#if UNITY_EDITOR
+        //        if (_resetInEditorOnAwake)
+        //        {
+        //            for (int i = 0; i < (int)(GarbageType.Count); i++)
+        //            {
+        //                _counts[(GarbageType)i] = 0;
+        //            }
+        //        }
+        //#endif
+    }
 
     public void GarbageCollected(GarbageType garbage)
     {
@@ -56,13 +74,14 @@ public class ScoreManager : MonoBehaviour
         CheckStreakMultiplier();
         _score += (scoreToAdd * _streakMultiplier);
         _streakValue += streakValueToAdd;
-        _streakBar._current += streakValueToAdd;
+        _streakBar._current = _streakValue;
     }
 
     public void DecreaseStreak()
     {
         _streakValue -= _regularStreakDecrease;
         CheckStreakMultiplier();
+        _streakBar._current = _streakValue;
     }
 
     private void CheckStreakMultiplier()
