@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ParticleManager : MonoBehaviour
 {
-    [SerializeField,Tooltip("How long the particles last")]
+    [SerializeField,Tooltip("How long the object lasts")]
     private float _particleLifespan;
     // Start is called before the first frame update
     void Start()

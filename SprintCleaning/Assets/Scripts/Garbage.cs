@@ -44,8 +44,8 @@ public class Garbage : MonoBehaviour
             _playerData.GarbageCollected(_type);
             player.GetComponent<PlayerGarbageCollection>().TextEdit();
             GameObject particleObject = Instantiate(_particle, gameObject.transform.position,Quaternion.identity);
-            Vector3 forward = player.transform.forward;
-            particleObject.transform.rotation = new Quaternion(forward.x,forward.y,forward.z,1);
+            Quaternion forward = player.transform.rotation;
+            particleObject.transform.rotation = forward;
             _playerData.AddScoreOnGarbageCollection(_score, _streakAddValue);
             
 
