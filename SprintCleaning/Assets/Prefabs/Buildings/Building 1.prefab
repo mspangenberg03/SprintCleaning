@@ -778,7 +778,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _earliestCornerByTrack: {fileID: 6233695487879644691}
   _latestCornerByTrack: {fileID: 5246127120586755782}
-  _pointOnFarSide: {fileID: 4473633730061329951}
-  <IDForDebugging>k__BackingField: 0
-  TestEarliestCorner: {x: 0, y: 0}
-  TestLatestCorner: {x: 0, y: 0}
+  _earliestCornerOnFarSide: {fileID: 0}
+  _latestCornerOnFarSide: {fileID: 0}
+  _throwSources:
+  - {fileID: 2522444239559267571}
+  - {fileID: 118825915894750196}
+  - {fileID: 4804840242041359114}
+  - {fileID: 5806709835039120167}
+  - {fileID: 1835858732744473299}

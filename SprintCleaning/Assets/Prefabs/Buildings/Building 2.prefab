@@ -403,10 +403,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _earliestCornerByTrack: {fileID: 3679542866280523869}
   _latestCornerByTrack: {fileID: 4381761007082915951}
-  _pointOnFarSide: {fileID: 2741585655987443837}
-  <IDForDebugging>k__BackingField: 0
-  TestEarliestCorner: {x: 0, y: 0}
-  TestLatestCorner: {x: 0, y: 0}
+  _earliestCornerOnFarSide: {fileID: 0}
+  _latestCornerOnFarSide: {fileID: 0}
+  _throwSources:
+  - {fileID: 5612414454928405078}
+  - {fileID: 7118277007410166038}
+  - {fileID: 4777966065985338659}
+  - {fileID: 4338054642155620016}
+  - {fileID: 2747767538761472041}
+  - {fileID: 9005793097348555696}
+  - {fileID: 19727396748399650}
 --- !u!1 &4370456419234944039
 GameObject:
   m_ObjectHideFlags: 0

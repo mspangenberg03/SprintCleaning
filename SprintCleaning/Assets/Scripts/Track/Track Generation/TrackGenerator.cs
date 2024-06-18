@@ -72,8 +72,8 @@ public class TrackGenerator : MonoBehaviour
         }
     }
 
-    public void AfterPlayerMovement()
+    public void AfterPlayerMovementFixedUpdate()
     {
-        _trackObjectsGenerator.CheckSpawnTrash();
+        _trackObjectsGenerator.AfterPlayerMovementFixedUpdate();
     }
 }

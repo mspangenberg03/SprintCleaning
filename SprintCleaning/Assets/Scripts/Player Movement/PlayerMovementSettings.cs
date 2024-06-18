@@ -29,4 +29,8 @@ public class PlayerMovementSettings : ScriptableObject
     [field: SerializeField] public float RotationSpeed { get; private set; } = 300f;
     [field: SerializeField] public float DistanceBetweenLanes { get; private set; } = 1.5f;
     [field: SerializeField] public float PlayerVerticalOffset { get; private set; } = 1.5f;
+
+    public float GravityAccelerationWhileRising => 2f * JumpHeight / (JumpUpDuration * JumpUpDuration);
+    public float GravityAccelerationWhileFalling => 2f * JumpHeight / (JumpDownDuration * JumpDownDuration);
+
 }

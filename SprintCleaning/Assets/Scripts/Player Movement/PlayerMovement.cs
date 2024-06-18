@@ -150,7 +150,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _trackGenerator.AddTrackPiece();
         }
-        _trackGenerator.AfterPlayerMovement();
+        _trackGenerator.AfterPlayerMovementFixedUpdate();
     }
 
     private void PollInputsOncePerFrame()
@@ -261,9 +261,6 @@ public class PlayerMovement : MonoBehaviour
             CheckJumpHitsGround();
         }
 
-        float gravityAccelerationWhileRising = 2f * _settings.JumpHeight / (_settings.JumpUpDuration * _settings.JumpUpDuration);
-        float gravityAccelerationWhileFalling = 2f * _settings.JumpHeight / (_settings.JumpDownDuration * _settings.JumpDownDuration);
-
         if (_jumpInput)
         {
             _jumpInputTime = Time.time;
@@ -273,13 +270,13 @@ public class PlayerMovement : MonoBehaviour
         bool executeJump = (Time.time <= _jumpInputTime + _settings.JumpBufferDuration) && _jumpPosition == 0;
         if (executeJump)
         {
-            _jumpSpeed = _settings.JumpUpDuration * gravityAccelerationWhileRising;
+            _jumpSpeed = _settings.JumpUpDuration * _settings.GravityAccelerationWhileRising;
             _jumpInputTime = float.NegativeInfinity;
         }
 
         if (_jumpPosition > 0 || executeJump)
         {
-            float gravity = _jumpSpeed >= 0 ? gravityAccelerationWhileRising : gravityAccelerationWhileFalling;
+            float gravity = _jumpSpeed >= 0 ? _settings.GravityAccelerationWhileRising : _settings.GravityAccelerationWhileFalling;
             if (executeJump)
                 gravity /= 2;// This seems to be necessary to make the jump height correct.
             _jumpSpeed -= gravity * Time.deltaTime;

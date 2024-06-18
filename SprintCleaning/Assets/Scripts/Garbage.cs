@@ -22,22 +22,58 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     private int _streakAddValue = 10;
 
     [SerializeField] private PlayerData _playerData;
+    [field: SerializeField] public float Gravity { get; private set; }
 
+    private float _horizontalSpeed;
+    private float _verticalSpeed;
+    private Vector3 _destinationPosition;
     private PoolOfMonoBehaviour<Garbage> _pool;
     public TrackPiece OnTrackPiece { get; set; }
+    public static List<Garbage> ThrownGarbage { get; private set; } = new();
+
+    private Transform Root => transform.parent;
 
     public void InitializeUponInstantiated(PoolOfMonoBehaviour<Garbage> pool)
     {
         _pool = pool;
     }
-    public void InitializeUponProduced() 
-    {
+    public void InitializeUponProduced() { }
+    public void OnReturnToPool() { }
 
+    public void SetTrajectoryFromCurrentPosition(Vector3 destinationPosition)
+    {
+        if (destinationPosition.y > Root.position.y)
+        {
+            throw new System.InvalidOperationException("cannot fall upwards");
+        }
+
+        _destinationPosition = destinationPosition;
+        float horizontalDistance = (destinationPosition.To2D() - Root.position.To2D()).magnitude;
+        _verticalSpeed = 0;
+        _horizontalSpeed = horizontalDistance / FallTime(Root.position, destinationPosition, Gravity);
+
+        ThrownGarbage.Add(this);
     }
 
-    public void OnReturnToPool() 
+    public static float FallTime(Vector3 from, Vector3 destinationPosition, float gravity)
     {
+        return Mathf.Sqrt(2 * (from.y - destinationPosition.y) / gravity);
+    }
 
+    public void MoveWhileBeingThrown()
+    {
+        Vector2 horizontalDirection = (_destinationPosition.To2D() - Root.position.To2D()).normalized;
+        Vector3 velocity = (horizontalDirection * _horizontalSpeed).To3D() + Vector3.up * _verticalSpeed;
+
+        Vector3 nextPosition = Root.position + velocity * Time.deltaTime;
+        if (nextPosition.y < _destinationPosition.y)
+        {
+            ThrownGarbage.Remove(this);
+            nextPosition = _destinationPosition;
+        }
+        Root.position = nextPosition;
+
+        _verticalSpeed -= Gravity * Time.deltaTime;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -81,6 +117,13 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
                 throw new System.Exception("jhtgfbvc");
 #endif
         }
+    }
+
+    private void OnDestroy()
+    {
+        // This is only for when the scene unloads, because trash is destroyed at that time (b/c of pooling).
+        // So it'll clear it a bunch of times when the scene unloads, because that's probably faster than removing this particular garbage from the list.
+        ThrownGarbage.Clear();
     }
 
     public void ReturnToPool()

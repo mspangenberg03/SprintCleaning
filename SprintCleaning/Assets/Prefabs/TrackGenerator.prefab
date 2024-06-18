@@ -60,12 +60,12 @@ MonoBehaviour:
     _oddsDontTurn: 0.5
     _minStraightBetweenTurns: 1
   _trackObjectsGenerator:
-    _minTimeSeeObjectOnTrack: 2
-    _maxTimeSeeObjectOnTrack: 3
-    _oddsSpawnImmediately: 0.25
+    _minTimeSeeObjectOnTrack: 1
+    _maxTimeSeeObjectOnTrack: 2
+    _oddsSpawnImmediately: 0.5
     _trackObjectsYOffset: 1.5
     _minGarbageOnTrackPiece: 4
-    _maxGarbageOnTrackPiece: 16
+    _maxGarbageOnTrackPiece: 13
     _maxConsecutiveBeatsWithLaneChange: 1
     _beatStrengths:
     - <Beats>k__BackingField: 0000000008000000

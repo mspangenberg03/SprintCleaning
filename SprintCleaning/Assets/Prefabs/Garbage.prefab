@@ -105,3 +105,4 @@ MonoBehaviour:
   _score: 1
   _streakAddValue: 10
   _playerData: {fileID: 11400000, guid: a4d552aa22ccde841848f0e8f2245245, type: 2}
+  <Gravity>k__BackingField: 34.5679
