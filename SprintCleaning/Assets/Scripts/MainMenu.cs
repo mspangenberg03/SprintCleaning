@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -32,13 +35,18 @@ public class MainMenu : MonoBehaviour
         float volume = PlayerPrefs.GetFloat("AudioSettings", DEFAULT_VOLUME);
         _audioSlider.value = volume;
         Camera.main.GetComponent<AudioSource>().volume = volume;
-
         _fullscreenToggle.isOn = Screen.fullScreen;
         _dropdown = _resolutionDropdownText.transform.parent.GetComponent<TMP_Dropdown>();
-        index = PlayerPrefs.GetInt("Index",0);
+        List<string> list = new List<string>();
+        foreach (Resolution res in Screen.resolutions)
+        {
+            list.Add(res.ToString());
+        }
+        _dropdown.AddOptions(list);
+        index = PlayerPrefs.GetInt("Index", 0);
         _dropdown.value = index;
-        _resolutionDropdownText.text =_dropdown.options[index].text;
-        
+        _resolutionDropdownText.text = _dropdown.options[index].text;
+        //ChangeResolution();
     }
     public void StartButton()
     {
@@ -78,9 +86,8 @@ public class MainMenu : MonoBehaviour
     }
     public void ChangeResolution()
     {
-        string[] str= _resolutionDropdownText.text.Split("x");
-        int width = int.Parse(str[0]);
-        int height = int.Parse(str[1]);
+        int width = int.Parse(_resolutionDropdownText.text.Split(" x ")[0]);
+        int height = int.Parse(_resolutionDropdownText.text.ToString().Split(" x ")[1].Split(" @ ")[0]);
         PlayerPrefs.SetInt("Width", width);
         PlayerPrefs.SetInt("Height", height);
         Screen.SetResolution(width, height,_fullscreenToggle.isOn);
