@@ -1,9 +1,8 @@
-using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TrackPiece : MonoBehaviour
+public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolable
 {
     public const int TRACK_PIECE_LENGTH = 64;
     [field: SerializeField] public Transform StartTransform { get; private set; } // Used for positioning this track piece when creating it
@@ -13,7 +12,49 @@ public class TrackPiece : MonoBehaviour
     private Vector3 p1; // control point of bezier curve
     private Vector3 p2; // end point of bezier curve
 
+    private static List<Vector2> _cachedIntersections = new();
+    private static List<float> _cachedRoots = new();
+
     public Vector3 EndPositionForStoredLane => p2;
+
+    public TrackPiece Prior { get; private set; }
+    public TrackPiece Next { get; private set; }
+
+    public List<Garbage> GarbageOnThisTrackPiece { get; set; } = new();
+    public List<Building> BuildingsByThisTrackPiece { get; set; } = new();
+
+    public void InitializeUponInstantiated(PoolOfMonoBehaviour<TrackPiece> poolOfMonoBehaviour) { }
+    public void InitializeUponProduced()
+    {
+        List<TrackPiece> currentTrackPieces = TrackGenerator.Instance.TrackPieces;
+        if (currentTrackPieces.Count > 0)
+        {
+            TrackPiece prior = TrackGenerator.Instance.TrackPieces[^1];
+            Prior = prior;
+            prior.Next = this;
+        }
+#if UNITY_EDITOR
+        if (GarbageOnThisTrackPiece.Count > 0)
+            throw new System.Exception("Count should be 0 when produced");
+#endif
+    }
+    public void OnReturnToPool()
+    {
+        foreach (Garbage x in GarbageOnThisTrackPiece)
+            x.ReturnToPool();
+        GarbageOnThisTrackPiece.Clear();
+
+        foreach (Building b in BuildingsByThisTrackPiece)
+            b.ReturnToPool();
+        BuildingsByThisTrackPiece.Clear();
+
+        if (Next != null)
+            Next.Prior = null;
+        Next = null;
+        Prior = null;
+
+        
+    }
 
     public void StoreLane(float lane)
     {
@@ -105,10 +146,71 @@ public class TrackPiece : MonoBehaviour
         return 2 * (p2 - 2 * p1 + p0);
     }
 
-    public float ApproximateMidlineLength()
+    public bool IntersectsWithLine2D(Vector2 linePoint1, Vector2 linePoint2)
+    {
+        // https://stackoverflow.com/questions/27664298/calculating-intersection-point-of-quadratic-bezier-curve
+
+        Vector2 P0 = p0.To2D();
+        Vector2 P1 = p1.To2D();
+        Vector2 P2 = p2.To2D();
+
+        _cachedIntersections.Clear();
+        _cachedRoots.Clear();
+        List<Vector2> intersections = _cachedIntersections;
+        List<float> roots = _cachedRoots;
+
+        Vector2 a1 = linePoint1;
+        Vector2 a2 = linePoint2;
+
+        Vector2 normal = new Vector2(a1.y - a2.y, a2.x - a1.x);
+        Vector2 c2 = new Vector2(P0.x - 2 * P1.x + P2.x, P0.y - 2 * P1.y + P2.y); 
+        Vector2 c1 = new Vector2(-2 * P0.x + 2 * P1.x , -2 * P0.y + 2 * P1.y); 
+        Vector2 c0 = new Vector2(P0.x, P0.y);
+
+        float coefficient = a1.x * a2.y - a2.x * a1.y;
+        float a = normal.x * c2.x + normal.y * c2.y;
+        float b = (normal.x * c1.x + normal.y * c1.y) / a;
+        float c = (normal.x * c0.x + normal.y * c0.y + coefficient) / a;
+
+        float d = b * b - 4 * c;
+
+
+        if (d > 0)
+        {
+            float e = Mathf.Sqrt(d);
+            roots.Add((-b + e) / 2);
+            roots.Add((-b - e) / 2);
+        }
+        else if (d == 0)
+            roots.Add(-b / 2);
+
+        for (int i = 0; i < roots.Count; i++)
+        {
+            float minX = Mathf.Min(a1.x, a2.x); 
+            float minY = Mathf.Min(a1.y, a2.y); 
+            float maxX = Mathf.Max(a1.x, a2.x); 
+            float maxY = Mathf.Max(a1.y, a2.y); 
+            float t = roots[i]; 
+            if (t >= 0 && t <= 1)
+            {
+                Vector2 point = BezierCurve(t).To2D();
+                float x = point.x;
+                float y = point.y;
+                if (a1.x == a2.x && y >= minY && y <= maxY)
+                    intersections.Add(point);
+                else if (a1.y == a2.y && c >= minX && x <= maxX)
+                    intersections.Add(point);
+                else if (x >= minX && y >= minY && x <= maxX && y <= maxY)
+                    intersections.Add(point);
+            }
+        }
+
+        return intersections.Count > 0;
+    }
+
+    public float ApproximateLengthForStoredLane()
     {
         const int steps = 100;
-        StoreLane(0);
         float sum = 0;
         Vector3 priorPoint = BezierCurve(0);
         for (int i = 1; i <= steps; i++)
@@ -186,6 +288,11 @@ public class TrackPiece : MonoBehaviour
     public float FindTForDistanceAlongMidline(float extraDistanceAlongTrack, float startingFromT)
     {
         StoreLane(0);
+        return FindTForDistanceAlongStoredLane(extraDistanceAlongTrack, startingFromT);
+    }
+
+    public float FindTForDistanceAlongStoredLane(float extraDistanceAlongTrack, float startingFromT)
+    {
         const int segments = 1000;
         float totalDistance = 0;
         Vector3 priorPosition = BezierCurve(startingFromT);
@@ -209,4 +316,22 @@ public class TrackPiece : MonoBehaviour
 
         return -1;
     }
+
+    //public float DistanceAlongMidlineAtT(float t)
+    //{
+    //    StoreLane(0);
+
+    //    const int segments = 1000;
+    //    float totalDistance = 0;
+    //    Vector3 priorPosition = BezierCurve(t);
+    //    for (int i = 0; i <= segments; i++)
+    //    {
+    //        float nextT = Mathf.Lerp(0, t, (float)i / segments);
+    //        Vector3 nextPosition = BezierCurve(nextT);
+    //        totalDistance += (nextPosition - priorPosition).magnitude;
+    //        priorPosition = nextPosition;
+    //    }
+
+    //    return totalDistance;
+    //}
 }

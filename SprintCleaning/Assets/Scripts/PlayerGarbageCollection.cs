@@ -12,36 +12,38 @@ public class PlayerGarbageCollection : MonoBehaviour
     private TextMeshProUGUI _garbageText;
 
     [SerializeField]
-    private PlayerData _playerData;
+    private ScoreManager _scoreManager;
 
     [SerializeField]
     private TextMeshProUGUI _scoreText;
 
     [SerializeField]
     private float _streakDecreaseInterval = 1f;
+    private ParticleSystem _particle;
 
     
     private void Start()
     {
-        _playerData.Awake();
+        //_scoreManager.Awake();
         InvokeRepeating(nameof(DecreaseStreak), 1f, _streakDecreaseInterval);
+        _particle = GetComponent<ParticleSystem>();
     }
     public void TextEdit()
     {
-        if (_garbageText != null)
-        {
-            string text = "";
-            for (int i = 0; i < (int)(GarbageType.Count); i++)
-                text += (GarbageType)i + ": " + _playerData._counts[(GarbageType)i] + "\n";
+        //if (_garbageText != null)
+        //{
+        //    string text = "";
+        //    for (int i = 0; i < (int)(GarbageType.Count); i++)
+        //        text += (GarbageType)i + ": " + _playerData._counts[(GarbageType)i] + "\n";
 
-            _garbageText.text = text;
-        }
+        //    _garbageText.text = text;
+        //}
 
         if (_scoreText != null)
         {
-            string scoreText = "Score: " + _playerData._score;
-            string streakValueText = "StreakValue: " + _playerData._streakValue;
-            string streakText = "Streak: " + _playerData._streakMultiplier;
+            string scoreText = "Score: " + _scoreManager._score;
+            string streakValueText = "StreakValue: " + _scoreManager._streakValue;
+            string streakText = "Streak: " + _scoreManager._streakMultiplier;
 
             _scoreText.text = scoreText + "\n" + streakValueText + "\n" + streakText;
         }
@@ -49,8 +51,7 @@ public class PlayerGarbageCollection : MonoBehaviour
 
     private void DecreaseStreak()
     {
-        _playerData.DecreaseStreak();
+        _scoreManager.DecreaseStreak();
         TextEdit();
     }
-
 }

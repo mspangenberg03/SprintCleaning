@@ -22,6 +22,7 @@ public class GameplayReproducer
     }
 
     public bool _reproduceGameplay;
+    public bool _dontOverrideControls;
 
     private DebugSaveData _saveData;
 
@@ -34,9 +35,10 @@ public class GameplayReproducer
     private string _saveLocation;
     private string _savePrevLocation;
 
-    public GameplayReproducer(bool reproduceGameplay)
+    public GameplayReproducer(bool reproduceGameplay, bool dontOverrideControls)
     {
         _reproduceGameplay = reproduceGameplay;
+        _dontOverrideControls = dontOverrideControls;
         _saveLocation = Path.Combine(Application.persistentDataPath, FILE_NAME);
         _savePrevLocation = Path.Combine(Application.persistentDataPath, FILE_PREV_NAME);
         Debug.Log("Bug reproduction file: " + _saveLocation);
@@ -107,8 +109,11 @@ public class GameplayReproducer
     {
         if (_reproduceGameplay)
         {
-            if (_currentIndex < inputs.Count)
-                input = inputs[_currentIndex];
+            if (!_dontOverrideControls)
+            {
+                if (_currentIndex < inputs.Count)
+                    input = inputs[_currentIndex];
+            }
         }
         else
             inputs.Add(input);

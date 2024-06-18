@@ -40,7 +40,11 @@ public class PlayerData : ScriptableObject
         if (_resetInEditorOnAwake)
         {
             for (int i = 0; i < (int)(GarbageType.Count); i++)
+            {
                 _counts[(GarbageType)i] = 0;
+            }
+            _score = 0;
+            _streakValue = 30;
         }
 #endif
     }
@@ -67,11 +71,13 @@ public class PlayerData : ScriptableObject
     {
         for (int i = 0; i < _streakThresholds.Length; i++)
         {
-            if (_streakValue < _streakThresholds[i])
+            if (_streakValue <= _streakThresholds[i])
             {
                 _streakMultiplier = i + 1;
                 break;
             }
         }
+        if (_streakValue > _streakThresholds[^1])
+            _streakMultiplier = _streakThresholds.Length + 1;
     }
 }

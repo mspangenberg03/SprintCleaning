@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 608179131147895185}
   - component: {fileID: 1360909279564036929}
-  - component: {fileID: 576300050288940725}
   - component: {fileID: -2036229910219731075}
   m_Layer: 0
   m_Name: TrackGenerator
@@ -46,65 +45,70 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 310c3ee7b7264a44682df7ac81514824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _diff: 0
-  _trackPrefabs:
-  - {fileID: 8436985586966843200, guid: 8bb2a798dd0b81b48a4a239534d025ec, type: 3}
-  - {fileID: 6221956084416107605, guid: ee67fbf2631f503419efad82417c6a6e, type: 3}
-  - {fileID: 8154570279409064104, guid: 63bdb2544d3f2bb44a2618bcb2b0aa69, type: 3}
-  - {fileID: 2007551459213979358, guid: 4bfd1ed85f90b134fad13ebbdeb3b311, type: 3}
-  - {fileID: 8077653236005777457, guid: 61a56f14fd0f90f42bdbb09d3b39ec28, type: 3}
-  - {fileID: 407651357389730200, guid: 55f09af61cf08334099a8f72ac7f4baa, type: 3}
-  - {fileID: 7290087389331728689, guid: 37f2c1bccdd93c148a8ccb365392a385, type: 3}
-  - {fileID: 5870286290506024139, guid: 42bb25729c0fb3a4388963f2c84162f3, type: 3}
-  - {fileID: 1641981354471546479, guid: 2c5af1c4aa87bd4429c8b00015ef1c9b, type: 3}
-  _numTrackPoints: 10
-  _oddsDontTurn: 0.5
-  _minStraightBetweenTurns: 1
-  _minObjectSeparation: 3
-  _trackObjectsYOffset: 1.5
-  _minGarbageOnTrackPiece: 4
-  _maxGarbageOnTrackPiece: 16
-  _beatStrengths:
-  - <Beats>k__BackingField: 0000000008000000
-    <GarbagePrefabs>k__BackingField:
-    - {fileID: 5889100143449206652, guid: c40c73e8c8806c64aa7f0b2f190c752b, type: 3}
-  - <Beats>k__BackingField: 040000000c000000
-    <GarbagePrefabs>k__BackingField:
-    - {fileID: 531514119308221982, guid: 37d0712457ceae149ae4b04ce1b892fa, type: 3}
-  - <Beats>k__BackingField: 02000000060000000a0000000e000000
-    <GarbagePrefabs>k__BackingField:
-    - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
-    - {fileID: 5349597445174181553, guid: e1f500c872e29dd42a11d84677af6e77, type: 3}
-    - {fileID: 8398012589345326481, guid: dbdb9ff453c05234bb421778ec6a5d09, type: 3}
-    - {fileID: 7774771380143810795, guid: adb627a9bfd126c4a9e9a96de38bc987, type: 3}
-    - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
-    - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
-  - <Beats>k__BackingField: 01000000030000000500000007000000090000000b0000000d0000000f000000
-    <GarbagePrefabs>k__BackingField:
-    - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
-    - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
-    - {fileID: 5349597445174181553, guid: e1f500c872e29dd42a11d84677af6e77, type: 3}
-    - {fileID: 7774771380143810795, guid: adb627a9bfd126c4a9e9a96de38bc987, type: 3}
-    - {fileID: 8398012589345326481, guid: dbdb9ff453c05234bb421778ec6a5d09, type: 3}
-    - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
-    - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
-    - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
-    - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
---- !u!114 &576300050288940725
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5132789170982312905}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac9afc36f1aafe6499cf66a115c3f55a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _comment: 'Not using all the tools / garbage types
-
-'
+  _numTrackPieces: 10
+  _trackPiecesGenerator:
+    _trackPrefabs:
+    - {fileID: 8436985586966843200, guid: 8bb2a798dd0b81b48a4a239534d025ec, type: 3}
+    - {fileID: 6221956084416107605, guid: ee67fbf2631f503419efad82417c6a6e, type: 3}
+    - {fileID: 8154570279409064104, guid: 63bdb2544d3f2bb44a2618bcb2b0aa69, type: 3}
+    - {fileID: 2007551459213979358, guid: 4bfd1ed85f90b134fad13ebbdeb3b311, type: 3}
+    - {fileID: 8077653236005777457, guid: 61a56f14fd0f90f42bdbb09d3b39ec28, type: 3}
+    - {fileID: 407651357389730200, guid: 55f09af61cf08334099a8f72ac7f4baa, type: 3}
+    - {fileID: 7290087389331728689, guid: 37f2c1bccdd93c148a8ccb365392a385, type: 3}
+    - {fileID: 1641981354471546479, guid: 2c5af1c4aa87bd4429c8b00015ef1c9b, type: 3}
+    - {fileID: 5870286290506024139, guid: 42bb25729c0fb3a4388963f2c84162f3, type: 3}
+    _oddsDontTurn: 0.5
+    _minStraightBetweenTurns: 1
+  _trackObjectsGenerator:
+    _minTimeSeeObjectOnTrack: 1
+    _maxTimeSeeObjectOnTrack: 2
+    _oddsSpawnImmediately: 0.5
+    _trackObjectsYOffset: 1.5
+    _minGarbageOnTrackPiece: 4
+    _maxGarbageOnTrackPiece: 10
+    _numberOfGarbageCountsToChooseMinAmongst: 2
+    _maxConsecutiveBeatsWithLaneChange: 1
+    _oddsSpawnObstacleImmediately: 1
+    _minObstaclesPerTrackPiece: 1
+    _maxObstaclesPerTrackPiece: 2
+    _maxObstaclesCarriedOnWhenFailToSpawn: 1
+    _numberOfObstacleCountsToChooseMinAmongst: 1
+    _minBeatsBetweenObstacles: 2
+    _obstaclePrefabs:
+    - {fileID: 1620772654782883020, guid: 038baf3fdc78e424aa92e61b29aa79ee, type: 3}
+    _beatStrengths:
+    - <Beats>k__BackingField: 0000000008000000
+      <GarbagePrefabs>k__BackingField:
+      - {fileID: 5889100143449206652, guid: c40c73e8c8806c64aa7f0b2f190c752b, type: 3}
+    - <Beats>k__BackingField: 040000000c000000
+      <GarbagePrefabs>k__BackingField:
+      - {fileID: 531514119308221982, guid: 37d0712457ceae149ae4b04ce1b892fa, type: 3}
+    - <Beats>k__BackingField: 02000000060000000a0000000e000000
+      <GarbagePrefabs>k__BackingField:
+      - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
+      - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
+      - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
+      - {fileID: 5349597445174181553, guid: e1f500c872e29dd42a11d84677af6e77, type: 3}
+      - {fileID: 8398012589345326481, guid: dbdb9ff453c05234bb421778ec6a5d09, type: 3}
+      - {fileID: 7774771380143810795, guid: adb627a9bfd126c4a9e9a96de38bc987, type: 3}
+    - <Beats>k__BackingField: 01000000030000000500000007000000090000000b0000000d0000000f000000
+      <GarbagePrefabs>k__BackingField:
+      - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
+      - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
+      - {fileID: 3398964712735291561, guid: 0273a507cc9868842b6bcee5b939b06e, type: 3}
+      - {fileID: 8398012589345326481, guid: dbdb9ff453c05234bb421778ec6a5d09, type: 3}
+      - {fileID: 7774771380143810795, guid: adb627a9bfd126c4a9e9a96de38bc987, type: 3}
+      - {fileID: 5349597445174181553, guid: e1f500c872e29dd42a11d84677af6e77, type: 3}
+      - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
+      - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
+      - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
+  _buildingsGeneratorSettings:
+    <DistanceFromTrackAtMiddleOfWidth>k__BackingField: 2
+    <MinDistanceFromTrackAlongWholeWidth>k__BackingField: 1
+    <BuildingPrefabs>k__BackingField:
+    - {fileID: 8816101896061673223, guid: b97e99c6008650e43bb2e7fa79baffa9, type: 3}
+    - {fileID: 3917349997031051797, guid: 423303f0f0bb7cb41adda6f2aed86216, type: 3}
+    - {fileID: 3218654796988719837, guid: e307e2521886647478242a295e9bf562, type: 3}
 --- !u!114 &-2036229910219731075
 MonoBehaviour:
   m_ObjectHideFlags: 0

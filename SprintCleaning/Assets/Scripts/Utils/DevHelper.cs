@@ -6,6 +6,9 @@ using UnityEngine;
 public class DevHelper : ScriptableObject
 {
     [SerializeField] private bool _reproduceGameplay;
+    [SerializeField] private bool _dontOverrideControlsWhenReproduceGameplay;
+    [field: SerializeField] public bool LogAudioTimeAndPlayerProgressAlongTrack { get; private set; }
+    [field: SerializeField] public bool LogUnexpectedTrashCollectionTimings { get; private set; }
     [field: SerializeField] public TrashCollectionTimingInfoSettings TrashCollectionTimingInfo { get; private set; }
 
 
@@ -14,6 +17,7 @@ public class DevHelper : ScriptableObject
     {
         [field: Header("When true, logs the number of fixed updates between trash collection, excluding those in the array.")]
         [field: SerializeField] public bool CheckTrashCollectionConsistentIntervals { get; private set; }
+        [field: SerializeField] public bool DontLogIntervals { get; private set; }
         [field: SerializeField] public int[] DontLogFixedUpdatesBetweenTrashCollection = new int[] { 28, 29 };
     }
 
@@ -31,7 +35,7 @@ public class DevHelper : ScriptableObject
                     Instantiate(prefab);
                     _ref = prefab.GetComponent<DevHelperRef>();
                 }
-                _ref.SO.GameplayReproducer = new GameplayReproducer(_ref.SO._reproduceGameplay);
+                _ref.SO.GameplayReproducer = new GameplayReproducer(_ref.SO._reproduceGameplay, _ref.SO._dontOverrideControlsWhenReproduceGameplay);
             }
             return _ref.SO;
         }
@@ -60,7 +64,7 @@ public class DevHelper : ScriptableObject
             if (x == fixedTimesteps)
                 expected = true;
         }
-        if (!expected && _lastTrashCollectionTime != -1)
+        if (!TrashCollectionTimingInfo.DontLogIntervals && !expected && _lastTrashCollectionTime != -1)
             Debug.Log("Number of fixed timesteps between Garbage.OnTriggerEnter: " + fixedTimesteps);
         _lastTrashCollectionTime = Time.fixedTime;
     }

@@ -695,6 +695,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1540360275 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+  m_PrefabInstance: {fileID: 5555699909272759551}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 373d767207006fe45861e5ba686ffd08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1623511382 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6132711351885811144, guid: b601506cee11a44488015984e6ec7f4c, type: 3}
@@ -843,16 +854,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2887168222166899384, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
-      propertyPath: m_text
-      value: 'Score: 0
-
-        StreakValue: 30
-
-        Streak: 1
-
-'
-      objectReference: {fileID: 0}
     - target: {fileID: 6029570124216557578, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -932,14 +933,6 @@ PrefabInstance:
     - target: {fileID: 6029570124216557578, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6819884067327339067, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 296.6564
-      objectReference: {fileID: 0}
-    - target: {fileID: 6819884067327339067, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -148.32825
       objectReference: {fileID: 0}
     - target: {fileID: 7913676833513205611, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: m_Name
@@ -1029,6 +1022,10 @@ PrefabInstance:
       propertyPath: _garbageText
       value: 
       objectReference: {fileID: 1123186108}
+    - target: {fileID: 3205953339151722299, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+      propertyPath: _scoreManager
+      value: 
+      objectReference: {fileID: 1540360275}
     - target: {fileID: 6582814077961112365, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
       propertyPath: _toolBar
       value: 
