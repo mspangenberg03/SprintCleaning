@@ -56,7 +56,7 @@ public class Building : MonoBehaviour, PoolOfMonoBehaviour<Building>.IPoolable
         for (int i = 0; i < _allThrowSources.Count; i++)
         {
             Transform next = _allThrowSources[i];
-            float sqrDistance = (destinationPosition - next.position).sqrMagnitude;
+            float sqrDistance = (destinationPosition - next.position).To2D().sqrMagnitude;
             if (sqrDistance < closestSqrDistance)
             {
                 closest = next;

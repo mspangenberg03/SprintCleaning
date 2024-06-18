@@ -12,7 +12,8 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     [Tooltip("The sound this piece of garbage plays on collect")]
     public AudioClip impact;
 
-    [SerializeField] private bool _obstacle;
+    [field: SerializeField] public bool Obstacle { get; private set; }
+
     public AudioSource _garbageAudio;
 
     [SerializeField,Tooltip("The score this garbage add")]
@@ -93,8 +94,10 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
                     Debug.Log("Hit trash at time (+- maybe 20 ms): " + audioTime);
             }
 
-            if (_obstacle)
+            bool gameOver = false;
+            if (Obstacle)
             {
+                gameOver = true;
                 player.GetComponent<Game_Over>().GameOver();
             }
             else{
@@ -105,8 +108,8 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 
             _playerData.AddScoreOnGarbageCollection(_score, _streakAddValue);
 
-
-            ReturnToPool();
+            if (!gameOver) // don't destroy it when game over because it looks strange how it disappears after a brief pause
+                ReturnToPool();
 #if UNITY_EDITOR
             if (!OnTrackPiece.GarbageOnThisTrackPiece.Contains(this))
                 throw new System.Exception("not contained");
