@@ -12,6 +12,8 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     [Tooltip("The sound this piece of garbage plays on collect")]
     public AudioClip impact;
 
+    [SerializeField] private GameObject _particle;
+
     [field: SerializeField] public bool Obstacle { get; private set; }
 
     public AudioSource _garbageAudio;
@@ -22,7 +24,6 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     [SerializeField, Tooltip("The value that collecting this garbage add to the current streak value")]
     private int _streakAddValue = 10;
 
-    [SerializeField] private PlayerData _playerData;
     [field: SerializeField] public float Gravity { get; private set; }
 
     private float _horizontalSpeed;
@@ -84,6 +85,11 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
             GameObject player = other.transform.parent.gameObject;
             _garbageAudio = player.GetComponent<AudioSource>();
             _garbageAudio.PlayOneShot(impact, 1F);
+            if (!Obstacle)
+            {
+                GameObject particleObject = Instantiate(_particle, gameObject.transform.position, Quaternion.identity);
+                particleObject.transform.rotation = player.transform.rotation;
+            }
 
             if (DevHelper.Instance.LogUnexpectedTrashCollectionTimings)
             {
@@ -101,12 +107,12 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
                 player.GetComponent<Game_Over>().GameOver();
             }
             else{
-                _playerData.GarbageCollected(_type);
+                ScoreManager.Instance.GarbageCollected(_type);
                 player.GetComponent<PlayerGarbageCollection>().TextEdit();
             }
             DevHelper.Instance.CheckLogInfoForTrashCollectionIntervalChecking();
 
-            _playerData.AddScoreOnGarbageCollection(_score, _streakAddValue);
+            ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
 
             if (!gameOver) // don't destroy it when game over because it looks strange how it disappears after a brief pause
                 ReturnToPool();
