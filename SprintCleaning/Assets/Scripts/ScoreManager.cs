@@ -18,6 +18,8 @@ public class ScoreManager : MonoBehaviour
 
     public int _streakMultiplier = 1;
 
+    [field: SerializeField] public int MaxStreakValue { get; private set; }
+
     [SerializeField]
     private int[] _streakThresholds;
 
