@@ -1552,8 +1552,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _score: 0
   _streakValue: 30
-  _regularStreakDecrease: 5
+  _regularStreakDecrease: 3
   _streakMultiplier: 1
   <MaxStreakValue>k__BackingField: 150
   _streakThresholds: 320000005000000078000000
+  gameAudioMixer: {fileID: 24100000, guid: fedf60293c00229499018b58512fe665, type: 2}
   _streakBar: {fileID: 2229442159456305738}

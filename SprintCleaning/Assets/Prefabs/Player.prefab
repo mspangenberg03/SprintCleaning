@@ -108,6 +108,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 6654320705877145291}
   _settings: {fileID: 11400000, guid: a974e26a5660c8944a6ecbfb082b9ae6, type: 2}
   _speedText: {fileID: 0}
+  gameAudioMixer: {fileID: 24100000, guid: fedf60293c00229499018b58512fe665, type: 2}
 --- !u!54 &6654320705877145291
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -178,7 +179,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _garbageText: {fileID: 0}
-  _playerItemData: {fileID: 11400000, guid: a4d552aa22ccde841848f0e8f2245245, type: 2}
+  _playerData: {fileID: 0}
+  _scoreText: {fileID: 0}
+  _streakDecreaseInterval: 1
 --- !u!1001 &3622048572025578668
 PrefabInstance:
   m_ObjectHideFlags: 0

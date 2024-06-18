@@ -104,5 +104,5 @@ MonoBehaviour:
   <Obstacle>k__BackingField: 0
   _garbageAudio: {fileID: 0}
   _score: 1
-  _streakAddValue: 10
+  _streakAddValue: 3
   <Gravity>k__BackingField: 34.5679

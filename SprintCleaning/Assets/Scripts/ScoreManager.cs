@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class ScoreManager : MonoBehaviour
 
     [SerializeField]
     private int[] _streakThresholds;
+
+    [SerializeField] private AudioMixer gameAudioMixer;
 
     public int[] StreakThresholds => _streakThresholds;
 
@@ -88,6 +91,8 @@ public class ScoreManager : MonoBehaviour
 
     private void CheckStreakMultiplier()
     {
+        int priorStreakMultiplier = _streakMultiplier;
+
         for (int i = 0; i < _streakThresholds.Length; i++)
         {
             if (_streakValue <= _streakThresholds[i])
@@ -98,5 +103,14 @@ public class ScoreManager : MonoBehaviour
         }
         if (_streakValue > _streakThresholds[^1])
             _streakMultiplier = _streakThresholds.Length + 1;
+
+        if (_streakMultiplier == priorStreakMultiplier)
+            return;
+
+        float duration = .5f;
+        StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak1Volume", duration, 1));
+        StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak2Volume", duration, _streakMultiplier >= 2 ? 1 : 0));
+        StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak3Volume", duration, _streakMultiplier >= 3 ? 1 : 0));
+        StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak4Volume", duration, _streakMultiplier >= 4 ? 1 : 0));
     }
 }

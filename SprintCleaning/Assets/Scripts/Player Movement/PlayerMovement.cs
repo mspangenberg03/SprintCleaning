@@ -212,6 +212,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         _lanePosition = nextLanePosition;
+
     }
 
     private void CheckLaneChangeInputs()
@@ -227,7 +228,6 @@ public class PlayerMovement : MonoBehaviour
         _currentTargetLane = Mathf.Clamp(_currentTargetLane, -1, 1);
         if (_currentTargetLane != priorTargetLane)
             _changingLanes = true;
-
         _leftInputDown = false;
         _rightInputDown = false;
     }

@@ -91,7 +91,7 @@ AudioMixerController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GameAudioMixer
+  m_Name: Level_1
   m_OutputGroup: {fileID: 0}
   m_MasterGroup: {fileID: 24300002}
   m_Snapshots:
@@ -100,7 +100,15 @@ AudioMixerController:
   m_SuspendThreshold: -80
   m_EnableSuspend: 1
   m_UpdateMode: 0
-  m_ExposedParameters: []
+  m_ExposedParameters:
+  - guid: 1f1d111370f2a6661babcfa308800fa4
+    name: Streak1Volume
+  - guid: 62410f1ed22e1e9cbaf3485a0f55ebc9
+    name: Streak2Volume
+  - guid: 8257f5b7bf907efb6ac7911efff0e062
+    name: Streak3Volume
+  - guid: 3baca1afb520fed26bea544677804fed
+    name: Streak4Volume
   m_AudioMixerGroupViews:
   - guids:
     - ce177ccf493b3eb0ba6c1de9dafaef9a
@@ -163,9 +171,12 @@ AudioMixerSnapshotController:
   m_FloatValues:
     01890f819aa97011f88c07275e1b0a4b: -80
     d802d6e1de5945a0c80de120111f0212: -80
+    8257f5b7bf907efb6ac7911efff0e062: -80
     0168596c5bdd195aba1380e29d348de8: 0
     64babacca89f9608ea9f3bac98c302ff: -80
     51948b5d638ed0960b6c6566b5c8f3fc: 1
+    62410f1ed22e1e9cbaf3485a0f55ebc9: -80
+    3baca1afb520fed26bea544677804fed: -80
     9ae58bfff76bd1c3ba36aa7316f67b44: 1
   m_TransitionOverrides: {}
 --- !u!244 &293814904375282778
