@@ -21,6 +21,8 @@ public class TrackObjectsGenerator
     [SerializeField] private int _numberOfObstacleCountsToChooseMinAmongst = 2;
     [SerializeField] private int _minBeatsBetweenObstacles = 3;
     [SerializeField] private GameObject[] _obstaclePrefabs;
+
+
     [Header("Beat strengths filled from 1st to last.")]
     [SerializeField] private GarbageSpawningBeatStrength[] _beatStrengths;
 
@@ -130,10 +132,8 @@ public class TrackObjectsGenerator
         {
             (int beat, GameObject prefab, _) = _selectedBeatsAndPrefabsAndLanes[i];
             int lane = SelectNextLane(beat);
+
             _selectedBeatsAndPrefabsAndLanes[i] = (beat, prefab, lane);
-            if(prefab == _obstaclePrefabs[1]){
-                lane = 0;
-            }
             SpawnOrThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnImmediately);
         }
 
@@ -179,7 +179,7 @@ public class TrackObjectsGenerator
                           // The 2nd part of the || is for a case where it happens.
             }
 
-            int lane = _possibleObstacleLanes[Random.Range(0, _possibleObstacleLanes.Count)];
+            int lane = 0;
             currentTrackLastObstacleBeat = System.Math.Max(currentTrackLastObstacleBeat, beat);
 
             int fromBeat = System.Math.Max(0, beat - _minBeatsBetweenObstacles);
@@ -188,8 +188,9 @@ public class TrackObjectsGenerator
                 _possibleObstacleBeats.Remove(j);
 
             GameObject prefab = _obstaclePrefabs[Random.Range(0, _obstaclePrefabs.Length)];
-            if(prefab == _obstaclePrefabs[1]){
-                lane = 0;
+
+            if(prefab != _obstaclePrefabs[1]){
+                lane = _possibleObstacleLanes[Random.Range(0, _possibleObstacleLanes.Count)];
             }
             SpawnOrThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnObstacleImmediately);
             numObstaclesSpawned++;

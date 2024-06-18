@@ -257,7 +257,7 @@ public class PlayerMovement : MonoBehaviour
         // the track goes upwards/downwards while the player is jumping.
         if (_jumpPosition > 0)
         {
-            _jumpPosition = _jumpPosition - changeInMidlinePositionY;
+            //_jumpPosition = _jumpPosition - changeInMidlinePositionY;
             CheckJumpHitsGround();
         }
 
