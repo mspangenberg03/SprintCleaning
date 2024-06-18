@@ -131,6 +131,9 @@ public class TrackObjectsGenerator
             (int beat, GameObject prefab, _) = _selectedBeatsAndPrefabsAndLanes[i];
             int lane = SelectNextLane(beat);
             _selectedBeatsAndPrefabsAndLanes[i] = (beat, prefab, lane);
+            if(prefab == _obstaclePrefabs[1]){
+                lane = 0;
+            }
             SpawnOrThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnImmediately);
         }
 
@@ -185,6 +188,9 @@ public class TrackObjectsGenerator
                 _possibleObstacleBeats.Remove(j);
 
             GameObject prefab = _obstaclePrefabs[Random.Range(0, _obstaclePrefabs.Length)];
+            if(prefab == _obstaclePrefabs[1]){
+                lane = 0;
+            }
             SpawnOrThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnObstacleImmediately);
             numObstaclesSpawned++;
         }

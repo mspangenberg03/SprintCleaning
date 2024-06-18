@@ -1169,6 +1169,14 @@ PrefabInstance:
       propertyPath: _trashCountPerStandardLength.min
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _trackObjectsGenerator._obstaclePrefabs.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _trackObjectsGenerator._obstaclePrefabs.Array.data[1]
+      value: 
+      objectReference: {fileID: 4091810569181232283, guid: 19ba1261769c5c04bac4ad5a7e2f8606, type: 3}
     - target: {fileID: 5132789170982312905, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
       propertyPath: m_Name
       value: GameManager
