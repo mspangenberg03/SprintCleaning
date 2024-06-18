@@ -1,17 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
-using UnityEngine.UI;
 
-[CreateAssetMenu]
-public class PlayerData : ScriptableObject
+public class ScoreManager : MonoBehaviour
 {
-    [SerializeField] private bool _resetInEditorOnAwake = true;
-
+    //[SerializeField] private bool _resetInEditorOnAwake = true;
     //The garbage that the player has in total
     public Dictionary<GarbageType, int> _counts;
 
@@ -27,8 +20,30 @@ public class PlayerData : ScriptableObject
 
     [SerializeField]
     private int[] _streakThresholds;
+
+    public int[] StreakThresholds => _streakThresholds;
+
+    [SerializeField]
+    private StreakBar _streakBar;
+
+    private static ScoreManager _instance;
+    public static ScoreManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<ScoreManager>();
+            }
+            return _instance;
+        }
+    }
+
     public void Awake()
     {
+
+        _instance = this;
+
         if (_counts == null)
         {
             _counts = new Dictionary<GarbageType, int>();
@@ -36,17 +51,17 @@ public class PlayerData : ScriptableObject
                 _counts.Add((GarbageType)i, 0);
         }
 
-#if UNITY_EDITOR
-        if (_resetInEditorOnAwake)
-        {
-            for (int i = 0; i < (int)(GarbageType.Count); i++)
-            {
-                _counts[(GarbageType)i] = 0;
-            }
-            _score = 0;
-            _streakValue = 30;
-        }
-#endif
+        _streakBar._current = _streakValue;
+
+        //#if UNITY_EDITOR
+        //        if (_resetInEditorOnAwake)
+        //        {
+        //            for (int i = 0; i < (int)(GarbageType.Count); i++)
+        //            {
+        //                _counts[(GarbageType)i] = 0;
+        //            }
+        //        }
+        //#endif
     }
 
     public void GarbageCollected(GarbageType garbage)
@@ -59,12 +74,14 @@ public class PlayerData : ScriptableObject
         CheckStreakMultiplier();
         _score += (scoreToAdd * _streakMultiplier);
         _streakValue += streakValueToAdd;
+        _streakBar._current = _streakValue;
     }
 
     public void DecreaseStreak()
     {
         _streakValue -= _regularStreakDecrease;
         CheckStreakMultiplier();
+        _streakBar._current = _streakValue;
     }
 
     private void CheckStreakMultiplier()
