@@ -49,11 +49,11 @@ public class PlayerMovement : MonoBehaviour
         set => _speedMultiplier = Mathf.Clamp(value, _settings.MinForwardsSpeed, _settings.MaxForwardsSpeed) / _settings.BaseForwardsSpeed;
     }
 
-    private bool LeftInput => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
-    private bool RightInput => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
-    private bool LeftInputDown => Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow);
-    private bool RightInputDown => Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow);
-    private bool JumpInput => Input.GetKey(KeyCode.Space);
+    private bool LeftInput => !Game_Over.GameIsOver && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow));
+    private bool RightInput => !Game_Over.GameIsOver && (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow));
+    private bool LeftInputDown => !Game_Over.GameIsOver && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow));
+    private bool RightInputDown => !Game_Over.GameIsOver && (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow));
+    private bool JumpInput => !Game_Over.GameIsOver && Input.GetKey(KeyCode.Space);
 
     private static PlayerMovementSettings _settingsStatic;
     public static PlayerMovementSettings Settings 

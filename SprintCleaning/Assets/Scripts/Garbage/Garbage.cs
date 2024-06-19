@@ -105,7 +105,8 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
             bool gameOver = false;
             if (Obstacle)
             {
-                animator.SetTrigger("Hit");
+                if (!Game_Over.GameIsOver)
+                    animator.SetTrigger("Hit");
                 player.GetComponent<Game_Over>().GameOver();
             }
             else{
