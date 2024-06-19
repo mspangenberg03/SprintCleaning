@@ -12,10 +12,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private PlayerMovementSettings _settings;
-    [SerializeField] private TextMeshProUGUI _speedText;
     [SerializeField] private Animator _animator;
-
-    private float _speedMultiplier = 1f;
     private float _currentTargetLane;
     private bool _changingLanes;
     
@@ -24,8 +21,6 @@ public class PlayerMovement : MonoBehaviour
 
     // input polling (in case of frames w/o fixed update)
     private bool _polledInputThisFrame;
-    private bool _leftInput;
-    private bool _rightInput;
     private bool _leftInputDown;
     private bool _rightInputDown;
     private bool _jumpInput;
@@ -40,20 +35,11 @@ public class PlayerMovement : MonoBehaviour
     private float _jumpPosition;
     private float _jumpSpeed;
 
+    private float CurrentForwardsSpeed => _settings.BaseForwardsSpeed * (1f - Game_Over.Instance.FractionOfGameOverDelayElapsed);
 
-    private float _gameOverTime = 0f;
-
-    private float CurrentForwardsSpeed
-    {
-        get => _settings.BaseForwardsSpeed * _speedMultiplier;
-        set => _speedMultiplier = Mathf.Clamp(value, _settings.MinForwardsSpeed, _settings.MaxForwardsSpeed) / _settings.BaseForwardsSpeed;
-    }
-
-    private bool LeftInput => !Game_Over.GameIsOver && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow));
-    private bool RightInput => !Game_Over.GameIsOver && (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow));
-    private bool LeftInputDown => !Game_Over.GameIsOver && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow));
-    private bool RightInputDown => !Game_Over.GameIsOver && (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow));
-    private bool JumpInput => !Game_Over.GameIsOver && Input.GetKey(KeyCode.Space);
+    private bool LeftInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow));
+    private bool RightInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow));
+    private bool JumpInput => !Game_Over.Instance.GameIsOver && Input.GetKey(KeyCode.Space);
 
     private static PlayerMovementSettings _settingsStatic;
     public static PlayerMovementSettings Settings 
@@ -81,30 +67,13 @@ public class PlayerMovement : MonoBehaviour
         _positionOnMidline = _trackGenerator.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
         _rigidbody.position = _positionOnMidline;
         _rigidbody.transform.position = _rigidbody.position;
-        _gameOverTime = 0f;
         _animator.SetFloat("Speed", 2f);
     }
 
     private void Update()
     {
-        if (_polledInputThisFrame) // fixed update ran
-        {
-            _leftInput = false;
-            _rightInput = false;
-        }
         PollInputsOncePerFrame();
         _polledInputThisFrame = false;
-    }
-
-    private void LateUpdate()
-    {
-        _speedText.text = "Speed: " + (int)CurrentForwardsSpeed;
-    }
-
-    public void GarbageSlow(float playerSpeedMultiplier)
-    {
-        _speedMultiplier *= playerSpeedMultiplier;
-        _speedMultiplier = Mathf.Max(_settings.MinForwardsSpeed / _settings.BaseForwardsSpeed, _speedMultiplier);
     }
 
     private void FixedUpdate()
@@ -115,27 +84,9 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (Game_Over.GameIsOver)
-        {
-            if (_gameOverTime.Equals(0f))
-            {
-                _gameOverTime = Time.time;
-            }
-            float stopTime = _gameOverTime + 2;
-            _speedMultiplier = 1 - Mathf.InverseLerp(_gameOverTime, stopTime, Time.time);
-            if (!_animator.GetBool("Idle"))
-            {
-                _animator.SetBool("Idle", true);
-                _animator.SetFloat("Speed", 0f);
-            }
-                
-
-        }
-        //_animator.SetFloat("Speed", 2f);
-
         PollInputsOncePerFrame();
         DevHelper.Instance.GameplayReproducer.StartNextFixedUpdate();
-        DevHelper.Instance.GameplayReproducer.SaveOrLoadMovementInputs(ref _leftInput, ref _rightInput, ref _leftInputDown, ref _rightInputDown, ref _jumpInput);
+        DevHelper.Instance.GameplayReproducer.SaveOrLoadMovementInputs(ref _leftInputDown, ref _rightInputDown, ref _jumpInput);
 
         TrackPiece trackPiece = _trackGenerator.TrackPieces[TARGET_POINT_INDEX];
         float t = trackPiece.FindTForClosestPointOnMidline(_positionOnMidline);
@@ -149,7 +100,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 priorPositionOnMidline = _positionOnMidline; 
         _positionOnMidline += midlineVelocity * Time.deltaTime;
 
-        UpdateJumpPosition(_positionOnMidline.y - priorPositionOnMidline.y);
+        UpdateJumpPosition();
 
         UpdateLanePosition();
 
@@ -183,10 +134,6 @@ public class PlayerMovement : MonoBehaviour
             return;
         _polledInputThisFrame = true;
 
-        if (LeftInput)
-            _leftInput = true;
-        if (RightInput)
-            _rightInput = true;
         if (LeftInputDown)
             _leftInputDown = true;
         if (RightInputDown)
@@ -243,10 +190,10 @@ public class PlayerMovement : MonoBehaviour
     {
         float priorTargetLane = _currentTargetLane;
 
-        if (_leftInputDown || (_leftInput && !_changingLanes && _settings.AllowMultipleLaneChangeByHoldingDown))
+        if (_leftInputDown)
             _currentTargetLane--;
 
-        if (_rightInputDown || (_rightInput && !_changingLanes && _settings.AllowMultipleLaneChangeByHoldingDown))
+        if (_rightInputDown)
             _currentTargetLane++;
 
         _currentTargetLane = Mathf.Clamp(_currentTargetLane, -1, 1);
@@ -275,15 +222,12 @@ public class PlayerMovement : MonoBehaviour
 
 
     #region Jumping
-    private void UpdateJumpPosition(float changeInMidlinePositionY)
+    private void UpdateJumpPosition()
     {
         // The jump position is relative to the midline position, so make it so the player doesn't move upwards/downwards if 
         // the track goes upwards/downwards while the player is jumping.
         if (_jumpPosition > 0)
-        {
-            //_jumpPosition = _jumpPosition - changeInMidlinePositionY;
             CheckJumpHitsGround();
-        }
 
         if (_jumpInput)
         {
