@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private PlayerMovementSettings _settings;
     [SerializeField] private TextMeshProUGUI _speedText;
+    [SerializeField] private Animator _animator;
 
     private float _speedMultiplier = 1f;
     private float _currentTargetLane;
@@ -77,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
         _positionOnMidline = _trackGenerator.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
         _rigidbody.position = _positionOnMidline;
         _rigidbody.transform.position = _rigidbody.position;
+        _animator.SetFloat("Speed", 2f);
     }
 
     private void Update()
@@ -270,6 +272,7 @@ public class PlayerMovement : MonoBehaviour
         bool executeJump = (Time.time <= _jumpInputTime + _settings.JumpBufferDuration) && _jumpPosition == 0;
         if (executeJump)
         {
+            _animator.SetTrigger("Jump");
             _jumpSpeed = _settings.JumpUpDuration * _settings.GravityAccelerationWhileRising;
             _jumpInputTime = float.NegativeInfinity;
         }
@@ -291,6 +294,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _jumpPosition = 0;
             _jumpSpeed = Mathf.Max(0, _jumpSpeed);
+            _animator.SetTrigger("HitGround");
         }
     }
 

@@ -89,6 +89,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
             {
                 GameObject particleObject = Instantiate(_particle, gameObject.transform.position, Quaternion.identity);
                 particleObject.transform.rotation = player.transform.rotation;
+                player.GetComponentInChildren<Animator>().SetTrigger("PickUp");
             }
 
             if (DevHelper.Instance.LogUnexpectedTrashCollectionTimings)
