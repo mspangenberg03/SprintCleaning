@@ -83,10 +83,12 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         if (other.gameObject.CompareTag("Player"))
         {
             GameObject player = other.transform.parent.gameObject;
+            Animator animator = player.GetComponentInChildren<Animator>();
             _garbageAudio = player.GetComponent<AudioSource>();
             _garbageAudio.PlayOneShot(impact, 1F);
             if (!Obstacle)
             {
+                animator.SetTrigger("PickUp");
                 GameObject particleObject = Instantiate(_particle, gameObject.transform.position, Quaternion.identity);
                 particleObject.transform.rotation = player.transform.rotation;
             }
@@ -103,7 +105,8 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
             bool gameOver = false;
             if (Obstacle)
             {
-                gameOver = true;
+                if (!Game_Over.GameIsOver)
+                    animator.SetTrigger("Hit");
                 player.GetComponent<Game_Over>().GameOver();
             }
             else{
