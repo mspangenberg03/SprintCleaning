@@ -40,6 +40,9 @@ public class PlayerMovement : MonoBehaviour
     private float _jumpPosition;
     private float _jumpSpeed;
 
+
+    private float _gameOverTime = 0f;
+
     private float CurrentForwardsSpeed
     {
         get => _settings.BaseForwardsSpeed * _speedMultiplier;
@@ -78,6 +81,7 @@ public class PlayerMovement : MonoBehaviour
         _positionOnMidline = _trackGenerator.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
         _rigidbody.position = _positionOnMidline;
         _rigidbody.transform.position = _rigidbody.position;
+        _gameOverTime = 0f;
         _animator.SetFloat("Speed", 2f);
     }
 
@@ -110,6 +114,24 @@ public class PlayerMovement : MonoBehaviour
         {
             return;
         }
+
+        if (Game_Over.GameIsOver)
+        {
+            if (_gameOverTime.Equals(0f))
+            {
+                _gameOverTime = Time.time;
+            }
+            float stopTime = _gameOverTime + 2;
+            _speedMultiplier = 1 - Mathf.InverseLerp(_gameOverTime, stopTime, Time.time);
+            if (!_animator.GetBool("Idle"))
+            {
+                _animator.SetBool("Idle", true);
+                _animator.SetFloat("Speed", 0f);
+            }
+                
+
+        }
+        //_animator.SetFloat("Speed", 2f);
 
         PollInputsOncePerFrame();
         DevHelper.Instance.GameplayReproducer.StartNextFixedUpdate();
@@ -294,7 +316,6 @@ public class PlayerMovement : MonoBehaviour
         {
             _jumpPosition = 0;
             _jumpSpeed = Mathf.Max(0, _jumpSpeed);
-            _animator.SetTrigger("HitGround");
         }
     }
 
