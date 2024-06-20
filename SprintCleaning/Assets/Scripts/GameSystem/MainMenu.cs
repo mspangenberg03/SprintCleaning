@@ -30,6 +30,12 @@ public class MainMenu : MonoBehaviour
     private TMP_Dropdown _dropdown;
 
     private int index;
+
+    private void Awake()
+    {
+        PlayerPrefs.DeleteAll();
+    }
+
     private void Start()
     {
         float volume = PlayerPrefs.GetFloat("AudioSettings", DEFAULT_VOLUME);
@@ -54,12 +60,12 @@ public class MainMenu : MonoBehaviour
     }
     public void ExitGame()
     {
-        #if UNITY_STANDALONE_WIN
-            Application.Quit();
-        #endif
-        #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-        #endif
+#if UNITY_STANDALONE_WIN
+        Application.Quit();
+#endif
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
     public void Settings()
     {
@@ -74,15 +80,15 @@ public class MainMenu : MonoBehaviour
 
     public void ChangeAudio()
     {
-        
+
         Camera.main.GetComponent<AudioSource>().volume = _audioSlider.value;
         PlayerPrefs.SetFloat("AudioSettings", _audioSlider.value);
-        
+
     }
     public void SetFullscreen()
     {
         Screen.fullScreen = _fullscreenToggle.isOn;
-        
+
     }
     public void ChangeResolution()
     {
@@ -90,7 +96,7 @@ public class MainMenu : MonoBehaviour
         int height = int.Parse(_resolutionDropdownText.text.ToString().Split(" x ")[1].Split(" @ ")[0]);
         PlayerPrefs.SetInt("Width", width);
         PlayerPrefs.SetInt("Height", height);
-        Screen.SetResolution(width, height,_fullscreenToggle.isOn);
+        Screen.SetResolution(width, height, _fullscreenToggle.isOn);
         index = _dropdown.value;
         PlayerPrefs.SetInt("Index", index);
     }
