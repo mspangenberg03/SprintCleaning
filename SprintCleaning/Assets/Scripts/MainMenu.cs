@@ -30,8 +30,21 @@ public class MainMenu : MonoBehaviour
     private TMP_Dropdown _dropdown;
 
     private int index;
+
+    private void Awake()
+    {
+        Debug.Log("clear playerprefs");
+        PlayerPrefs.DeleteAll();
+    }
+
     private void Start()
     {
+        for (int i = 0; i < Screen.resolutions.Length; i++)
+            Debug.Log(Screen.resolutions[i].width + " " + Screen.resolutions[i].height + " " + Screen.resolutions[i].refreshRateRatio);
+        Debug.Log("--------");
+        Debug.Log("Current: " + Screen.currentResolution.width + " " + Screen.currentResolution.height + " " + Screen.currentResolution.refreshRateRatio);
+
+        Debug.Log("athgfbvyhgfvhgbfv");
         float volume = PlayerPrefs.GetFloat("AudioSettings", DEFAULT_VOLUME);
         _audioSlider.value = volume;
         Camera.main.GetComponent<AudioSource>().volume = volume;
@@ -47,6 +60,7 @@ public class MainMenu : MonoBehaviour
         _dropdown.value = index;
         _resolutionDropdownText.text = _dropdown.options[index].text;
         //ChangeResolution();
+        Debug.Log("uykjukyjukjyfkugjyfdfdddd");
     }
     public void StartButton()
     {
@@ -86,16 +100,20 @@ public class MainMenu : MonoBehaviour
     }
     public void ChangeResolution()
     {
+        Debug.Log("bhtgfbvjyhgbfvjhgbfvhygfv");
         int width = int.Parse(_resolutionDropdownText.text.Split(" x ")[0]);
         int height = int.Parse(_resolutionDropdownText.text.ToString().Split(" x ")[1].Split(" @ ")[0]);
         PlayerPrefs.SetInt("Width", width);
         PlayerPrefs.SetInt("Height", height);
         Screen.SetResolution(width, height,_fullscreenToggle.isOn);
         index = _dropdown.value;
+        Debug.Log("chygfvhygbfvhgf");
         PlayerPrefs.SetInt("Index", index);
+        Debug.Log("dhygfvdhtgrfv");
     }
     public void OpenGarbageSellingMenu()
     {
+        Debug.Log("ehtgrfvhgfv");
         SceneManager.LoadScene("SellingMenu");
     }
 }

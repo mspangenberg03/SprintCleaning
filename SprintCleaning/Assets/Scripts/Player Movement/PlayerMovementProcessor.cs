@@ -10,6 +10,7 @@ public static class PlayerMovementProcessor
     {
         // Set the fixed delta time such that, if performance isn't an issue, the number of fixed updates is constant every frame.
         // Otherwise there's a little jitter.
+        Debug.Log("nbgvfmjnhbgvfcd");
         double frameRate = Screen.currentResolution.refreshRateRatio.value;
         double fixedUpdatesPerFrame = frameRate < 120 ? 2 : 1;
         Time.fixedDeltaTime = (float)(1f / (frameRate * fixedUpdatesPerFrame));
