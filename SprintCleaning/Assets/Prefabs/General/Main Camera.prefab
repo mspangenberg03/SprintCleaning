@@ -144,6 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65249721ce34cdb43a7415f84a5f0ffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gameAudioMixer: {fileID: 24100000, guid: fedf60293c00229499018b58512fe665, type: 2}
   _musicSources:
   - {fileID: 8507224168536241742}
   - {fileID: 8803661052240162182}

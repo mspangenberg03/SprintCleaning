@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 [DefaultExecutionOrder(-11)] // should be before anything accesses this in case the singleton's FindObjectOfTime being slow causes sync issues
 public class GameplayMusic : MonoBehaviour
 {
+    [SerializeField] private AudioMixer _gameAudioMixer;
     public AudioSource[] _musicSources;
 
     private static GameplayMusic _instance;
@@ -24,7 +26,11 @@ public class GameplayMusic : MonoBehaviour
 
     private void Awake()
     {
-        DevHelper devHelper = DevHelper.Instance; // just to initialize it before any code uses the RNG
+        FadeMixerGroup.SetVolume(_gameAudioMixer, "Streak1Volume", 0);
+        FadeMixerGroup.SetVolume(_gameAudioMixer, "Streak2Volume", 0);
+        FadeMixerGroup.SetVolume(_gameAudioMixer, "Streak3Volume", 0);
+        FadeMixerGroup.SetVolume(_gameAudioMixer, "Streak4Volume", 0);
+        ScoreManager.Instance.CheckStreakMultiplier();
 
         _instance = this;
         //System.Threading.Thread.MemoryBarrier();
