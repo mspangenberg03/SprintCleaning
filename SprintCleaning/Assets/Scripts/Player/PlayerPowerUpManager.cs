@@ -11,33 +11,11 @@ public class PlayerPowerUpManager : MonoBehaviour
     [SerializeField] private PlayerMovement _PlayerMovement;
 
     [SerializeField] private GameObject _Vaccum;
+    [SerializeField] private GameObject _Score;
 
     public List<PowerUpBase> _heldPowerUps = new();
 
-    public void PowerUpUsed(PowerUpType _powerUp)
-    {
-        /*
-        int index = -1;
-        for (int i = 0; i < _heldPowerUps.Count; i++)
-        {
-            if (_heldPowerUps[i]._type == _powerUp)
-            {
-                index = i; 
-                break;
-            }
-        }
-        if (index == -1)
-            throw new System.Exception("No PowerUp in _heldPowerUps is _powerUp.");
-
-        _heldPowerUps[index]._PowerUpUses++;
-        if (_heldPowerUps[index]._PowerUpUses == _heldPowerUps[index]._durablity)
-        {
-            _heldPowerUps.RemoveAt(index);
-        }
-
-        _PowerUpBar.UpdateDisplayedInfo(_heldPowerUps);
-        */
-    }
+    
 
     public void TryAddPowerUp(PickUpPowerUp pickupPowerUp)
     {
@@ -60,10 +38,11 @@ public class PlayerPowerUpManager : MonoBehaviour
         else if(pickupPowerUp.PowerUpInfo._type == PowerUpType.Speed_Boots){
             _PlayerMovement.ChangeSpeedMult(1.5f);
         }
-        /*else if(pickupPowerUp.PowerUpInfo._type == PowerUpType.Score_Mult){
-
+        else if(pickupPowerUp.PowerUpInfo._type == PowerUpType.Score_Mult){
+            ScoreManager _scoreManager = _Score.GetComponent<ScoreManager>();
+            _scoreManager._powerUpMultiplier = 2;
         }
-        */
+        
         Destroy(pickupPowerUp.gameObject);
         
 
@@ -96,10 +75,11 @@ public class PlayerPowerUpManager : MonoBehaviour
                     _PlayerMovement.ChangeSpeedMult(1f);
                     Debug.Log("speed done");
                 }
-                /*else if(_heldPowerUps[i].PowerUpInfo._type == PowerUpType.Score_Mult){
-
+                else if(_heldPowerUps[i].PowerUpInfo._type == PowerUpType.Score_Mult){
+                    ScoreManager _scoreManager = _Score.GetComponent<ScoreManager>();
+                    _scoreManager._powerUpMultiplier = 1;
                 }
-                */
+                
             }
         }
         if(index != -1){

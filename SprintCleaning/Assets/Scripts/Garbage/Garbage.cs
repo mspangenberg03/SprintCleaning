@@ -152,8 +152,6 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
                 if (audioTime % .25 > .022)
                     Debug.Log("Hit trash at time (+- maybe 20 ms): " + audioTime);
             }
-
-            bool gameOver = false;
             
             ScoreManager.Instance.GarbageCollected(_type);
             player.GetComponent<PlayerGarbageCollection>().TextEdit();
