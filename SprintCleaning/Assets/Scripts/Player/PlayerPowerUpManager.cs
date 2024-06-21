@@ -69,11 +69,9 @@ public class PlayerPowerUpManager : MonoBehaviour
                 if(_heldPowerUps[i]._type == PowerUpType.Vaccum){
                     CapsuleCollider _vacCol = _Vaccum.GetComponent<CapsuleCollider>();
                     _vacCol.enabled = false;
-                    Debug.Log("vac done");
                 }
                 else if(_heldPowerUps[i]._type == PowerUpType.Speed_Boots){
                     _PlayerMovement.ChangeSpeedMult(1f);
-                    Debug.Log("speed done");
                 }
                 else if(_heldPowerUps[i]._type == PowerUpType.Score_Mult){
                     ScoreManager _scoreManager = _Score.GetComponent<ScoreManager>();
