@@ -122,6 +122,61 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &66157948
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 66157950}
+  - component: {fileID: 66157949}
+  m_Layer: 0
+  m_Name: 'Vaccum Capsule '
+  m_TagString: Vaccum
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!136 &66157949
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 66157948}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Radius: 4
+  m_Height: 1.7312443
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.66634786, z: 0}
+--- !u!4 &66157950
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 66157948}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1791975040}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &213862579
 GameObject:
   m_ObjectHideFlags: 3
@@ -706,6 +761,28 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1379219828180637411, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
   m_PrefabInstance: {fileID: 6773608403735988638}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1791975044 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6582814077961112365, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+  m_PrefabInstance: {fileID: 6773608403735988638}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0535ff30f6d754e4493f36ed2c8001f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1791975046 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7155127644151803059, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+  m_PrefabInstance: {fileID: 6773608403735988638}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 434a2b6b3929989468b1cbab3b581905, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5555699909272759551
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -868,12 +945,27 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1540360275}
     - target: {fileID: 6582814077961112365, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+      propertyPath: _Vaccum
+      value: 
+      objectReference: {fileID: 66157948}
+    - target: {fileID: 6582814077961112365, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
       propertyPath: _PowerUpBar
       value: 
       objectReference: {fileID: 1623511382}
+    - target: {fileID: 6582814077961112365, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+      propertyPath: _PlayerMovement
+      value: 
+      objectReference: {fileID: 1791975046}
+    - target: {fileID: 7155127644151803059, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+      propertyPath: _playerPowerUpManager
+      value: 
+      objectReference: {fileID: 1791975044}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1379219828180637411, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 66157950}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
 --- !u!1001 &8043883741683208405

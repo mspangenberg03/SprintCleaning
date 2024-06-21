@@ -83,7 +83,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (other.gameObject.CompareTag("Player")||other.gameObject.CompareTag("Vaccum"))
         {
             GameObject player = other.transform.parent.gameObject;
             Animator animator = player.GetComponentInChildren<Animator>();
@@ -106,7 +106,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
             }
 
             bool gameOver = false;
-            if (Obstacle)
+            if (Obstacle&&!other.gameObject.CompareTag("Vaccum"))
             {
                 if (!Game_Over.Instance.GameIsOver)
                     animator.SetTrigger("Hit");
