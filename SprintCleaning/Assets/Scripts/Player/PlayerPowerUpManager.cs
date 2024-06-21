@@ -75,7 +75,7 @@ public class PlayerPowerUpManager : MonoBehaviour
                     _PlayerMovement.ChangeSpeedMult(1f);
                     Debug.Log("speed done");
                 }
-                else if(_heldPowerUps[i].PowerUpInfo._type == PowerUpType.Score_Mult){
+                else if(_heldPowerUps[i]._type == PowerUpType.Score_Mult){
                     ScoreManager _scoreManager = _Score.GetComponent<ScoreManager>();
                     _scoreManager._powerUpMultiplier = 1;
                 }
