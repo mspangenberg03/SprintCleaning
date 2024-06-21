@@ -58,7 +58,7 @@ public class PlayerPowerUpManager : MonoBehaviour
            _vacCol.enabled = true;
         }
         else if(pickupPowerUp.PowerUpInfo._type == PowerUpType.Speed_Boots){
-            _PlayerMovement.ChangeSpeedMult(2f);
+            _PlayerMovement.ChangeSpeedMult(1.5f);
         }
         /*else if(pickupPowerUp.PowerUpInfo._type == PowerUpType.Score_Mult){
 
@@ -67,12 +67,7 @@ public class PlayerPowerUpManager : MonoBehaviour
         Destroy(pickupPowerUp.gameObject);
         
 
-        /*if (_heldPowerUps.Count > _numberOfPowerUps)
-        {
-            _heldPowerUps.RemoveAt(_heldPowerUps.Count - 1);
-        }
-*/
-        //_PowerUpBar.UpdateDisplayedInfo(_heldPowerUps);
+
     }
 
     public bool HasPowerUp(PowerUpType _powerUp)
@@ -89,7 +84,7 @@ public class PlayerPowerUpManager : MonoBehaviour
         int index = -1;
         for (int i = 0; i < _heldPowerUps.Count; i++)
         {
-            _heldPowerUps[i]._PowerUpTimer = _heldPowerUps[i]._PowerUpTimer + (0.001f/Time.deltaTime);
+            _heldPowerUps[i]._PowerUpTimer = _heldPowerUps[i]._PowerUpTimer + Time.deltaTime;
             if (_heldPowerUps[i]._PowerUpTimer >= _heldPowerUps[i]._length){
                 index = i;
                 if(_heldPowerUps[i]._type == PowerUpType.Vaccum){
@@ -107,11 +102,8 @@ public class PlayerPowerUpManager : MonoBehaviour
                 */
             }
         }
-        //if(index != -1){
-         //   _heldPowerUps.RemoveAt(index);
-        //}
-            
-            //Debug.Log("called");
-        
+        if(index != -1){
+            _heldPowerUps.RemoveAt(index);
+        }       
     }
 }
