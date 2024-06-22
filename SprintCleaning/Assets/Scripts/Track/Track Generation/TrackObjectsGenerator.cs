@@ -179,7 +179,6 @@ public class TrackObjectsGenerator
                           // The 2nd part of the || is for a case where it happens.
             }
 
-            int lane = 0;
             currentTrackLastObstacleBeat = System.Math.Max(currentTrackLastObstacleBeat, beat);
 
             int fromBeat = System.Math.Max(0, beat - _minBeatsBetweenObstacles);
@@ -187,11 +186,15 @@ public class TrackObjectsGenerator
             for (int j = fromBeat; j <= toBeat; j++)
                 _possibleObstacleBeats.Remove(j);
 
-            GameObject prefab = _obstaclePrefabs[Random.Range(0, _obstaclePrefabs.Length)];
+            GameObject prefab;
+            do
+            {
+                prefab = _obstaclePrefabs[Random.Range(0, _obstaclePrefabs.Length)];
+            } while (_possibleObstacleLanes.Count != 3 && prefab == _obstaclePrefabs[1]);
 
-            if(prefab != _obstaclePrefabs[1]){
-                lane = _possibleObstacleLanes[Random.Range(0, _possibleObstacleLanes.Count)];
-            }
+            int lane = _possibleObstacleLanes[Random.Range(0, _possibleObstacleLanes.Count)];
+            if (prefab == _obstaclePrefabs[1]) // horizontal obstacle
+                lane = 0;
             SpawnOrThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnObstacleImmediately);
             numObstaclesSpawned++;
         }
