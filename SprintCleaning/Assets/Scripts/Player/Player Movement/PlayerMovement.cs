@@ -123,7 +123,7 @@ public class PlayerMovement : MonoBehaviour
         endDirection.y = 0;
         if (VectorUtils.TwoPointsAreOnDifferentSidesOfPlane(priorPositionOnMidline, _positionOnMidline, endPosition, endDirection))
         {
-            _trackGenerator.AddTrackPiece();
+            _trackGenerator.AddTrackPieceAndObjects();
         }
         _trackGenerator.AfterPlayerMovementFixedUpdate();
     }

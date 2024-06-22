@@ -52,23 +52,21 @@ public class TrackGenerator : MonoBehaviour
         _leftBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, true, _buildingsGeneratorSettings);
 
         for (int i = 0; i < _numTrackPieces; i++)
-            AddTrackPiece();
+            AddTrackPieceAndObjects();
     }
 
-    public void AddTrackPiece()
+    public void AddTrackPieceAndObjects()
     {
         TrackPiece newTrackPiece = _trackPiecesGenerator.AddTrackPiece();
+
+        _rightBuildingsGenerator.AddBuildings(newTrackPiece);
+        _leftBuildingsGenerator.AddBuildings(newTrackPiece);
+
         if (newTrackPiece.Prior != null)
         {
-            // Generate buildings 1 track piece later so can check for overlap with the next track piece.
-            // Generating garbage 2 track pieces later so if the nearest throwing point to a garbage's point on the track is on a building from the next track piece,
-            // that building will already exist.
-
-            _rightBuildingsGenerator.AddBuildings(newTrackPiece.Prior);
-            _leftBuildingsGenerator.AddBuildings(newTrackPiece.Prior);
-
-            if (newTrackPiece.Prior.Prior != null)
-                _trackObjectsGenerator.AddTrash(newTrackPiece.Prior.Prior, TrackPieces.Count);
+            // Add trash on the 2nd to last track piece, because buildings haven't fully filled the last track piece yet,
+            // and need those to know where the trash will be thrown from.
+            _trackObjectsGenerator.AddTrash(newTrackPiece.Prior, TrackPieces.Count);
         }
     }
 

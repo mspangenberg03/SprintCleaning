@@ -9,6 +9,7 @@ public class DevHelper : ScriptableObject
     [SerializeField] private bool _dontOverrideControlsWhenReproduceGameplay;
     [field: SerializeField] public bool LogAudioTimeAndPlayerProgressAlongTrack { get; private set; }
     [field: SerializeField] public bool LogUnexpectedTrashCollectionTimings { get; private set; }
+    [field: SerializeField] public bool ImmortalPlayer { get; private set; }
     [field: SerializeField] public TrashCollectionTimingInfoSettings TrashCollectionTimingInfo { get; private set; }
 
 

@@ -8,8 +8,6 @@ public class Building : MonoBehaviour, PoolOfMonoBehaviour<Building>.IPoolable
 
     [SerializeField] private Transform _earliestCornerByTrack;
     [SerializeField] private Transform _latestCornerByTrack;
-    //[SerializeField] private Transform _earliestCornerOnFarSide;
-    //[SerializeField] private Transform _latestCornerOnFarSide;
     [SerializeField] private Transform[] _throwSources;
 
     private PoolOfMonoBehaviour<Building> _pool;

@@ -26,6 +26,8 @@ public class GameplayMusic : MonoBehaviour
 
     private void Awake()
     {
+        _ = DevHelper.Instance; // this is just to initialize it before anything uses Random, since this script has the earliest execution order.
+
         FadeMixerGroup.SetVolume(_gameAudioMixer, "Streak1Volume", 0);
         FadeMixerGroup.SetVolume(_gameAudioMixer, "Streak2Volume", 0);
         FadeMixerGroup.SetVolume(_gameAudioMixer, "Streak3Volume", 0);

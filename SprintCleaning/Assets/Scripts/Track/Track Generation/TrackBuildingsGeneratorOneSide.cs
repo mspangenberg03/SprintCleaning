@@ -24,8 +24,6 @@ public class TrackBuildingsGeneratorOneSide
     private float _spawnpointLane;
     private float _noCrossingLane;
 
-    private Building _prior;
-
 
     public TrackBuildingsGeneratorOneSide(Transform poolFolder, Transform outOfPoolFolder, bool isLeft, BuildingsGeneratorInspectorSettings inspectorSettings)
     {
@@ -59,6 +57,8 @@ public class TrackBuildingsGeneratorOneSide
             infiniteLoopCheck--;
 
 #if UNITY_EDITOR
+        if (infiniteLoopCheck == 0)
+            Debug.LogError("infinite loop detected");
         if (_currentPiece == null)
             throw new System.Exception("_currentPiece is null");
 #endif
@@ -66,9 +66,6 @@ public class TrackBuildingsGeneratorOneSide
 
     private bool TryAddBuilding()
     {
-        if (_currentPiece.Next == null)
-            return false; // don't add to the last track piece
-
         _currentPiece.StoreLane(_spawnpointLane);
 
         if (_nextBuildingPrefabIndex == -1)
@@ -86,11 +83,11 @@ public class TrackBuildingsGeneratorOneSide
         {
             lengthFromStartOfSpawnNextToToBuildingHalfWidth -= spawnNextTo.ApproximateLengthForStoredLane();
             spawnNextTo = spawnNextTo.Next;
-            spawnNextTo.StoreLane(_spawnpointLane);
 
-            //if (spawnNextTo.Next == null || spawnNextTo.Next.Next == null)
-            if (spawnNextTo.Next == null)
+            if (spawnNextTo == null)
                 return false;
+
+            spawnNextTo.StoreLane(_spawnpointLane);
         }
         float tAtSpawnPoint = spawnNextTo.FindTForDistanceAlongStoredLane(lengthFromStartOfSpawnNextToToBuildingHalfWidth, 0);
 
@@ -114,7 +111,7 @@ public class TrackBuildingsGeneratorOneSide
 
         if (spawnNextTo.IntersectsWithLine2D(earlierCorner, laterCorner)
             || (spawnNextTo.Prior != null && spawnNextTo.Prior.IntersectsWithLine2D(earlierCorner, laterCorner))
-            || spawnNextTo.Next.IntersectsWithLine2D(earlierCorner, laterCorner))
+            || (spawnNextTo.Next != null && spawnNextTo.Next.IntersectsWithLine2D(earlierCorner, laterCorner)))
         {
             // The building would intersect with the track, so move the starting point forwards and try again
             _lengthOfCurrentPieceFilled += 1f;

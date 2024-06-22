@@ -31,6 +31,8 @@ public class Game_Over : MonoBehaviour
 
     public void GameOver()
     {
+        if (DevHelper.Instance.ImmortalPlayer)
+            return;
         if (GameIsOver)
             return;
         StartCoroutine(DelayGameOver());
