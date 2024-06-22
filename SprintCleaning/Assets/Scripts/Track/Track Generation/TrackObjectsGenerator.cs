@@ -353,9 +353,9 @@ public class TrackObjectsGenerator
     private void CalcPositionAndRotationForObjectOnTrack(TrackPiece trackPiece, float distanceAlongMidline, float lane
         , out Vector3 position, out Quaternion rotation)
     {
-        float t = trackPiece.FindTForDistanceAlongMidline(distanceAlongMidline, 0f);
-
         trackPiece.StoreLane(0);
+        float t = trackPiece.FindTForDistanceAlongStoredLane(distanceAlongMidline, 0f);
+
         Vector3 midlinePosition = trackPiece.BezierCurve(t) + Vector3.up * _trackObjectsYOffset;
 
         Vector3 approximatedPositionOnMidline = trackPiece.BezierCurve(t);
