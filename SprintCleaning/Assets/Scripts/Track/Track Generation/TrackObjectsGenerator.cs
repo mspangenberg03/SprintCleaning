@@ -21,9 +21,7 @@ public class TrackObjectsGenerator
     [SerializeField] private int _numberOfObstacleCountsToChooseMinAmongst = 2;
     [SerializeField] private int _minBeatsBetweenObstacles = 3;
     [SerializeField] private GameObject[] _obstaclePrefabs;
-
-
-    [Header("Beat strengths filled from 1st to last.")]
+    [Header("Beat Strengths (filled from 1st to last)")]
     [SerializeField] private GarbageSpawningBeatStrength[] _beatStrengths;
 
     private DictionaryOfPoolsOfMonoBehaviour<Garbage> _pools;
@@ -344,7 +342,6 @@ public class TrackObjectsGenerator
                     throw new System.Exception("The garbage is already in the list.");
 #endif
                 trackPiece.GarbageOnThisTrackPiece.Add(newGarbage);
-                
             }
         }
     }

@@ -93,9 +93,9 @@ public class TrackBuildingsGeneratorOneSide
         spawnTrackPiece.BuildingsByThisTrackPiece.Add(newBuilding);
 
         // Successfully spawned the building, so move forwards along the track and then try to spawn another building.
-        AdvanceAlongTrackWhenSpawnedNewBuilding(spawnTrackPiece, spawnDistanceAlongTrackPiece);
+        AdvanceAlongTrackWhenAddedNewBuilding(spawnTrackPiece, spawnDistanceAlongTrackPiece, nextBuildingWidth);
+        _nextBuildingPrefabIndex = -1;
         _priorSpawned = newBuilding;
-        _nextBuildingPrefabIndex = -1; // will pick one next time
 
         return true;
     }
@@ -155,11 +155,11 @@ public class TrackBuildingsGeneratorOneSide
             newBuilding.ReturnToPool();
     }
 
-    private void AdvanceAlongTrackWhenSpawnedNewBuilding(TrackPiece spawnTrackPiece, float spawnDistanceAlongTrackPiece)
+    private void AdvanceAlongTrackWhenAddedNewBuilding(TrackPiece spawnTrackPiece, float spawnDistanceAlongTrackPiece, float newBuildingWidth)
     {
         _trackPieceBeingFilled = spawnTrackPiece;
 
-        _filledUpToLengthOfTrackPiece = spawnDistanceAlongTrackPiece + _buildingWidths[_nextBuildingPrefabIndex] / 2;
+        _filledUpToLengthOfTrackPiece = spawnDistanceAlongTrackPiece + newBuildingWidth / 2;
         while (true)
         {
             _trackPieceBeingFilled.StoreLane(_spawnpointLane);
