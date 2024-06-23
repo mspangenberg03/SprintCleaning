@@ -35,11 +35,11 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 
     private Transform Root => transform.parent;
 
-    public void InitializeUponInstantiated(PoolOfMonoBehaviour<Garbage> pool)
+    public void InitializeUponPrefabInstantiated(PoolOfMonoBehaviour<Garbage> pool)
     {
         _pool = pool;
     }
-    public void InitializeUponProduced() 
+    public void InitializeUponProducedByPool() 
     {
         _animTrigger.Reset();
     }

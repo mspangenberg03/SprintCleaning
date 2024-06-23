@@ -25,9 +25,9 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
     public List<Building> BuildingsByThisTrackPiece { get; set; } = new();
 
 
-    public void InitializeUponInstantiated(PoolOfMonoBehaviour<TrackPiece> poolOfMonoBehaviour) { }
+    public void InitializeUponPrefabInstantiated(PoolOfMonoBehaviour<TrackPiece> poolOfMonoBehaviour) { }
 
-    public void InitializeUponProduced()
+    public void InitializeUponProducedByPool()
     {
         List<TrackPiece> currentTrackPieces = TrackGenerator.Instance.TrackPieces;
         if (currentTrackPieces.Count > 0)

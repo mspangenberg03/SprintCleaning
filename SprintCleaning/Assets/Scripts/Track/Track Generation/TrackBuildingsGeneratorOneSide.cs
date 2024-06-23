@@ -24,6 +24,8 @@ public class TrackBuildingsGeneratorOneSide
     private float _spawnpointLane;
     private float _noCrossingLane;
 
+    private Building _priorSpawned;
+
 
     public TrackBuildingsGeneratorOneSide(Transform poolFolder, Transform outOfPoolFolder, bool isLeft, BuildingsGeneratorInspectorSettings inspectorSettings)
     {
@@ -114,7 +116,7 @@ public class TrackBuildingsGeneratorOneSide
             || (spawnNextTo.Next != null && spawnNextTo.Next.IntersectsWithLine2D(earlierCorner, laterCorner)))
         {
             // The building would intersect with the track, so move the starting point forwards and try again
-            _lengthOfCurrentPieceFilled += 1f;
+            _lengthOfCurrentPieceFilled += Random.value;
             return true;
         }
 
@@ -123,7 +125,13 @@ public class TrackBuildingsGeneratorOneSide
         Quaternion rotation = Quaternion.Euler(0, yRotation, 0);
         Building newBuilding = _buildingPools.Produce(_nextBuildingPrefabIndex, buildingSpawnPoint + Vector3.up * PlayerMovement.Settings.PlayerVerticalOffset, rotation);
 
-
+        if (_priorSpawned != null && Building.OverlappingFootprints(_priorSpawned, newBuilding))
+        {
+            // The building overlaps another building, so despawn it, move the starting point forwards, and try again
+            newBuilding.ReturnToPool();
+            _lengthOfCurrentPieceFilled += Random.value;
+            return true;
+        }
 
 
         spawnNextTo.BuildingsByThisTrackPiece.Add(newBuilding);
@@ -143,6 +151,8 @@ public class TrackBuildingsGeneratorOneSide
         }
 
         _nextBuildingPrefabIndex = -1;
+
+        _priorSpawned = newBuilding;
 
         return true;
 

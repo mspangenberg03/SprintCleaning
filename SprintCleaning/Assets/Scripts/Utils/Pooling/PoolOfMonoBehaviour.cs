@@ -12,8 +12,8 @@ public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour
 
     public interface IPoolable
     {
-        void InitializeUponInstantiated(PoolOfMonoBehaviour<T> pool);
-        void InitializeUponProduced();
+        void InitializeUponPrefabInstantiated(PoolOfMonoBehaviour<T> pool);
+        void InitializeUponProducedByPool();
         void OnReturnToPool();
     }
 
@@ -45,7 +45,7 @@ public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour
         {
             GameObject instantiated = Object.Instantiate(_prefab, position, rotation, _outOfPoolFolder);
             result = instantiated.GetComponentInChildren<T>(); // The script can be on the prefab's root gameObject.
-            result.InitializeUponInstantiated(this);
+            result.InitializeUponPrefabInstantiated(this);
             _rootOfEachPrefabInstance.Add(result, instantiated);
         }
         else
@@ -60,7 +60,7 @@ public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour
             rootTransform.position = position;
             rootTransform.rotation = rotation;
         }
-        result.InitializeUponProduced();
+        result.InitializeUponProducedByPool();
         GameObject rootGameObject = _rootOfEachPrefabInstance[result];
         rootGameObject.SetActive(true);
         return result;
