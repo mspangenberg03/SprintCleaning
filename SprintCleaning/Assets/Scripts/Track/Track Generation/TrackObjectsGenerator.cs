@@ -83,7 +83,7 @@ public class TrackObjectsGenerator
         _obstaclesLeftover -= numObstacles;
         numObstacles = System.Math.Min(numObstacles, Mathf.CeilToInt(_maxObstaclesPerTrackPiece));
 
-        if (numTrackPieces < 5)
+        if (numTrackPieces < 4)
         {
             numTrash = 0; // so the player doesn't immediately encounter trash.
             numObstacles = 0;

@@ -27,7 +27,7 @@ public class TrackBuildingsGeneratorOneSide
     private Building _priorSpawned;
 
 
-    public TrackBuildingsGeneratorOneSide(Transform poolFolder, Transform outOfPoolFolder, bool isLeft, BuildingsGeneratorInspectorSettings inspectorSettings)
+    public TrackBuildingsGeneratorOneSide(Transform poolFolder, Transform outOfPoolFolder, BuildingsGeneratorInspectorSettings inspectorSettings, bool isLeft)
     {
         _buildingPrefabs = inspectorSettings.BuildingPrefabs;
         _isLeft = isLeft;

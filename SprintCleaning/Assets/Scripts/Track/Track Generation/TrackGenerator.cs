@@ -25,10 +25,11 @@ public class TrackGenerator : MonoBehaviour
         }
     }
 
-    void Awake()
+    private void Awake()
     {
         _instance = this;
 
+        // These folder gameObjects are just to make the hierarchy window more organized.
         Transform trackPieceFolder = new GameObject("Track Pieces").transform;
         Transform trackObjectFolder = new GameObject("Track Objects").transform;
         Transform buildingFolder = new GameObject("Buildings").transform;
@@ -48,8 +49,8 @@ public class TrackGenerator : MonoBehaviour
 
         _trackPiecesGenerator.Initialize(trackPiecePoolFolder, trackPieceFolder, TrackPieces, _numTrackPieces);
         _trackObjectsGenerator.Initialize(trackObjectPoolFolder, trackObjectFolder);
-        _rightBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, false, _buildingsGeneratorSettings);
-        _leftBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, true, _buildingsGeneratorSettings);
+        _rightBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, _buildingsGeneratorSettings, false);
+        _leftBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, _buildingsGeneratorSettings, true);
 
         for (int i = 0; i < _numTrackPieces; i++)
             AddTrackPieceAndObjects();
@@ -62,12 +63,11 @@ public class TrackGenerator : MonoBehaviour
         _rightBuildingsGenerator.AddBuildings(newTrackPiece);
         _leftBuildingsGenerator.AddBuildings(newTrackPiece);
 
-        if (newTrackPiece.Prior != null)
-        {
-            // Add trash on the 2nd to last track piece, because buildings haven't fully filled the last track piece yet,
-            // and need those to know where the trash will be thrown from.
-            _trackObjectsGenerator.AddTrash(newTrackPiece.Prior, TrackPieces.Count);
-        }
+        // Add trash on the 2nd to last track piece, because buildings need to finish spawning up to some distance
+        // away, in order to decide where trash will be thrown from.
+        TrackPiece addTrashOn = newTrackPiece.Prior;
+        if (addTrashOn != null)
+            _trackObjectsGenerator.AddTrash(addTrashOn, TrackPieces.Count);
     }
 
     public void AfterPlayerMovementFixedUpdate()

@@ -5,7 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class TrackPiecesGenerator
 {
-    [SerializeField] private GameObject[] _trackPrefabs; // index 0 should be the straight track piece
+    [Header("Index 0 of Track Prefabs must be the straight track piece.")]
+    [SerializeField] private GameObject[] _trackPrefabs;
     [SerializeField] private float _oddsDontTurn = .8f;
     [SerializeField] private float _minStraightBetweenTurns = 2;
 
@@ -56,25 +57,22 @@ public class TrackPiecesGenerator
     {
         int index;
 
-        if (_trackPrefabs.Length == 1 || _trackPieces.Count == 0)
+        if (_trackPrefabs.Length == 1 || _trackPieces.Count == 0
+            || _numStraightSinceLastTurn < _minStraightBetweenTurns || Random.value < _oddsDontTurn)
+        {
+            // Track doesn't turn
             index = 0;
+            if (_trackPieces.Count != 0)
+                _numStraightSinceLastTurn++;
+        }
         else
         {
-            if (_numStraightSinceLastTurn < _minStraightBetweenTurns || Random.value < _oddsDontTurn)
+            // Track turns
+            _numStraightSinceLastTurn = 0;
+            do
             {
-                // Track doesn't turn
-                index = 0;
-                _numStraightSinceLastTurn++;
-            }
-            else
-            {
-                // Track turns
-                _numStraightSinceLastTurn = 0;
-                do
-                {
-                    index = Random.Range(1, _trackPrefabs.Length);
-                } while (index == _priorTrackPieceIndex);
-            }
+                index = Random.Range(1, _trackPrefabs.Length);
+            } while (index == _priorTrackPieceIndex);
         }
 
         _priorTrackPieceIndex = index;
