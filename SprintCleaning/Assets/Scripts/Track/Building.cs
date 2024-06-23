@@ -23,6 +23,8 @@ public class Building : MonoBehaviour, PoolOfMonoBehaviour<Building>.IPoolable
 
     public float Width => (_earliestCornerByTrack.position - _latestCornerByTrack.position).magnitude;
 
+    public int DebugID { get; set; }
+
     public void InitializeUponPrefabInstantiated(PoolOfMonoBehaviour<Building> pool) 
     {
         _pool = pool;

@@ -24,6 +24,7 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
     public List<Garbage> GarbageOnThisTrackPiece { get; set; } = new();
     public List<Building> BuildingsByThisTrackPiece { get; set; } = new();
 
+    public int DebugID { get; set; }
 
     public void InitializeUponPrefabInstantiated(PoolOfMonoBehaviour<TrackPiece> poolOfMonoBehaviour) { }
 
@@ -50,6 +51,8 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
         if (Next != null)
             Next.Prior = null;
         Next = null;
+        if (Prior != null)
+            Prior.Next = null;
         Prior = null;
     }
 

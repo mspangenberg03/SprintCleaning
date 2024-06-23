@@ -35,6 +35,8 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 
     private Transform Root => transform.parent;
 
+    public int DebugID { get; set; }
+
     public void InitializeUponPrefabInstantiated(PoolOfMonoBehaviour<Garbage> pool)
     {
         _pool = pool;
