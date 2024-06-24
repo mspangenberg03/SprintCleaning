@@ -21,11 +21,10 @@ MonoBehaviour:
   <BaseLaneChangeSpeed>k__BackingField: 10
   <LaneChangeSpeedupTime>k__BackingField: 0.000001
   <LaneChangeTurnaroundTime>k__BackingField: 0.000001
-  <AllowMultipleLaneChangeByHoldingDown>k__BackingField: 0
   <JumpHeight>k__BackingField: 2
   <JumpUpDuration>k__BackingField: 0.35
   <JumpDownDuration>k__BackingField: 0.45
   <JumpBufferDuration>k__BackingField: 0.1
   <RotationSpeed>k__BackingField: 300
   <DistanceBetweenLanes>k__BackingField: 3
-  <PlayerVerticalOffset>k__BackingField: 1.5
+  <PlayerVerticalOffset>k__BackingField: 0.75

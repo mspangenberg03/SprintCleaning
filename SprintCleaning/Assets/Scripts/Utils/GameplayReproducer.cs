@@ -14,8 +14,6 @@ public class GameplayReproducer
     {
         public int seed;
         public float fixedDeltaTime;
-        public bool[] leftInputs;
-        public bool[] rightInputs;
         public bool[] leftInputDowns;
         public bool[] rightInputDowns;
         public bool[] jumps;
@@ -26,8 +24,6 @@ public class GameplayReproducer
 
     private DebugSaveData _saveData;
 
-    private List<bool> _leftInputs = new();
-    private List<bool> _rightInputs = new();
     private List<bool> _leftInputDowns = new();
     private List<bool> _rightInputDowns = new();
     private List<bool> _jumpInputs = new();
@@ -48,8 +44,6 @@ public class GameplayReproducer
             if (File.Exists(_saveLocation))
             {
                 _saveData = JsonUtility.FromJson<DebugSaveData>(File.ReadAllText(_saveLocation));
-                _leftInputs = new List<bool>(_saveData.leftInputs);
-                _rightInputs = new List<bool>(_saveData.rightInputs);
                 _leftInputDowns = new List<bool>(_saveData.leftInputDowns);
                 _rightInputDowns = new List<bool>(_saveData.rightInputDowns);
                 _jumpInputs = new List<bool>(_saveData.jumps);
@@ -82,8 +76,6 @@ public class GameplayReproducer
         }
 
         // save the data
-        _saveData.leftInputs = _leftInputs.ToArray();
-        _saveData.rightInputs = _rightInputs.ToArray();
         _saveData.leftInputDowns = _leftInputDowns.ToArray();
         _saveData.rightInputDowns = _rightInputDowns.ToArray();
         _saveData.jumps = _jumpInputs.ToArray();
@@ -96,10 +88,8 @@ public class GameplayReproducer
         _currentIndex++;
     }
 
-    public void SaveOrLoadMovementInputs(ref bool leftInput, ref bool rightInput, ref bool leftInputDown, ref bool rightInputDown, ref bool jumpInput)
+    public void SaveOrLoadMovementInputs(ref bool leftInputDown, ref bool rightInputDown, ref bool jumpInput)
     {
-        SaveOrLoadBoolInput(ref leftInput, _leftInputs);
-        SaveOrLoadBoolInput(ref rightInput, _rightInputs);
         SaveOrLoadBoolInput(ref leftInputDown, _leftInputDowns);
         SaveOrLoadBoolInput(ref rightInputDown, _rightInputDowns);
         SaveOrLoadBoolInput(ref jumpInput, _jumpInputs);

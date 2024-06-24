@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 {
-    
+    [SerializeField] private GarbagePickupAnimationTrigger _animTrigger;
 
     [Tooltip("The type of tool needed to collect this piece of garbage")]
     public GarbageType _type;
@@ -39,7 +39,10 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     {
         _pool = pool;
     }
-    public void InitializeUponProduced() { }
+    public void InitializeUponProduced() 
+    {
+        _animTrigger.Reset();
+    }
     public void OnReturnToPool() { }
 
     public void SetTrajectoryFromCurrentPosition(Vector3 destinationPosition)
@@ -83,8 +86,10 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         if (other.gameObject.CompareTag("Player"))
         {
             GameObject player = other.transform.parent.gameObject;
+            Animator animator = player.GetComponentInChildren<Animator>();
             _garbageAudio = player.GetComponent<AudioSource>();
             _garbageAudio.PlayOneShot(impact, 1F);
+            _animTrigger.CheckTriggerAnimation(other);
             if (!Obstacle)
             {
                 GameObject particleObject = Instantiate(_particle, gameObject.transform.position, Quaternion.identity);
@@ -103,7 +108,8 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
             bool gameOver = false;
             if (Obstacle)
             {
-                gameOver = true;
+                if (!Game_Over.Instance.GameIsOver)
+                    animator.SetTrigger("Hit");
                 player.GetComponent<Game_Over>().GameOver();
             }
             else{

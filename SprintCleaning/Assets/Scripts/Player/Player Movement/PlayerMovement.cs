@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using Cinemachine;
 
 [DefaultExecutionOrder(-10)]
 public class PlayerMovement : MonoBehaviour
@@ -13,20 +12,15 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private PlayerMovementSettings _settings;
-    [SerializeField] private TextMeshProUGUI _speedText;
-
-    private float _speedMultiplier = 1f;
+    [SerializeField] private Animator _animator;
     private float _currentTargetLane;
     private bool _changingLanes;
     
     private float _jumpInputTime = float.NegativeInfinity;
     private TrackGenerator _trackGenerator;
-    [SerializeField]
-    GameObject _camera;
+
     // input polling (in case of frames w/o fixed update)
     private bool _polledInputThisFrame;
-    private bool _leftInput;
-    private bool _rightInput;
     private bool _leftInputDown;
     private bool _rightInputDown;
     private bool _jumpInput;
@@ -34,39 +28,18 @@ public class PlayerMovement : MonoBehaviour
     // position & velocity
 
     private Vector3 _positionOnMidline;
+
     private float _lanePosition;
     private float _laneChangeSpeed;
 
     private float _jumpPosition;
     private float _jumpSpeed;
 
-    [Header("Camera Animations")]
-    [SerializeField]
-    private AnimationClip _tiltUp;
-    [SerializeField]
-    private AnimationClip _tiltDown;
-    [SerializeField]
-    private AnimationClip _tiltUpFromDown;
-    [SerializeField]
-    private AnimationClip _tiltDownFromUp;
+    private float CurrentForwardsSpeed => _settings.BaseForwardsSpeed * (1f - Game_Over.Instance.FractionOfGameOverDelayElapsed);
 
-    private bool _tiltedUp;
-    private bool _tiltedDown;
-    private bool _cameraLevel;
-    [SerializeField]
-    private Animator _animator;
-
-    private float CurrentForwardsSpeed
-    {
-        get => _settings.BaseForwardsSpeed * _speedMultiplier;
-        set => _speedMultiplier = Mathf.Clamp(value, _settings.MinForwardsSpeed, _settings.MaxForwardsSpeed) / _settings.BaseForwardsSpeed;
-    }
-
-    private bool LeftInput => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
-    private bool RightInput => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
-    private bool LeftInputDown => Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow);
-    private bool RightInputDown => Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow);
-    private bool JumpInput => Input.GetKey(KeyCode.Space);
+    private bool LeftInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow));
+    private bool RightInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow));
+    private bool JumpInput => !Game_Over.Instance.GameIsOver && Input.GetKey(KeyCode.Space);
 
     private static PlayerMovementSettings _settingsStatic;
     public static PlayerMovementSettings Settings 
@@ -94,29 +67,13 @@ public class PlayerMovement : MonoBehaviour
         _positionOnMidline = _trackGenerator.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
         _rigidbody.position = _positionOnMidline;
         _rigidbody.transform.position = _rigidbody.position;
-        //Animator.Play(_tiltUp);
+        _animator.SetFloat("Speed", 2f);
     }
 
     private void Update()
     {
-        if (_polledInputThisFrame) // fixed update ran
-        {
-            _leftInput = false;
-            _rightInput = false;
-        }
         PollInputsOncePerFrame();
         _polledInputThisFrame = false;
-    }
-
-    private void LateUpdate()
-    {
-        _speedText.text = "Speed: " + (int)CurrentForwardsSpeed;
-    }
-
-    public void GarbageSlow(float playerSpeedMultiplier)
-    {
-        _speedMultiplier *= playerSpeedMultiplier;
-        _speedMultiplier = Mathf.Max(_settings.MinForwardsSpeed / _settings.BaseForwardsSpeed, _speedMultiplier);
     }
 
     private void FixedUpdate()
@@ -129,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
 
         PollInputsOncePerFrame();
         DevHelper.Instance.GameplayReproducer.StartNextFixedUpdate();
-        DevHelper.Instance.GameplayReproducer.SaveOrLoadMovementInputs(ref _leftInput, ref _rightInput, ref _leftInputDown, ref _rightInputDown, ref _jumpInput);
+        DevHelper.Instance.GameplayReproducer.SaveOrLoadMovementInputs(ref _leftInputDown, ref _rightInputDown, ref _jumpInput);
 
         TrackPiece trackPiece = _trackGenerator.TrackPieces[TARGET_POINT_INDEX];
         float t = trackPiece.FindTForClosestPointOnMidline(_positionOnMidline);
@@ -139,13 +96,11 @@ public class PlayerMovement : MonoBehaviour
 
 
         Vector3 midlineVelocity = TrackMidlineVelocity(trackPiece, t);
-        //_camera.transform.rotation = Quaternion.LookRotation(midlineVelocity * Time.deltaTime);
-        //if()
-        Debug.Log(midlineVelocity);
+
         Vector3 priorPositionOnMidline = _positionOnMidline; 
         _positionOnMidline += midlineVelocity * Time.deltaTime;
 
-        UpdateJumpPosition(_positionOnMidline.y - priorPositionOnMidline.y);
+        UpdateJumpPosition();
 
         UpdateLanePosition();
 
@@ -179,10 +134,6 @@ public class PlayerMovement : MonoBehaviour
             return;
         _polledInputThisFrame = true;
 
-        if (LeftInput)
-            _leftInput = true;
-        if (RightInput)
-            _rightInput = true;
         if (LeftInputDown)
             _leftInputDown = true;
         if (RightInputDown)
@@ -239,10 +190,10 @@ public class PlayerMovement : MonoBehaviour
     {
         float priorTargetLane = _currentTargetLane;
 
-        if (_leftInputDown || (_leftInput && !_changingLanes && _settings.AllowMultipleLaneChangeByHoldingDown))
+        if (_leftInputDown)
             _currentTargetLane--;
 
-        if (_rightInputDown || (_rightInput && !_changingLanes && _settings.AllowMultipleLaneChangeByHoldingDown))
+        if (_rightInputDown)
             _currentTargetLane++;
 
         _currentTargetLane = Mathf.Clamp(_currentTargetLane, -1, 1);
@@ -271,15 +222,12 @@ public class PlayerMovement : MonoBehaviour
 
 
     #region Jumping
-    private void UpdateJumpPosition(float changeInMidlinePositionY)
+    private void UpdateJumpPosition()
     {
         // The jump position is relative to the midline position, so make it so the player doesn't move upwards/downwards if 
         // the track goes upwards/downwards while the player is jumping.
         if (_jumpPosition > 0)
-        {
-            //_jumpPosition = _jumpPosition - changeInMidlinePositionY;
             CheckJumpHitsGround();
-        }
 
         if (_jumpInput)
         {
@@ -290,6 +238,7 @@ public class PlayerMovement : MonoBehaviour
         bool executeJump = (Time.time <= _jumpInputTime + _settings.JumpBufferDuration) && _jumpPosition == 0;
         if (executeJump)
         {
+            _animator.SetTrigger("Jump");
             _jumpSpeed = _settings.JumpUpDuration * _settings.GravityAccelerationWhileRising;
             _jumpInputTime = float.NegativeInfinity;
         }

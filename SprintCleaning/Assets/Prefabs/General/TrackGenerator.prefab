@@ -63,19 +63,20 @@ MonoBehaviour:
     _minTimeSeeObjectOnTrack: 1
     _maxTimeSeeObjectOnTrack: 2
     _oddsSpawnImmediately: 0.5
-    _trackObjectsYOffset: 1.5
+    _trackObjectsYOffset: 0.5
     _minGarbageOnTrackPiece: 4
     _maxGarbageOnTrackPiece: 10
     _numberOfGarbageCountsToChooseMinAmongst: 2
     _maxConsecutiveBeatsWithLaneChange: 1
     _oddsSpawnObstacleImmediately: 1
     _minObstaclesPerTrackPiece: 1
-    _maxObstaclesPerTrackPiece: 2
+    _maxObstaclesPerTrackPiece: 11
     _maxObstaclesCarriedOnWhenFailToSpawn: 1
     _numberOfObstacleCountsToChooseMinAmongst: 1
     _minBeatsBetweenObstacles: 2
     _obstaclePrefabs:
     - {fileID: 1620772654782883020, guid: 038baf3fdc78e424aa92e61b29aa79ee, type: 3}
+    - {fileID: 6174984916426853657, guid: a521367ff84e1214ab6b8a23b54c28ce, type: 3}
     _beatStrengths:
     - <Beats>k__BackingField: 0000000008000000
       <GarbagePrefabs>k__BackingField:
