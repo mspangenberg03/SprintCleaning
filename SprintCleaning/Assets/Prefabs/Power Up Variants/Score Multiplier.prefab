@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &8675166970662572947
+--- !u!1001 &6581061509573321036
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -11,18 +11,18 @@ PrefabInstance:
     - target: {fileID: 1363372076950304251, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: f562f9fa4fd63fd4db08566a8bfb12dd, type: 2}
+      objectReference: {fileID: 2100000, guid: 6f1f26b69aae1304c9ddb45f3007dfbe, type: 2}
     - target: {fileID: 2007214065330267525, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 18.911444
+      value: 18.130047
       objectReference: {fileID: 0}
     - target: {fileID: 2007214065330267525, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.50000006
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 2007214065330267525, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 5.258856
+      value: 1.6472716
       objectReference: {fileID: 0}
     - target: {fileID: 2007214065330267525, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -57,20 +57,20 @@ PrefabInstance:
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7213048395655017689, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
-      propertyPath: <ToolInfo>k__BackingField._type
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 7213048395655017689, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
       propertyPath: <ToolInfo>k__BackingField._toolUI
       value: 
-      objectReference: {fileID: 11400000, guid: 38d57f011c94b044eba58328a938c90e, type: 2}
+      objectReference: {fileID: 11400000, guid: 6b617c64f7bd3a446befc2e8b349dd9d, type: 2}
+    - target: {fileID: 7213048395655017689, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
+      propertyPath: <PowerUpInfo>k__BackingField._type
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7213048395655017689, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
       propertyPath: <ToolInfo>k__BackingField._toolUses
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7593384376440917220, guid: 495c11d258c8ce94693d3a30ad8b12c5, type: 3}
       propertyPath: m_Name
-      value: Yellow Variant
+      value: Score Multiplier
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
