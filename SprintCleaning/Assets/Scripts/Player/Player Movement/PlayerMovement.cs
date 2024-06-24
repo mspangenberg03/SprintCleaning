@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Cinemachine;
 
 [DefaultExecutionOrder(-10)]
 public class PlayerMovement : MonoBehaviour
@@ -20,7 +21,8 @@ public class PlayerMovement : MonoBehaviour
     
     private float _jumpInputTime = float.NegativeInfinity;
     private TrackGenerator _trackGenerator;
-
+    [SerializeField]
+    GameObject _camera;
     // input polling (in case of frames w/o fixed update)
     private bool _polledInputThisFrame;
     private bool _leftInput;
@@ -32,12 +34,27 @@ public class PlayerMovement : MonoBehaviour
     // position & velocity
 
     private Vector3 _positionOnMidline;
-
     private float _lanePosition;
     private float _laneChangeSpeed;
 
     private float _jumpPosition;
     private float _jumpSpeed;
+
+    [Header("Camera Animations")]
+    [SerializeField]
+    private AnimationClip _tiltUp;
+    [SerializeField]
+    private AnimationClip _tiltDown;
+    [SerializeField]
+    private AnimationClip _tiltUpFromDown;
+    [SerializeField]
+    private AnimationClip _tiltDownFromUp;
+
+    private bool _tiltedUp;
+    private bool _tiltedDown;
+    private bool _cameraLevel;
+    [SerializeField]
+    private Animator _animator;
 
     private float CurrentForwardsSpeed
     {
@@ -77,6 +94,7 @@ public class PlayerMovement : MonoBehaviour
         _positionOnMidline = _trackGenerator.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
         _rigidbody.position = _positionOnMidline;
         _rigidbody.transform.position = _rigidbody.position;
+        //Animator.Play(_tiltUp);
     }
 
     private void Update()
@@ -121,7 +139,9 @@ public class PlayerMovement : MonoBehaviour
 
 
         Vector3 midlineVelocity = TrackMidlineVelocity(trackPiece, t);
-
+        //_camera.transform.rotation = Quaternion.LookRotation(midlineVelocity * Time.deltaTime);
+        //if()
+        Debug.Log(midlineVelocity);
         Vector3 priorPositionOnMidline = _positionOnMidline; 
         _positionOnMidline += midlineVelocity * Time.deltaTime;
 
