@@ -19,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
     private float _jumpInputTime = float.NegativeInfinity;
     private TrackGenerator _trackGenerator;
 
+    [SerializeField] private PlayerPowerUpManager _playerPowerUpManager;
+
     // input polling (in case of frames w/o fixed update)
     private bool _polledInputThisFrame;
     private bool _leftInputDown;
@@ -34,8 +36,9 @@ public class PlayerMovement : MonoBehaviour
 
     private float _jumpPosition;
     private float _jumpSpeed;
+    private float _speedMult = 1f;
 
-    private float CurrentForwardsSpeed => _settings.BaseForwardsSpeed * (1f - Game_Over.Instance.FractionOfGameOverDelayElapsed);
+    private float CurrentForwardsSpeed => _settings.BaseForwardsSpeed * (1f - Game_Over.Instance.FractionOfGameOverDelayElapsed) * _speedMult;
 
     private bool LeftInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow));
     private bool RightInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow));
@@ -126,6 +129,7 @@ public class PlayerMovement : MonoBehaviour
             _trackGenerator.AddTrackPieceAndObjects();
         }
         _trackGenerator.AfterPlayerMovementFixedUpdate();
+        _playerPowerUpManager.PowerUpAfterUpdate();
     }
 
     private void PollInputsOncePerFrame()
@@ -161,6 +165,9 @@ public class PlayerMovement : MonoBehaviour
         result.y += yDifference / Time.deltaTime;
 
         return result;
+    }
+    public void ChangeSpeedMult(float mult){
+        _speedMult = mult;
     }
 
     #region Lane Changing

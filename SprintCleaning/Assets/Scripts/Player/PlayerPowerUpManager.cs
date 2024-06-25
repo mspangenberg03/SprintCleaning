@@ -8,31 +8,14 @@ public class PlayerPowerUpManager : MonoBehaviour
     [Tooltip("How many PowerUps the player can hold")]
     [SerializeField] private int _numberOfPowerUps;
     [SerializeField] private PowerUpBar _PowerUpBar;
+    [SerializeField] private PlayerMovement _PlayerMovement;
+
+    [SerializeField] private GameObject _Vaccum;
+    [SerializeField] private GameObject _Score;
 
     public List<PowerUpBase> _heldPowerUps = new();
 
-    public void PowerUpUsed(PowerUpType _powerUp)
-    {
-        int index = -1;
-        for (int i = 0; i < _heldPowerUps.Count; i++)
-        {
-            if (_heldPowerUps[i]._type == _powerUp)
-            {
-                index = i; 
-                break;
-            }
-        }
-        if (index == -1)
-            throw new System.Exception("No PowerUp in _heldPowerUps is _powerUp.");
-
-        _heldPowerUps[index]._PowerUpUses++;
-        if (_heldPowerUps[index]._PowerUpUses == _heldPowerUps[index]._durablity)
-        {
-            _heldPowerUps.RemoveAt(index);
-        }
-
-        _PowerUpBar.UpdateDisplayedInfo(_heldPowerUps);
-    }
+    
 
     public void TryAddPowerUp(PickUpPowerUp pickupPowerUp)
     {
@@ -40,7 +23,7 @@ public class PlayerPowerUpManager : MonoBehaviour
         {
             if (pickupPowerUp.PowerUpInfo._type == _heldPowerUps[i]._type)
             {
-                _heldPowerUps[i]._PowerUpUses = 0;
+                _heldPowerUps[i]._PowerUpTimer = 0f;
                 Destroy(pickupPowerUp.gameObject);
                 _PowerUpBar.UpdateDisplayedInfo(_heldPowerUps);
                 return;
@@ -48,14 +31,22 @@ public class PlayerPowerUpManager : MonoBehaviour
         }
 
         _heldPowerUps.Insert(0, pickupPowerUp.PowerUpInfo);
-        Destroy(pickupPowerUp.gameObject);
-
-        if (_heldPowerUps.Count > _numberOfPowerUps)
-        {
-            _heldPowerUps.RemoveAt(_heldPowerUps.Count - 1);
+        if(pickupPowerUp.PowerUpInfo._type == PowerUpType.Vaccum){
+           CapsuleCollider _vacCol = _Vaccum.GetComponent<CapsuleCollider>();
+           _vacCol.enabled = true;
         }
+        else if(pickupPowerUp.PowerUpInfo._type == PowerUpType.Speed_Boots){
+            _PlayerMovement.ChangeSpeedMult(1.5f);
+        }
+        else if(pickupPowerUp.PowerUpInfo._type == PowerUpType.Score_Mult){
+            ScoreManager _scoreManager = _Score.GetComponent<ScoreManager>();
+            _scoreManager._powerUpMultiplier = 2;
+        }
+        
+        Destroy(pickupPowerUp.gameObject);
+        
 
-        _PowerUpBar.UpdateDisplayedInfo(_heldPowerUps);
+
     }
 
     public bool HasPowerUp(PowerUpType _powerUp)
@@ -66,5 +57,31 @@ public class PlayerPowerUpManager : MonoBehaviour
                 return true;
         }
         return false;
+    }
+    public void PowerUpAfterUpdate()
+    {
+        int index = -1;
+        for (int i = 0; i < _heldPowerUps.Count; i++)
+        {
+            _heldPowerUps[i]._PowerUpTimer = _heldPowerUps[i]._PowerUpTimer + Time.deltaTime;
+            if (_heldPowerUps[i]._PowerUpTimer >= _heldPowerUps[i]._length){
+                index = i;
+                if(_heldPowerUps[i]._type == PowerUpType.Vaccum){
+                    CapsuleCollider _vacCol = _Vaccum.GetComponent<CapsuleCollider>();
+                    _vacCol.enabled = false;
+                }
+                else if(_heldPowerUps[i]._type == PowerUpType.Speed_Boots){
+                    _PlayerMovement.ChangeSpeedMult(1f);
+                }
+                else if(_heldPowerUps[i]._type == PowerUpType.Score_Mult){
+                    ScoreManager _scoreManager = _Score.GetComponent<ScoreManager>();
+                    _scoreManager._powerUpMultiplier = 1;
+                }
+                
+            }
+        }
+        if(index != -1){
+            _heldPowerUps.RemoveAt(index);
+        }       
     }
 }
