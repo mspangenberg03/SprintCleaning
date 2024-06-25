@@ -259,8 +259,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d45a9dd4944e2434b842fc9e92db267b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _unlockLevel2: 0
-  _unlockLevel3: 0
 --- !u!4 &83256293
 Transform:
   m_ObjectHideFlags: 0
@@ -1749,6 +1747,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a4f92f20db31b41b50f2a9b4893ef5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _levelTracker: {fileID: 83256291}
   _mainMenuPanel: {fileID: 324527791}
   _settingsMenuPanel: {fileID: 1574527646}
   _levelSelectPanel: {fileID: 716546419}
