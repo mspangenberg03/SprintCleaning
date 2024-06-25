@@ -17,6 +17,8 @@ public class MainMenu : MonoBehaviour
     private GameObject _mainMenuPanel;
     [SerializeField]
     private GameObject _settingsMenuPanel;
+    [SerializeField]
+    private GameObject _levelSelectPanel;
 
     [SerializeField]
     private Slider _audioSlider;
@@ -56,7 +58,21 @@ public class MainMenu : MonoBehaviour
     }
     public void StartButton()
     {
-        SceneManager.LoadScene("Main");
+        _mainMenuPanel.SetActive(false);
+        _levelSelectPanel.SetActive(true);
+        //SceneManager.LoadScene("Level 1");
+    }
+    public void StartLevel1()
+    {
+        SceneManager.LoadScene("Level 1");
+    }
+    public void StartLevel2()
+    {
+        SceneManager.LoadScene("Level 2");
+    }
+    public void StartLevel3()
+    {
+        SceneManager.LoadScene("Level 3");
     }
     public void ExitGame()
     {
@@ -76,6 +92,7 @@ public class MainMenu : MonoBehaviour
     {
         _mainMenuPanel.SetActive(true);
         _settingsMenuPanel.SetActive(false);
+        _levelSelectPanel.SetActive(false);
     }
 
     public void ChangeAudio()
