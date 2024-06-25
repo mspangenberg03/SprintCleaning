@@ -13,6 +13,10 @@ PrefabInstance:
       value: Obstacle Variant
       objectReference: {fileID: 0}
     - target: {fileID: 3993401155454205292, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
+      propertyPath: impact
+      value: 
+      objectReference: {fileID: 8300000, guid: c228a559710e0397da76bab261bb485e, type: 3}
+    - target: {fileID: 3993401155454205292, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
       propertyPath: _obstacle
       value: 1
       objectReference: {fileID: 0}
