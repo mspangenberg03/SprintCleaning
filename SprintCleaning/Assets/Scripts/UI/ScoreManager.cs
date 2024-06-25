@@ -52,8 +52,13 @@ public class ScoreManager : MonoBehaviour
     {
 
         _instance = this;
+        #if (UNITY_EDITOR) 
+        Debug.Log("Level Tracker Assigned");
+        #else
         _levelTracker = GameObject.Find("levelTracker");
         _levelCode = _levelTracker.GetComponent<Level_Tracker>();
+        #endif
+        
         
 
         if (_counts == null)
@@ -115,7 +120,12 @@ public class ScoreManager : MonoBehaviour
         }
         if (_streakValue > _streakThresholds[^1]){
             _streakMultiplier = _streakThresholds.Length + 1;
+            #if (UNITY_EDITOR) 
+            Debug.Log("Level Unlocked");
+            #else
             _levelCode.UnlockLevel();
+            #endif
+            
         }
 
 
