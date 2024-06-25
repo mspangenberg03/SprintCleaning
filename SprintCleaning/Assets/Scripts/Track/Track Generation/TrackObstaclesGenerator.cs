@@ -5,6 +5,10 @@ using UnityEngine;
 [System.Serializable]
 public class TrackObstaclesGenerator
 {
+    [SerializeField] private float _minTimeSeeObjectOnTrack = 1;
+    [SerializeField] private float _maxTimeSeeObjectOnTrack = 2;
+    [SerializeField] private float _trackObjectsYOffset = .5f;
+
     [SerializeField] private float _oddsSpawnObstacleImmediately = 1f;
     [SerializeField] private float _minObstaclesPerTrackPiece = 0f;
     [SerializeField] private float _maxObstaclesPerTrackPiece = 2f;
@@ -74,7 +78,7 @@ public class TrackObstaclesGenerator
             GameObject prefab = index < ObstaclePrefabs.Length ? ObstaclePrefabs[index] : WideObstaclePrefabs[index - ObstaclePrefabs.Length];
             int lane = index < ObstaclePrefabs.Length ? _possibleObstacleLanes.RandomElement() : 0;
 
-            _objectsGenerator.SpawnOrPlanToThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnObstacleImmediately);
+            _objectsGenerator.SpawnOrPlanToThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnObstacleImmediately, Random.Range(_minTimeSeeObjectOnTrack, _maxTimeSeeObjectOnTrack), _trackObjectsYOffset);
 
             numObstaclesSpawned++;
             currentTrackLastObstacleBeat = System.Math.Max(currentTrackLastObstacleBeat, beat);

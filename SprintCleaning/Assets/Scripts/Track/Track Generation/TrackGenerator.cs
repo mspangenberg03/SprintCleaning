@@ -7,6 +7,7 @@ public class TrackGenerator : MonoBehaviour
     [SerializeField] private int _numTrackPieces = 10;
     [SerializeField] private TrackPiecesGenerator _trackPiecesGenerator;
     [SerializeField] private TrackObjectsGenerator _trackObjectsGenerator;
+    [SerializeField] private TrackGarbageGenerator _garbageGenerator;
     [SerializeField] private TrackObstaclesGenerator _obstaclesGenerator;
     [SerializeField] private BuildingsGeneratorInspectorSettings _buildingsGeneratorSettings;
 
@@ -49,7 +50,7 @@ public class TrackGenerator : MonoBehaviour
 
 
         _trackPiecesGenerator.Initialize(trackPiecePoolFolder, trackPieceFolder, TrackPieces, _numTrackPieces);
-        _trackObjectsGenerator.Initialize(trackObjectPoolFolder, trackObjectFolder, _obstaclesGenerator);
+        _trackObjectsGenerator.Initialize(trackObjectPoolFolder, trackObjectFolder, _obstaclesGenerator, _garbageGenerator);
         _rightBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, _buildingsGeneratorSettings, false);
         _leftBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, _buildingsGeneratorSettings, true);
 
