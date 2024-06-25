@@ -19,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
     private float _jumpInputTime = float.NegativeInfinity;
     private TrackGenerator _trackGenerator;
 
+    [SerializeField] private PlayerPowerUpManager _playerPowerUpManager;
+
     // input polling (in case of frames w/o fixed update)
     private bool _polledInputThisFrame;
     private bool _leftInputDown;
@@ -34,13 +36,9 @@ public class PlayerMovement : MonoBehaviour
 
     private float _jumpPosition;
     private float _jumpSpeed;
+    private float _speedMult = 1f;
 
-    [SerializeField]
-    private Animator _cameraAnimator;
-    private bool _tiltedUp = false;
-    private bool _tiltedDown = false;
-    private bool _cameraStraight = false;
-    private float CurrentForwardsSpeed => _settings.BaseForwardsSpeed * (1f - Game_Over.Instance.FractionOfGameOverDelayElapsed);
+    private float CurrentForwardsSpeed => _settings.BaseForwardsSpeed * (1f - Game_Over.Instance.FractionOfGameOverDelayElapsed) * _speedMult;
 
     private bool LeftInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow));
     private bool RightInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow));
@@ -101,35 +99,6 @@ public class PlayerMovement : MonoBehaviour
 
 
         Vector3 midlineVelocity = TrackMidlineVelocity(trackPiece, t);
-        //if(midlineVelocity.y > 0 && !_tiltedUp)
-        //{
-        //    Debug.Log("Animation played");
-        //    _cameraAnimator.Play("TiltUp");
-        //    _tiltedUp = true;
-        //    _cameraStraight = false;
-        //}
-        //if(midlineVelocity.y>0 && _tiltedUp)
-        //{
-        //    _cameraAnimator.Play("TiltDownFromUp");
-        //    _tiltedUp = false;
-        //    _cameraStraight = true;
-        //}
-        //if(midlineVelocity.y < 0 && !_tiltedDown)
-        //{
-        //    _cameraAnimator.Play("TiltDown");
-        //    _tiltedDown = true;
-        //    _cameraStraight = false;
-        //}
-        //if (midlineVelocity.y < 0 && _tiltedDown)
-        //{
-        //    _cameraAnimator.Play("TiltUpFromDown");
-        //    _tiltedDown = false;
-        //    _cameraStraight = true;
-        //}
-        //if (midlineVelocity.y == 0 && _cameraStraight)
-        //{
-        //    _cameraAnimator.gameObject.transform.rotation = new Quaternion(midlineVelocity.x,midlineVelocity.y,midlineVelocity.z,1);
-        //}
 
         Vector3 priorPositionOnMidline = _positionOnMidline; 
         _positionOnMidline += midlineVelocity * Time.deltaTime;
@@ -157,9 +126,10 @@ public class PlayerMovement : MonoBehaviour
         endDirection.y = 0;
         if (VectorUtils.TwoPointsAreOnDifferentSidesOfPlane(priorPositionOnMidline, _positionOnMidline, endPosition, endDirection))
         {
-            _trackGenerator.AddTrackPiece();
+            _trackGenerator.AddTrackPieceAndObjects();
         }
         _trackGenerator.AfterPlayerMovementFixedUpdate();
+        _playerPowerUpManager.PowerUpAfterUpdate();
     }
 
     private void PollInputsOncePerFrame()
@@ -195,6 +165,9 @@ public class PlayerMovement : MonoBehaviour
         result.y += yDifference / Time.deltaTime;
 
         return result;
+    }
+    public void ChangeSpeedMult(float mult){
+        _speedMult = mult;
     }
 
     #region Lane Changing

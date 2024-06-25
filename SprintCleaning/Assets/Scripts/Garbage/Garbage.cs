@@ -35,11 +35,13 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 
     private Transform Root => transform.parent;
 
-    public void InitializeUponInstantiated(PoolOfMonoBehaviour<Garbage> pool)
+    public int DebugID { get; set; }
+
+    public void InitializeUponPrefabInstantiated(PoolOfMonoBehaviour<Garbage> pool)
     {
         _pool = pool;
     }
-    public void InitializeUponProduced() 
+    public void InitializeUponProducedByPool() 
     {
         _animTrigger.Reset();
     }
@@ -106,7 +108,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
             }
 
             bool gameOver = false;
-            if (Obstacle)
+            if (Obstacle&&!other.gameObject.CompareTag("Vaccum"))
             {
                 if (!Game_Over.Instance.GameIsOver)
                     animator.SetTrigger("Hit");
@@ -116,7 +118,6 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
                 ScoreManager.Instance.GarbageCollected(_type);
                 player.GetComponent<PlayerGarbageCollection>().TextEdit();
             }
-            DevHelper.Instance.CheckLogInfoForTrashCollectionIntervalChecking();
 
             ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
 
@@ -131,6 +132,32 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
             if (OnTrackPiece.GarbageOnThisTrackPiece.Contains(this))
                 throw new System.Exception("jhtgfbvc");
 #endif
+        }
+        else if(other.gameObject.CompareTag("Vaccum")){
+            GameObject player = other.transform.parent.gameObject;
+            Animator animator = player.GetComponentInChildren<Animator>();
+            _garbageAudio = player.GetComponent<AudioSource>();
+            _garbageAudio.PlayOneShot(impact, 1F);
+            _animTrigger.CheckTriggerAnimation(other);
+            if (!Obstacle)
+            {
+                GameObject particleObject = Instantiate(_particle, gameObject.transform.position, Quaternion.identity);
+                particleObject.transform.rotation = player.transform.rotation;
+            }
+
+            if (DevHelper.Instance.LogUnexpectedTrashCollectionTimings)
+            {
+                // On my computer, the audio time updates every .02133 seconds. To be precisely synced with the music, it should be
+                // at a .25 second interval
+                double audioTime = GameplayMusic.CurrentAudioTime;
+                if (audioTime % .25 > .022)
+                    Debug.Log("Hit trash at time (+- maybe 20 ms): " + audioTime);
+            }
+            
+            ScoreManager.Instance.GarbageCollected(_type);
+            player.GetComponent<PlayerGarbageCollection>().TextEdit();
+
+            ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
         }
     }
 

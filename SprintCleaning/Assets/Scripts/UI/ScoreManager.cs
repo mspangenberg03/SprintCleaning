@@ -19,6 +19,8 @@ public class ScoreManager : MonoBehaviour
 
     public int _streakMultiplier = 1;
 
+    public int _powerUpMultiplier = 1;
+
     [field: SerializeField] public int MaxStreakValue { get; private set; }
 
     [SerializeField]
@@ -58,6 +60,9 @@ public class ScoreManager : MonoBehaviour
 
         _streakBar._current = _streakValue;
 
+        
+        
+
         //#if UNITY_EDITOR
         //        if (_resetInEditorOnAwake)
         //        {
@@ -77,7 +82,9 @@ public class ScoreManager : MonoBehaviour
     public void AddScoreOnGarbageCollection(int scoreToAdd, int streakValueToAdd)
     {
         CheckStreakMultiplier();
-        _score += (scoreToAdd * _streakMultiplier);
+        int add = scoreToAdd * _streakMultiplier * _powerUpMultiplier;
+        ScoreGainText.Instance.OnScoreGained(add);
+        _score += add;
         _streakValue += streakValueToAdd;
         _streakBar._current = _streakValue;
     }
@@ -89,7 +96,7 @@ public class ScoreManager : MonoBehaviour
         _streakBar._current = _streakValue;
     }
 
-    private void CheckStreakMultiplier()
+    public void CheckStreakMultiplier()
     {
         int priorStreakMultiplier = _streakMultiplier;
 
