@@ -1709,6 +1709,10 @@ MonoBehaviour:
   _audioSlider: {fileID: 1400330802}
   _fullscreenToggle: {fileID: 1268050978}
   _resolutionDropdownText: {fileID: 868904100}
+  _unlockLevel2: 0
+  _level2Button: {fileID: 1910839638}
+  _unlockLevel3: 0
+  _level3Button: {fileID: 1812333673}
 --- !u!114 &607905635
 MonoBehaviour:
   m_ObjectHideFlags: 0

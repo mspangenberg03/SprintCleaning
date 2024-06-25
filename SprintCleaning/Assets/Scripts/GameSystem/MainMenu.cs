@@ -33,6 +33,17 @@ public class MainMenu : MonoBehaviour
 
     private int index;
 
+    [SerializeField]
+    private bool _unlockLevel2;
+
+    [SerializeField]
+    private Button _level2Button;
+    
+    [SerializeField]
+    private bool _unlockLevel3;
+    [SerializeField]
+    private Button _level3Button;
+
     private void Awake()
     {
         PlayerPrefs.DeleteAll();
@@ -55,6 +66,13 @@ public class MainMenu : MonoBehaviour
         _dropdown.value = index;
         _resolutionDropdownText.text = _dropdown.options[index].text;
         //ChangeResolution();
+        if(!_unlockLevel2){
+            _level2Button.interactable = false;
+        }
+        if(!_unlockLevel3){
+            _level3Button.interactable = false;
+        }
+
     }
     public void StartButton()
     {
