@@ -18,6 +18,7 @@ public class ChangeCameraUpdateModeAfterFirstUpdate : MonoBehaviour
         {
             _brain.m_UpdateMethod = Cinemachine.CinemachineBrain.UpdateMethod.FixedUpdate;
             _brain.m_BlendUpdateMethod = Cinemachine.CinemachineBrain.BrainUpdateMethod.FixedUpdate;
+            Destroy(this);
         }
         _updated = true;
     }
