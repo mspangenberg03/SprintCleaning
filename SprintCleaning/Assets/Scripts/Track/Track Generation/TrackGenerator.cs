@@ -7,6 +7,7 @@ public class TrackGenerator : MonoBehaviour
     [SerializeField] private int _numTrackPieces = 10;
     [SerializeField] private TrackPiecesGenerator _trackPiecesGenerator;
     [SerializeField] private TrackObjectsGenerator _trackObjectsGenerator;
+    [SerializeField] private TrackObstaclesGenerator _obstaclesGenerator;
     [SerializeField] private BuildingsGeneratorInspectorSettings _buildingsGeneratorSettings;
 
     private TrackBuildingsGeneratorOneSide _rightBuildingsGenerator;
@@ -48,7 +49,7 @@ public class TrackGenerator : MonoBehaviour
 
 
         _trackPiecesGenerator.Initialize(trackPiecePoolFolder, trackPieceFolder, TrackPieces, _numTrackPieces);
-        _trackObjectsGenerator.Initialize(trackObjectPoolFolder, trackObjectFolder);
+        _trackObjectsGenerator.Initialize(trackObjectPoolFolder, trackObjectFolder, _obstaclesGenerator);
         _rightBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, _buildingsGeneratorSettings, false);
         _leftBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, _buildingsGeneratorSettings, true);
 
@@ -67,7 +68,7 @@ public class TrackGenerator : MonoBehaviour
         // away, in order to decide where trash will be thrown from.
         TrackPiece addTrashOn = newTrackPiece.Prior;
         if (addTrashOn != null)
-            _trackObjectsGenerator.AddTrash(addTrashOn, TrackPieces.Count);
+            _trackObjectsGenerator.AddGarbageAndObstacles(addTrashOn, TrackPieces.Count);
     }
 
     public void AfterPlayerMovementFixedUpdate()

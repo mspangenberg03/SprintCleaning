@@ -17,7 +17,3 @@ MonoBehaviour:
   <LogAudioTimeAndPlayerProgressAlongTrack>k__BackingField: 0
   <LogUnexpectedTrashCollectionTimings>k__BackingField: 0
   <ImmortalPlayer>k__BackingField: 0
-  <TrashCollectionTimingInfo>k__BackingField:
-    <CheckTrashCollectionConsistentIntervals>k__BackingField: 0
-    <DontLogIntervals>k__BackingField: 0
-    DontLogFixedUpdatesBetweenTrashCollection: 1c0000001d000000

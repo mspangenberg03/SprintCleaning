@@ -13,89 +13,68 @@ public class TrackObjectsGenerator
     [SerializeField] private int _maxGarbageOnTrackPiece = 16;
     [SerializeField] private int _numberOfGarbageCountsToChooseMinAmongst = 2;
     [SerializeField] private int _maxConsecutiveBeatsWithLaneChange = 1;
-    [Header("Obstacles")]
-    [SerializeField] private float _oddsSpawnObstacleImmediately = 1f;
-    [SerializeField] private float _minObstaclesPerTrackPiece = 0f;
-    [SerializeField] private float _maxObstaclesPerTrackPiece = 2f;
-    [SerializeField] private int _maxObstaclesCarriedOnWhenFailToSpawn = 2;
-    [SerializeField] private int _numberOfObstacleCountsToChooseMinAmongst = 2;
-    [SerializeField] private int _minBeatsBetweenObstacles = 3;
-    [SerializeField] private GameObject[] _obstaclePrefabs;
     [Header("Beat Strengths (filled from 1st to last)")]
     [SerializeField] private GarbageSpawningBeatStrength[] _beatStrengths;
 
+
     private DictionaryOfPoolsOfMonoBehaviour<Garbage> _pools;
 
-    private float _obstaclesLeftover;
-
-    private List<(int beat, GameObject prefab, int lane)> _selectedBeatsAndPrefabsAndLanes = new();
-    private List<int> _possibleObstacleBeats = new();
-    private List<int> _possibleObstacleLanes = new();
+    private List<(int beat, GameObject prefab, int lane)> _selectedBeatsAndPrefabsAndLanesForGarbage = new();
     private List<(float time, Vector3 finalPosition, Vector3 initialPosition, Quaternion rotation, TrackPiece trackPiece, GameObject prefab)> _plannedSpawns = new();
-    // ^ should probably use a priority queue for this, and make this data a struct or class
-    private int _priorLane;
-    private int _priorBeat = -1;
-    private int _priorTrackPieceLastObstacleBeat = -1;
-    private int _consecutiveBeatsWithLaneChange;
+     //^ should probably use a priority queue for this, and make this data a struct or class
+
+    private TrackGarbageLaneDecider _laneDecider;
     private System.Comparison<(int, GameObject, int)> _comparisonDelegateInstance = (a, b) => a.Item1 - b.Item1;
     private Dictionary<GameObject, float> _prefabToGravity = new();
 
-    //public static TrackPiece TrackPieceGeneratingObjectsOn { get; private set; }
 
-    public void Initialize(Transform poolFolder, Transform outOfPoolFolder)
+    private TrackObstaclesGenerator _obstaclesGenerator;
+
+    public void Initialize(Transform poolFolder, Transform outOfPoolFolder, TrackObstaclesGenerator obstaclesGenerator)
     {
+        _obstaclesGenerator= obstaclesGenerator;
+        _laneDecider = new TrackGarbageLaneDecider(_maxConsecutiveBeatsWithLaneChange);
         _pools = new DictionaryOfPoolsOfMonoBehaviour<Garbage>(poolFolder, outOfPoolFolder);
+
+
         foreach (GarbageSpawningBeatStrength x in _beatStrengths)
         {
             foreach (GameObject prefab in x.GarbagePrefabs)
-            {
-                _pools.CheckAddPoolForPrefab(prefab);
-                _prefabToGravity[prefab] = prefab.GetComponentInChildren<Garbage>().Gravity;
-            }
+                InitializeForPrefab(prefab);
         }
+        foreach (GameObject prefab in obstaclesGenerator.ObstaclePrefabs)
+            InitializeForPrefab(prefab);
+        foreach (GameObject prefab in obstaclesGenerator.WideObstaclePrefabs)
+            InitializeForPrefab(prefab);
 
-        foreach (GameObject prefab in _obstaclePrefabs)
+        void InitializeForPrefab(GameObject prefab)
         {
             _pools.CheckAddPoolForPrefab(prefab);
             _prefabToGravity[prefab] = prefab.GetComponentInChildren<Garbage>().Gravity;
         }
+
+        obstaclesGenerator.Initialize(this);
     }
 
-    public void AddTrash(TrackPiece trackPiece, int numTrackPieces)
+    public void AddGarbageAndObstacles(TrackPiece trackPiece, int numTrackPieces)
     {
-        //TrackPieceGeneratingObjectsOn = trackPiece;
+        bool spawnNone = numTrackPieces < 4; // To prevent immediately encountering trash when the run starts.
 
-        int numTrash = int.MaxValue;
+
+        int numTrash = NumberOfTrashToSpawn();
+        if (spawnNone)
+            numTrash = 0;
+
+        GenerateGarbage(trackPiece, numTrash);
+        _obstaclesGenerator.AddObstaclesToTrackPiece(trackPiece, spawnNone, _selectedBeatsAndPrefabsAndLanesForGarbage);
+    }
+
+    private int NumberOfTrashToSpawn()
+    {
+        int result = int.MaxValue;
         for (int i = 0; i < _numberOfGarbageCountsToChooseMinAmongst; i++)
-            numTrash = System.Math.Min(numTrash, Random.Range(_minGarbageOnTrackPiece, _maxGarbageOnTrackPiece + 1));
-
-        float floatNumberOfObstacles = float.PositiveInfinity;
-        for (int i = 0; i < _numberOfObstacleCountsToChooseMinAmongst; i++)
-            floatNumberOfObstacles = Mathf.Min(floatNumberOfObstacles, Random.Range(_minObstaclesPerTrackPiece, _maxObstaclesPerTrackPiece));
-
-        if (_obstaclesLeftover < 0)
-            throw new System.Exception("kujyhtgj " + _obstaclesLeftover);
-
-        _obstaclesLeftover += floatNumberOfObstacles;
-        int numObstacles = (int)_obstaclesLeftover;
-        _obstaclesLeftover -= numObstacles;
-        numObstacles = System.Math.Min(numObstacles, Mathf.CeilToInt(_maxObstaclesPerTrackPiece));
-
-        if (numTrackPieces < 4)
-        {
-            numTrash = 0; // so the player doesn't immediately encounter trash.
-            numObstacles = 0;
-        }
-
-        if (numTrash < 0 || numObstacles < 0)
-            throw new System.Exception("ujyhgtkujyhbgfvcd " + floatNumberOfObstacles + " " + _obstaclesLeftover);
-
-        if (!DevHelper.Instance.TrashCollectionTimingInfo.CheckTrashCollectionConsistentIntervals)
-            GenerateTrashAtSomeBeats(numTrash, numObstacles, trackPiece);
-        else
-            GenerateTrashAtEveryPosition(trackPiece);
-
-        
+            result = System.Math.Min(result, Random.Range(_minGarbageOnTrackPiece, _maxGarbageOnTrackPiece + 1));
+        return result;
     }
 
     public void AfterPlayerMovementFixedUpdate()
@@ -114,105 +93,36 @@ public class TrackObjectsGenerator
             {
                 (_, Vector3 finalPosition, Vector3 initialPosition, Quaternion rotation, TrackPiece trackPieceFromEarlier, GameObject prefab) = _plannedSpawns[i];
                 _plannedSpawns.RemoveAt(i);
-                CreateGarbage(prefab, finalPosition, rotation, trackPieceFromEarlier, true, initialPosition);
+                Spawn(prefab, finalPosition, rotation, trackPieceFromEarlier, true, initialPosition);
             }
         }
     }
 
-    private void GenerateTrashAtSomeBeats(int numTrash, int numObstacles, TrackPiece trackPiece)
+    private void GenerateGarbage(TrackPiece trackPiece, int numTrash)
     {
         foreach (GarbageSpawningBeatStrength x in _beatStrengths)
             x.StartNextTrackPiece();
 
         SelectBeatsAndPrefabsForGarbage(numTrash);
 
-        for (int i = 0; i < _selectedBeatsAndPrefabsAndLanes.Count; i++)
+        for (int i = 0; i < _selectedBeatsAndPrefabsAndLanesForGarbage.Count; i++)
         {
-            (int beat, GameObject prefab, _) = _selectedBeatsAndPrefabsAndLanes[i];
-            int lane = SelectNextLane(beat);
+            (int beat, GameObject prefab, _) = _selectedBeatsAndPrefabsAndLanesForGarbage[i];
+            int lane = _laneDecider.SelectGarbageLane(beat);
 
-            _selectedBeatsAndPrefabsAndLanes[i] = (beat, prefab, lane);
-            SpawnOrThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnImmediately);
+            _selectedBeatsAndPrefabsAndLanesForGarbage[i] = (beat, prefab, lane);
+            SpawnOrPlanToThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnImmediately);
         }
-
-        _possibleObstacleBeats.Clear();
-        for (int i = 0; i < 16; i++)
-            _possibleObstacleBeats.Add(i);
-        for (int i = 0; i < _selectedBeatsAndPrefabsAndLanes.Count; i++)
-            _possibleObstacleBeats.Remove(_selectedBeatsAndPrefabsAndLanes[i].beat);
-        if (_priorTrackPieceLastObstacleBeat != -1)
-        {
-            for (int i = _priorTrackPieceLastObstacleBeat; i <= _priorTrackPieceLastObstacleBeat + _minBeatsBetweenObstacles; i++)
-            {
-                int toRemove = (i + 32) % 16;
-                if (toRemove >= _priorTrackPieceLastObstacleBeat)
-                    continue;
-                _possibleObstacleBeats.Remove(toRemove);
-            }
-        }
-
-        int numObstaclesSpawned = 0;
-        int currentTrackLastObstacleBeat = -1;
-        for (int i = 0; i < numObstacles && _possibleObstacleBeats.Count > 0; i++)
-        {
-            int indexInPossibilities = Random.Range(0, _possibleObstacleBeats.Count);
-            int beat = _possibleObstacleBeats[indexInPossibilities];
-            _possibleObstacleBeats.RemoveAt(indexInPossibilities);
-
-            _possibleObstacleLanes.Clear();
-            for (int j = -1; j <= 1; j++)
-                _possibleObstacleLanes.Add(j);
-
-            for (int j = 0; j < _selectedBeatsAndPrefabsAndLanes.Count; j++)
-            {
-                (int beatOfTrash, _, int laneOfTrash) = _selectedBeatsAndPrefabsAndLanes[j];
-                if (System.Math.Abs(beatOfTrash - beat) < 2)
-                    _possibleObstacleLanes.Remove(laneOfTrash);
-            }
-
-            if (_possibleObstacleLanes.Count < 2 || (beat == 15 && _possibleObstacleLanes.Count < 3))
-            {
-                i--;
-                continue; // If there's only 1 lane, that lane would be on the path between the two adjacent pieces of trash.
-                          // The 2nd part of the || is for a case where it happens.
-            }
-
-            currentTrackLastObstacleBeat = System.Math.Max(currentTrackLastObstacleBeat, beat);
-
-            int fromBeat = System.Math.Max(0, beat - _minBeatsBetweenObstacles);
-            int toBeat = System.Math.Min(15, beat + _minBeatsBetweenObstacles);
-            for (int j = fromBeat; j <= toBeat; j++)
-                _possibleObstacleBeats.Remove(j);
-
-            GameObject prefab;
-            do
-            {
-                prefab = _obstaclePrefabs[Random.Range(0, _obstaclePrefabs.Length)];
-            } while (_possibleObstacleLanes.Count != 3 && prefab == _obstaclePrefabs[1]);
-
-            int lane = _possibleObstacleLanes[Random.Range(0, _possibleObstacleLanes.Count)];
-            if (prefab == _obstaclePrefabs[1]) // horizontal obstacle
-                lane = 0;
-            SpawnOrThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnObstacleImmediately);
-            numObstaclesSpawned++;
-        }
-        int numObstaclesFailedToSpawn = numObstacles - numObstaclesSpawned;
-        if (numObstaclesFailedToSpawn < 0)
-            throw new System.Exception("liukjyhngbftkujygrtfvdecsykjhgbfvdc " + " " + numObstacles + " " + numObstaclesSpawned);
-
-        _obstaclesLeftover += System.Math.Min(numObstaclesFailedToSpawn, _maxObstaclesCarriedOnWhenFailToSpawn);
-
-        _priorTrackPieceLastObstacleBeat = currentTrackLastObstacleBeat;
     }
 
-    private void SpawnOrThrowObject(GameObject prefab, int beat, int lane, TrackPiece trackPiece, float oddsSpawnImmediately)
+    public void SpawnOrPlanToThrowObject(GameObject prefab, int beat, int lane, TrackPiece trackPiece, float oddsSpawnImmediately)
     {
         float distanceAlongMidline = beat * TrackPiece.TRACK_PIECE_LENGTH / 16;
         CalcPositionAndRotationForObjectOnTrack(trackPiece, distanceAlongMidline, lane, out Vector3 finalPosition, out Quaternion rotation);
 
         if (Random.value <= oddsSpawnImmediately)
         {
-            CreateGarbage(prefab, finalPosition, rotation, trackPiece, false, Vector3.negativeInfinity);
+            Spawn(prefab, finalPosition, rotation, trackPiece, false, Vector3.negativeInfinity);
         }
         else
         {
@@ -232,7 +142,7 @@ public class TrackObjectsGenerator
 
             bool wouldNeedToFallUpwards = finalPosition.y > initialPosition.y - .1f; // the subtraction is to avoid ridiculously fast horizontal throwing speeds
             if (wouldNeedToFallUpwards)
-                CreateGarbage(prefab, finalPosition, rotation, trackPiece, false, Vector3.negativeInfinity);
+                Spawn(prefab, finalPosition, rotation, trackPiece, false, Vector3.negativeInfinity);
             else
             {
                 float throwTime = Garbage.FallTime(initialPosition, finalPosition, _prefabToGravity[prefab]);
@@ -240,14 +150,14 @@ public class TrackObjectsGenerator
                 float timeUntilReachBeat = distanceToReachBeat / PlayerMovement.Settings.BaseForwardsSpeed;
                 float spawnDelay = timeUntilReachBeat - warningTime - throwTime;
                 if (spawnDelay <= 0)
-                    CreateGarbage(prefab, finalPosition, rotation, trackPiece, false, Vector3.negativeInfinity);
+                    Spawn(prefab, finalPosition, rotation, trackPiece, false, Vector3.negativeInfinity);
                 else
                     _plannedSpawns.Insert(0, (Time.fixedTime + spawnDelay, finalPosition, initialPosition, rotation, trackPiece, prefab));
             }
         }
     }
 
-    private void CreateGarbage(GameObject prefab, Vector3 finalPosition, Quaternion rotation, TrackPiece trackPiece, bool thrown, Vector3 throwFrom)
+    private void Spawn(GameObject prefab, Vector3 finalPosition, Quaternion rotation, TrackPiece trackPiece, bool thrown, Vector3 throwFrom)
     {
         Vector3 initialPosition = thrown ? throwFrom : finalPosition;
         Garbage newGarbage = _pools.Produce(prefab, initialPosition, rotation);
@@ -267,9 +177,10 @@ public class TrackObjectsGenerator
 
     private void SelectBeatsAndPrefabsForGarbage(int numTrash)
     {
-        _selectedBeatsAndPrefabsAndLanes.Clear();
+        _selectedBeatsAndPrefabsAndLanesForGarbage.Clear();
         for (int i = 0; i < numTrash; i++)
         {
+            // Find the 1st beat strength which isn't full.
             GarbageSpawningBeatStrength beatStrength = null;
             for (int j = 0; j < _beatStrengths.Length; j++)
             {
@@ -281,71 +192,10 @@ public class TrackObjectsGenerator
             }
 
             beatStrength.Next(out int beat, out GameObject prefab);
-            _selectedBeatsAndPrefabsAndLanes.Add((beat, prefab, -2));
+            _selectedBeatsAndPrefabsAndLanesForGarbage.Add((beat, prefab, -2));
         }
-        _selectedBeatsAndPrefabsAndLanes.Sort(_comparisonDelegateInstance);
+        _selectedBeatsAndPrefabsAndLanesForGarbage.Sort(_comparisonDelegateInstance);
     }
-
-    private int SelectNextLane(int beat)
-    {
-        bool isConsecutiveBeat = beat == _priorBeat + 1 || (beat == 0 && _priorBeat == 15);
-        isConsecutiveBeat &= _priorBeat != -1;
-
-        // Select the lane.
-        int lane;
-        if (isConsecutiveBeat)
-        {
-            if (_consecutiveBeatsWithLaneChange >= _maxConsecutiveBeatsWithLaneChange)
-            {
-                // Don't require the player to make too many consecutive lane changes.
-                lane = _priorLane;
-            }
-            else
-            {
-                // Don't require the player to make two lane changes between consecutive beats.
-                do
-                {
-                    lane = Random.Range(-1, 2);
-                } while (System.Math.Abs(lane - _priorLane) > 1);
-            }
-        }
-        else
-        {
-            _consecutiveBeatsWithLaneChange = 0;
-            lane = Random.Range(-1, 2);
-        }
-
-        if (isConsecutiveBeat && lane != _priorLane)
-            _consecutiveBeatsWithLaneChange++;
-        else
-            _consecutiveBeatsWithLaneChange = 0;
-        _priorBeat = beat;
-        _priorLane = lane;
-
-        return lane;
-    }
-
-
-
-    private void GenerateTrashAtEveryPosition(TrackPiece trackPiece)
-    {
-        GameObject prefab = _beatStrengths[0].GarbagePrefabs[0];
-        for (int i = 0; i < TrackPiece.TRACK_PIECE_LENGTH; i += TrackPiece.TRACK_PIECE_LENGTH / 16)
-        {
-            for (int j = -1; j <= 1; j++)
-            {
-                CalcPositionAndRotationForObjectOnTrack(trackPiece, i, j, out Vector3 position, out Quaternion rotation);
-                Garbage newGarbage = _pools.Produce(prefab, position, rotation);
-                newGarbage.OnTrackPiece = trackPiece;
-#if UNITY_EDITOR
-                if (trackPiece.GarbageOnThisTrackPiece.Contains(newGarbage))
-                    throw new System.Exception("The garbage is already in the list.");
-#endif
-                trackPiece.GarbageOnThisTrackPiece.Add(newGarbage);
-            }
-        }
-    }
-
 
     private void CalcPositionAndRotationForObjectOnTrack(TrackPiece trackPiece, float distanceAlongMidline, float lane
         , out Vector3 position, out Quaternion rotation)

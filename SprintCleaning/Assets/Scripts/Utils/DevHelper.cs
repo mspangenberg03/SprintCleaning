@@ -10,17 +10,6 @@ public class DevHelper : ScriptableObject
     [field: SerializeField] public bool LogAudioTimeAndPlayerProgressAlongTrack { get; private set; }
     [field: SerializeField] public bool LogUnexpectedTrashCollectionTimings { get; private set; }
     [field: SerializeField] public bool ImmortalPlayer { get; private set; }
-    [field: SerializeField] public TrashCollectionTimingInfoSettings TrashCollectionTimingInfo { get; private set; }
-
-
-    [System.Serializable]
-    public class TrashCollectionTimingInfoSettings
-    {
-        [field: Header("When true, logs the number of fixed updates between trash collection, excluding those in the array.")]
-        [field: SerializeField] public bool CheckTrashCollectionConsistentIntervals { get; private set; }
-        [field: SerializeField] public bool DontLogIntervals { get; private set; }
-        [field: SerializeField] public int[] DontLogFixedUpdatesBetweenTrashCollection = new int[] { 28, 29 };
-    }
 
     private static DevHelperRef _ref;
     public static DevHelper Instance
@@ -42,31 +31,10 @@ public class DevHelper : ScriptableObject
         }
     }
 
-
-    private float _lastTrashCollectionTime;
-
     public GameplayReproducer GameplayReproducer { get; private set; }
 
     public void OnDestroyRef()
     {
         GameplayReproducer.CheckSave();
-        _lastTrashCollectionTime = -1;
-    }
-
-    public void CheckLogInfoForTrashCollectionIntervalChecking()
-    {
-        if (!TrashCollectionTimingInfo.CheckTrashCollectionConsistentIntervals)
-            return;
-        
-        int fixedTimesteps = Mathf.RoundToInt((Time.fixedTime - _lastTrashCollectionTime) / Time.fixedDeltaTime);
-        bool expected = false;
-        foreach (int x in TrashCollectionTimingInfo.DontLogFixedUpdatesBetweenTrashCollection)
-        {
-            if (x == fixedTimesteps)
-                expected = true;
-        }
-        if (!TrashCollectionTimingInfo.DontLogIntervals && !expected && _lastTrashCollectionTime != -1)
-            Debug.Log("Number of fixed timesteps between Garbage.OnTriggerEnter: " + fixedTimesteps);
-        _lastTrashCollectionTime = Time.fixedTime;
     }
 }
