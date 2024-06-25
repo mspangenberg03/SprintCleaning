@@ -110,15 +110,12 @@ public class ScoreManager : MonoBehaviour
             if (_streakValue <= _streakThresholds[i])
             {
                 _streakMultiplier = i + 1;
-                _levelCode.UnlockLevel();
-                Debug.Log("Unlocking level");
                 break;
             }
         }
         if (_streakValue > _streakThresholds[^1]){
             _streakMultiplier = _streakThresholds.Length + 1;
             _levelCode.UnlockLevel();
-            
         }
 
 
