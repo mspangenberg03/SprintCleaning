@@ -19,7 +19,7 @@ PrefabInstance:
     - target: {fileID: 3993401155454205292, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
       propertyPath: impact
       value: 
-      objectReference: {fileID: 8300000, guid: c04801b4bdb3aab4d9df86dfb6de1bfd, type: 3}
+      objectReference: {fileID: 8300000, guid: 7be9ca70a4879764292a2c73e4837910, type: 3}
     - target: {fileID: 3993401155454205292, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
       propertyPath: _playerData
       value: 
