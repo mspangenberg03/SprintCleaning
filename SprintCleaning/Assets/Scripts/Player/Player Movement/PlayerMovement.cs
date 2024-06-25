@@ -35,6 +35,11 @@ public class PlayerMovement : MonoBehaviour
     private float _jumpPosition;
     private float _jumpSpeed;
 
+    [SerializeField]
+    private Animator _cameraAnimator;
+    private bool _tiltedUp = false;
+    private bool _tiltedDown = false;
+    private bool _cameraStraight = false;
     private float CurrentForwardsSpeed => _settings.BaseForwardsSpeed * (1f - Game_Over.Instance.FractionOfGameOverDelayElapsed);
 
     private bool LeftInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow));
@@ -96,6 +101,35 @@ public class PlayerMovement : MonoBehaviour
 
 
         Vector3 midlineVelocity = TrackMidlineVelocity(trackPiece, t);
+        //if(midlineVelocity.y > 0 && !_tiltedUp)
+        //{
+        //    Debug.Log("Animation played");
+        //    _cameraAnimator.Play("TiltUp");
+        //    _tiltedUp = true;
+        //    _cameraStraight = false;
+        //}
+        //if(midlineVelocity.y>0 && _tiltedUp)
+        //{
+        //    _cameraAnimator.Play("TiltDownFromUp");
+        //    _tiltedUp = false;
+        //    _cameraStraight = true;
+        //}
+        //if(midlineVelocity.y < 0 && !_tiltedDown)
+        //{
+        //    _cameraAnimator.Play("TiltDown");
+        //    _tiltedDown = true;
+        //    _cameraStraight = false;
+        //}
+        //if (midlineVelocity.y < 0 && _tiltedDown)
+        //{
+        //    _cameraAnimator.Play("TiltUpFromDown");
+        //    _tiltedDown = false;
+        //    _cameraStraight = true;
+        //}
+        //if (midlineVelocity.y == 0 && _cameraStraight)
+        //{
+        //    _cameraAnimator.gameObject.transform.rotation = new Quaternion(midlineVelocity.x,midlineVelocity.y,midlineVelocity.z,1);
+        //}
 
         Vector3 priorPositionOnMidline = _positionOnMidline; 
         _positionOnMidline += midlineVelocity * Time.deltaTime;
