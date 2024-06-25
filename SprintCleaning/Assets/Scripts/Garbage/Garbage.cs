@@ -156,13 +156,8 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
             
             ScoreManager.Instance.GarbageCollected(_type);
             player.GetComponent<PlayerGarbageCollection>().TextEdit();
-        
-            DevHelper.Instance.CheckLogInfoForTrashCollectionIntervalChecking();
 
             ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
-
-           
-
         }
     }
 
