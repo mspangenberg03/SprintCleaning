@@ -32,6 +32,8 @@ public class ScoreManager : MonoBehaviour
 
     [SerializeField]
     private StreakBar _streakBar;
+    private GameObject _levelTracker;
+    private Level_Tracker _levelCode;
 
     private static ScoreManager _instance;
     public static ScoreManager Instance
@@ -50,6 +52,9 @@ public class ScoreManager : MonoBehaviour
     {
 
         _instance = this;
+        _levelTracker = GameObject.Find("levelTracker");
+        _levelCode = _levelTracker.GetComponent<Level_Tracker>();
+        
 
         if (_counts == null)
         {
@@ -105,11 +110,17 @@ public class ScoreManager : MonoBehaviour
             if (_streakValue <= _streakThresholds[i])
             {
                 _streakMultiplier = i + 1;
+                _levelCode.UnlockLevel();
+                Debug.Log("Unlocking level");
                 break;
             }
         }
-        if (_streakValue > _streakThresholds[^1])
+        if (_streakValue > _streakThresholds[^1]){
             _streakMultiplier = _streakThresholds.Length + 1;
+            _levelCode.UnlockLevel();
+            
+        }
+
 
         if (_streakMultiplier == priorStreakMultiplier)
             return;

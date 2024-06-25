@@ -858,6 +858,7 @@ MonoBehaviour:
   _streakValue: 30
   _regularStreakDecrease: 3
   _streakMultiplier: 1
+  _powerUpMultiplier: 1
   <MaxStreakValue>k__BackingField: 150
   _streakThresholds: 320000005000000078000000
   gameAudioMixer: {fileID: 24100000, guid: fedf60293c00229499018b58512fe665, type: 2}
