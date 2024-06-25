@@ -2,24 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class TrackObjectsGenerator
+public class TrackObjectsInstantiator
 {
-    
-
-
     private DictionaryOfPoolsOfMonoBehaviour<Garbage> _pools;
     private List<(float time, Vector3 finalPosition, Vector3 initialPosition, Quaternion rotation, TrackPiece trackPiece, GameObject prefab)> _plannedSpawns = new();
     private Dictionary<GameObject, float> _prefabToGravity = new();
-    private TrackGarbageGenerator _garbageGenerator;
-    private TrackObstaclesGenerator _obstaclesGenerator;
 
-    public void Initialize(Transform poolFolder, Transform outOfPoolFolder, TrackObstaclesGenerator obstaclesGenerator, TrackGarbageGenerator garbageGenerator)
+    public TrackObjectsInstantiator(Transform poolFolder, Transform outOfPoolFolder, TrackObstaclesGenerator obstaclesGenerator, TrackGarbageGenerator garbageGenerator)
     {
-        _garbageGenerator = garbageGenerator;
-        _obstaclesGenerator = obstaclesGenerator;
         _pools = new DictionaryOfPoolsOfMonoBehaviour<Garbage>(poolFolder, outOfPoolFolder);
-
 
         foreach (GarbageSpawningBeatStrength x in garbageGenerator.BeatStrengths)
         {
@@ -36,27 +27,9 @@ public class TrackObjectsGenerator
             _pools.CheckAddPoolForPrefab(prefab);
             _prefabToGravity[prefab] = prefab.GetComponentInChildren<Garbage>().Gravity;
         }
-
-        obstaclesGenerator.Initialize(this);
-        garbageGenerator.Initialize(this);
     }
 
-    public void AddGarbageAndObstacles(TrackPiece trackPiece, int numTrackPieces)
-    {
-        bool spawnNone = numTrackPieces < 4; // To prevent immediately encountering trash when the run starts.
-        _garbageGenerator.AddGarbage(trackPiece, spawnNone, out var selectedBeatsAndPrefabsAndLanesForGarbage);
-        _obstaclesGenerator.AddObstaclesToTrackPiece(trackPiece, spawnNone, selectedBeatsAndPrefabsAndLanesForGarbage);
-    }
-
-    public void AfterPlayerMovementFixedUpdate()
-    {
-        CheckSpawnPlannedTrash();
-
-        for (int i = Garbage.ThrownGarbage.Count - 1; i >= 0; i--)
-            Garbage.ThrownGarbage[i].MoveWhileBeingThrown();
-    }
-
-    private void CheckSpawnPlannedTrash()
+    public void CheckSpawnPlannedTrash()
     {
         for (int i = _plannedSpawns.Count - 1; i >= 0; i--)
         {
@@ -148,5 +121,4 @@ public class TrackObjectsGenerator
         float directionAngle = Quaternion.FromToRotation(Vector3.forward, directionOnPlane).eulerAngles.y;
         rotation = Quaternion.Euler(0f, directionAngle, 0f);
     }
-
 }

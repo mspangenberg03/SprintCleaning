@@ -17,9 +17,6 @@ public class TrackGarbageGenerator
     [field: Header("Beat Strengths (filled from 1st to last)")]
     [field: SerializeField] public GarbageSpawningBeatStrength[] BeatStrengths { get; private set; }
 
-    [System.NonSerialized]
-    private TrackObjectsGenerator _objectsGenerator;
-
     private List<(int beat, GameObject prefab, int lane)> _selectedBeatsAndPrefabsAndLanesForGarbage = new();
     private TrackGarbageLaneDecider _laneDecider;
 
@@ -27,10 +24,11 @@ public class TrackGarbageGenerator
 
 
 
-    public void Initialize(TrackObjectsGenerator objectsGenerator)
-    {
-        _objectsGenerator = objectsGenerator;
+    private TrackObjectsInstantiator _instantiator;
 
+    public void Initialize(TrackObjectsInstantiator instantiator)
+    {
+        _instantiator = instantiator;
         _laneDecider = new TrackGarbageLaneDecider(_maxConsecutiveBeatsWithLaneChange);
     }
 
@@ -67,7 +65,7 @@ public class TrackGarbageGenerator
             int lane = _laneDecider.SelectGarbageLane(beat);
 
             _selectedBeatsAndPrefabsAndLanesForGarbage[i] = (beat, prefab, lane);
-            _objectsGenerator.SpawnOrPlanToThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnImmediately, Random.Range(_minTimeSeeObjectOnTrack, _maxTimeSeeObjectOnTrack), _trackObjectsYOffset);
+            _instantiator.SpawnOrPlanToThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnImmediately, Random.Range(_minTimeSeeObjectOnTrack, _maxTimeSeeObjectOnTrack), _trackObjectsYOffset);
         }
     }
 
@@ -92,9 +90,5 @@ public class TrackGarbageGenerator
         }
         _selectedBeatsAndPrefabsAndLanesForGarbage.Sort(_comparisonDelegateInstance);
     }
-
-
-
-
 
 }

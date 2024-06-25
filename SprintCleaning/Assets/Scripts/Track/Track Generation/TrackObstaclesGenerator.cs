@@ -23,12 +23,11 @@ public class TrackObstaclesGenerator
     private List<int> _possibleObstacleLanes = new();
     private int _priorTrackPieceLastObstacleBeat = -1;
 
-    [System.NonSerialized]
-    private TrackObjectsGenerator _objectsGenerator;
+    private TrackObjectsInstantiator _instantiator;
 
-    public void Initialize(TrackObjectsGenerator objectsGenerator)
+    public void Initialize(TrackObjectsInstantiator instantiator)
     {
-        _objectsGenerator = objectsGenerator;
+        _instantiator = instantiator;
     }
 
     public void AddObstaclesToTrackPiece(TrackPiece trackPiece, bool spawnNone
@@ -78,7 +77,7 @@ public class TrackObstaclesGenerator
             GameObject prefab = index < ObstaclePrefabs.Length ? ObstaclePrefabs[index] : WideObstaclePrefabs[index - ObstaclePrefabs.Length];
             int lane = index < ObstaclePrefabs.Length ? _possibleObstacleLanes.RandomElement() : 0;
 
-            _objectsGenerator.SpawnOrPlanToThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnObstacleImmediately, Random.Range(_minTimeSeeObjectOnTrack, _maxTimeSeeObjectOnTrack), _trackObjectsYOffset);
+            _instantiator.SpawnOrPlanToThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnObstacleImmediately, Random.Range(_minTimeSeeObjectOnTrack, _maxTimeSeeObjectOnTrack), _trackObjectsYOffset);
 
             numObstaclesSpawned++;
             currentTrackLastObstacleBeat = System.Math.Max(currentTrackLastObstacleBeat, beat);
