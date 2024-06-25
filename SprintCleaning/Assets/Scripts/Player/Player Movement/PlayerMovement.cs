@@ -37,8 +37,9 @@ public class PlayerMovement : MonoBehaviour
     private float _jumpPosition;
     private float _jumpSpeed;
     private float _speedMult = 1f;
+    [SerializeField] private float _levelSpeedUp = 1.0f;
 
-    private float CurrentForwardsSpeed => _settings.BaseForwardsSpeed * (1f - Game_Over.Instance.FractionOfGameOverDelayElapsed) * _speedMult;
+    private float CurrentForwardsSpeed => _settings.BaseForwardsSpeed * (1f - Game_Over.Instance.FractionOfGameOverDelayElapsed) * (_speedMult*_levelSpeedUp);
 
     private bool LeftInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow));
     private bool RightInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow));
@@ -168,6 +169,9 @@ public class PlayerMovement : MonoBehaviour
     }
     public void ChangeSpeedMult(float mult){
         _speedMult = mult;
+    }
+    public void ChangeLevel(float level){
+        _levelSpeedUp = level;
     }
 
     #region Lane Changing
