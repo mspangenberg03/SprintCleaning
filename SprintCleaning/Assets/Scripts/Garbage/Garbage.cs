@@ -35,11 +35,13 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 
     private Transform Root => transform.parent;
 
-    public void InitializeUponInstantiated(PoolOfMonoBehaviour<Garbage> pool)
+    public int DebugID { get; set; }
+
+    public void InitializeUponPrefabInstantiated(PoolOfMonoBehaviour<Garbage> pool)
     {
         _pool = pool;
     }
-    public void InitializeUponProduced() 
+    public void InitializeUponProducedByPool() 
     {
         _animTrigger.Reset();
     }
@@ -116,7 +118,6 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
                 ScoreManager.Instance.GarbageCollected(_type);
                 player.GetComponent<PlayerGarbageCollection>().TextEdit();
             }
-            DevHelper.Instance.CheckLogInfoForTrashCollectionIntervalChecking();
 
             ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
 
@@ -155,13 +156,8 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
             
             ScoreManager.Instance.GarbageCollected(_type);
             player.GetComponent<PlayerGarbageCollection>().TextEdit();
-        
-            DevHelper.Instance.CheckLogInfoForTrashCollectionIntervalChecking();
 
             ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
-
-           
-
         }
     }
 

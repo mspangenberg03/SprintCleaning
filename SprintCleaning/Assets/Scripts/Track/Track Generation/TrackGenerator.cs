@@ -6,11 +6,14 @@ public class TrackGenerator : MonoBehaviour
 {
     [SerializeField] private int _numTrackPieces = 10;
     [SerializeField] private TrackPiecesGenerator _trackPiecesGenerator;
-    [SerializeField] private TrackObjectsGenerator _trackObjectsGenerator;
+    [SerializeField] private TrackGarbageGenerator _garbageGenerator;
+    [SerializeField] private TrackObstaclesGenerator _obstaclesGenerator;
     [SerializeField] private BuildingsGeneratorInspectorSettings _buildingsGeneratorSettings;
 
     private TrackBuildingsGeneratorOneSide _rightBuildingsGenerator;
     private TrackBuildingsGeneratorOneSide _leftBuildingsGenerator;
+    private TrackObjectsInstantiator _trackObjectsInstantiator;
+
 
     public List<TrackPiece> TrackPieces { get; private set; } = new();
 
@@ -25,10 +28,11 @@ public class TrackGenerator : MonoBehaviour
         }
     }
 
-    void Awake()
+    private void Awake()
     {
         _instance = this;
 
+        // These folder gameObjects are just to make the hierarchy window more organized.
         Transform trackPieceFolder = new GameObject("Track Pieces").transform;
         Transform trackObjectFolder = new GameObject("Track Objects").transform;
         Transform buildingFolder = new GameObject("Buildings").transform;
@@ -47,33 +51,42 @@ public class TrackGenerator : MonoBehaviour
 
 
         _trackPiecesGenerator.Initialize(trackPiecePoolFolder, trackPieceFolder, TrackPieces, _numTrackPieces);
-        _trackObjectsGenerator.Initialize(trackObjectPoolFolder, trackObjectFolder);
-        _rightBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, false, _buildingsGeneratorSettings);
-        _leftBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, true, _buildingsGeneratorSettings);
+        _trackObjectsInstantiator = new TrackObjectsInstantiator(trackObjectPoolFolder, trackObjectFolder, _obstaclesGenerator, _garbageGenerator);
+        _obstaclesGenerator.Initialize(_trackObjectsInstantiator);
+        _garbageGenerator.Initialize(_trackObjectsInstantiator);
+
+
+        _rightBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, _buildingsGeneratorSettings, false);
+        _leftBuildingsGenerator = new TrackBuildingsGeneratorOneSide(buildingPoolFolder, buildingFolder, _buildingsGeneratorSettings, true);
 
         for (int i = 0; i < _numTrackPieces; i++)
-            AddTrackPiece();
+            AddTrackPieceAndObjects();
     }
 
-    public void AddTrackPiece()
+    public void AddTrackPieceAndObjects()
     {
         TrackPiece newTrackPiece = _trackPiecesGenerator.AddTrackPiece();
-        if (newTrackPiece.Prior != null)
+
+        _rightBuildingsGenerator.AddBuildings(newTrackPiece);
+        _leftBuildingsGenerator.AddBuildings(newTrackPiece);
+
+        // Add trash on the 2nd to last track piece, because buildings need to finish spawning up to some distance
+        // away, in order to decide where trash will be thrown from.
+        TrackPiece addTrashOn = newTrackPiece.Prior;
+        if (addTrashOn != null)
         {
-            // Generate buildings 1 track piece later so can check for overlap with the next track piece.
-            // Generating garbage 2 track pieces later so if the nearest throwing point to a garbage's point on the track is on a building from the next track piece,
-            // that building will already exist.
-
-            _rightBuildingsGenerator.AddBuildings(newTrackPiece.Prior);
-            _leftBuildingsGenerator.AddBuildings(newTrackPiece.Prior);
-
-            if (newTrackPiece.Prior.Prior != null)
-                _trackObjectsGenerator.AddTrash(newTrackPiece.Prior.Prior, TrackPieces.Count);
+            bool spawnNone = TrackPieces.Count < 4; // To prevent immediately encountering trash when the run starts.
+            _garbageGenerator.AddGarbage(addTrashOn, spawnNone, out var selectedBeatsAndPrefabsAndLanesForGarbage);
+            _obstaclesGenerator.AddObstaclesToTrackPiece(addTrashOn, spawnNone, selectedBeatsAndPrefabsAndLanesForGarbage);
         }
     }
 
     public void AfterPlayerMovementFixedUpdate()
     {
-        _trackObjectsGenerator.AfterPlayerMovementFixedUpdate();
+        _trackObjectsInstantiator.CheckSpawnPlannedTrash();
+
+        for (int i = Garbage.ThrownGarbage.Count - 1; i >= 0; i--)
+            Garbage.ThrownGarbage[i].MoveWhileBeingThrown();
     }
+
 }

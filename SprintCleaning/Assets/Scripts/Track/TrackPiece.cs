@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Use a bezier curve as the path between the start and end
+// https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_B%C3%A9zier_curves
+
 public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolable
 {
     public const int TRACK_PIECE_LENGTH = 64;
@@ -12,10 +15,8 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
     private Vector3 p1; // control point of bezier curve
     private Vector3 p2; // end point of bezier curve
 
-    private static List<Vector2> _cachedIntersections = new();
-    private static List<float> _cachedRoots = new();
-
-    public Vector3 EndPositionForStoredLane => p2;
+    private static List<Vector2> _calcIntersections = new();
+    private static List<float> _calcRoots = new();
 
     public TrackPiece Prior { get; private set; }
     public TrackPiece Next { get; private set; }
@@ -23,21 +24,20 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
     public List<Garbage> GarbageOnThisTrackPiece { get; set; } = new();
     public List<Building> BuildingsByThisTrackPiece { get; set; } = new();
 
-    public void InitializeUponInstantiated(PoolOfMonoBehaviour<TrackPiece> poolOfMonoBehaviour) { }
-    public void InitializeUponProduced()
+    public int DebugID { get; set; }
+
+    public void InitializeUponPrefabInstantiated(PoolOfMonoBehaviour<TrackPiece> poolOfMonoBehaviour) { }
+
+    public void InitializeUponProducedByPool()
     {
         List<TrackPiece> currentTrackPieces = TrackGenerator.Instance.TrackPieces;
         if (currentTrackPieces.Count > 0)
         {
-            TrackPiece prior = TrackGenerator.Instance.TrackPieces[^1];
-            Prior = prior;
-            prior.Next = this;
+            Prior = TrackGenerator.Instance.TrackPieces[^1];
+            Prior.Next = this;
         }
-#if UNITY_EDITOR
-        if (GarbageOnThisTrackPiece.Count > 0)
-            throw new System.Exception("Count should be 0 when produced");
-#endif
     }
+
     public void OnReturnToPool()
     {
         foreach (Garbage x in GarbageOnThisTrackPiece)
@@ -51,9 +51,9 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
         if (Next != null)
             Next.Prior = null;
         Next = null;
+        if (Prior != null)
+            Prior.Next = null;
         Prior = null;
-
-        
     }
 
     public void StoreLane(float lane)
@@ -93,32 +93,9 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
         return bestT;
     }
 
-    public float Lane(Vector3 currentPosition, float t)
-    {
-        // Find the closest point on the middle lane
-        
-        Vector3 closestPointOnMiddleLane = BezierCurve(t);
-
-        // Find the distance to that point, but only along the direction which is perpendicular to the curve, because t uses
-        // an approximation so it's a bit off.
-        Vector2 offset = (currentPosition - closestPointOnMiddleLane).To2D();
-        Vector2 perpendicularDirection = Vector2.Perpendicular(BezierCurveDerivative(t).To2D());
-        bool toLeft = VectorUtils.PointIsToLeftOfVector(closestPointOnMiddleLane, closestPointOnMiddleLane + BezierCurveDerivative(t), currentPosition);
-        if (toLeft)
-            perpendicularDirection *= -1;
-        float distanceToMiddleLane = VectorUtils.ProjectionMagnitude(offset, perpendicularDirection);
-
-        float lane = toLeft ? distanceToMiddleLane : -distanceToMiddleLane;
-        lane /= PlayerMovement.Settings.DistanceBetweenLanes;
-        return lane;
-    }
-
     public Vector3 BezierCurve(float t)
     {
-        // Use a bezier curve as the path between the start and end of the current track piece.
-        // https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_B%C3%A9zier_curves
-
-        // A point on the bezier curve for the current track piece.
+        // A point on the track piece's bezier curve
         return p1 + (1 - t) * (1 - t) * (p0 - p1) + t * t * (p2 - p1);
     }
 
@@ -132,8 +109,7 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
         return (
             p1x + (1 - t) * (1 - t) * (p0x - p1x) + t * t * (p2x - p1x),
             p1y + (1 - t) * (1 - t) * (p0y - p1y) + t * t * (p2y - p1y),
-            p1z + (1 - t) * (1 - t) * (p0z - p1z) + t * t * (p2z - p1z)
-            );
+            p1z + (1 - t) * (1 - t) * (p0z - p1z) + t * t * (p2z - p1z));
     }
 
     public Vector3 BezierCurveDerivative(float t)
@@ -154,10 +130,10 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
         Vector2 P1 = p1.To2D();
         Vector2 P2 = p2.To2D();
 
-        _cachedIntersections.Clear();
-        _cachedRoots.Clear();
-        List<Vector2> intersections = _cachedIntersections;
-        List<float> roots = _cachedRoots;
+        _calcIntersections.Clear();
+        _calcRoots.Clear();
+        List<Vector2> intersections = _calcIntersections;
+        List<float> roots = _calcRoots;
 
         Vector2 a1 = linePoint1;
         Vector2 a2 = linePoint2;
@@ -243,9 +219,7 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
     {
         Gizmos.color = new Color(1f, 1f, 1f, .3f);
         DrawOneLane(-1f);
-        Gizmos.color = new Color(1f, 1f, 1f, .3f);
         DrawOneLane(0f);
-        Gizmos.color = new Color(1f, 1f, 1f, .3f);
         DrawOneLane(1f);
 
         float alpha = Application.isPlaying ? .2f : 1f;
@@ -254,7 +228,7 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
         for (int i = 0; i < TRACK_PIECE_LENGTH; i++)
         {
             StoreLane(0);
-            t = FindTForDistanceAlongMidline(1f, t);
+            t = FindTForDistanceAlongStoredLane(1f, t);
             if (t == -1)
             {
                 if (i == TRACK_PIECE_LENGTH - 1)
@@ -271,8 +245,6 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
     private void DrawOneLane(float lane)
     {
         StoreLane(lane);
-        // Use a bezier curve as the path between the start and end of the current track piece.
-        // https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_B%C3%A9zier_curves
         const int segments = 100;
         Vector3 verticalOffset = Vector3.up * PlayerMovement.Settings.PlayerVerticalOffset;
         Vector3 priorPoint = p0 + verticalOffset;
@@ -283,12 +255,6 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
             Gizmos.DrawLine(priorPoint, nextPoint);
             priorPoint = nextPoint;
         }
-    }
-
-    public float FindTForDistanceAlongMidline(float extraDistanceAlongTrack, float startingFromT)
-    {
-        StoreLane(0);
-        return FindTForDistanceAlongStoredLane(extraDistanceAlongTrack, startingFromT);
     }
 
     public float FindTForDistanceAlongStoredLane(float extraDistanceAlongTrack, float startingFromT)
@@ -307,7 +273,6 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
             {
                 float inverseLerp = Mathf.InverseLerp(priorDistance, totalDistance, extraDistanceAlongTrack);
                 return Mathf.Lerp(priorT, nextT, inverseLerp);
-                //return nextT;
             }
             priorPosition = nextPosition;
             priorDistance = totalDistance;
@@ -316,22 +281,4 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
 
         return -1;
     }
-
-    //public float DistanceAlongMidlineAtT(float t)
-    //{
-    //    StoreLane(0);
-
-    //    const int segments = 1000;
-    //    float totalDistance = 0;
-    //    Vector3 priorPosition = BezierCurve(t);
-    //    for (int i = 0; i <= segments; i++)
-    //    {
-    //        float nextT = Mathf.Lerp(0, t, (float)i / segments);
-    //        Vector3 nextPosition = BezierCurve(nextT);
-    //        totalDistance += (nextPosition - priorPosition).magnitude;
-    //        priorPosition = nextPosition;
-    //    }
-
-    //    return totalDistance;
-    //}
 }

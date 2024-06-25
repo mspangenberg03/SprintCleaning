@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class VectorUtils : MonoBehaviour
 {
+
     public static Vector3 RotateVectorAroundYAxis(Vector3 direction, float angle)
     {
         float radians = angle * Mathf.Deg2Rad;
@@ -77,6 +78,7 @@ public class VectorUtils : MonoBehaviour
     {
         return ClosestPointOnLineOrSegment2D(point, segmentPoint1, segmentPoint2, true);
     }
+
     public static Vector2 ClosestPointOnLineOrSegment2D(Vector2 point, Vector2 segmentPoint1, Vector2 segmentPoint2, bool segment)
     {
         // stack overflow shortest distance between a point and a line segment
@@ -96,26 +98,39 @@ public class VectorUtils : MonoBehaviour
         return a + t * bMinusA;
     }
 
-    // TODO: prevent buildings from overlapping
-    //public static bool PolygonsOverlap2D(Vector2[][] twoPolygons)
-    //{
-    //    // https://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
+    public static bool PolygonsOverlap2D(Vector2[] a, Vector2[] b)
+    {
+        // This only works for convex polygons. The points need to be in clockwise or counterclockwise order.
+        // https://stackoverflow.com/questions/10962379/how-to-check-intersection-between-2-rotated-rectangles
 
-    //    for (int i = 0; i < twoPolygons.Length; i++)
-    //    {
-    //        Vector2[] poly = twoPolygons[i];
-    //        for (int j = 0; j < poly.Length; j++)
-    //        {
-    //            int nextIndex = (j + 1) % poly.Length;
-    //            Vector2 p1 = poly[j];
-    //            Vector2 p2 = poly[nextIndex];
-    //            Vector2 normal = new Vector2(p2.y - p1.y, p1.x - p2.x);
-    //            float minA = float.NaN;
-    //            float maxA = float.NaN;
-    //            for (int k = 0; k < )
-    //        }
-    //    }
+        for (int i = 0; i < 2; i++)
+        {
+            Vector2[] currentPolygon = i == 0 ? a : b;
+            for (int j = 0; j < currentPolygon.Length; j++)
+            {
+                int nextIndex = (j + 1) % currentPolygon.Length;
 
-    //}
+                Vector2 normal = Vector2.Perpendicular(currentPolygon[j] - currentPolygon[nextIndex]);
+
+                CalculateMinAndMax(a, out float minA, out float maxA);
+                CalculateMinAndMax(b, out float minB, out float maxB);
+                void CalculateMinAndMax(Vector2[] polygon, out float min, out float max)
+                {
+                    min = float.PositiveInfinity;
+                    max = float.NegativeInfinity;
+                    for (int k = 0; k < polygon.Length; k++)
+                    {
+                        float projection = Vector2.Dot(normal, polygon[k]);
+                        min = Math.Min(min, projection);
+                        max = Math.Max(max, projection);
+                    }
+                }
+
+                if (maxA < minB || maxB < minA)
+                    return false;
+            }
+        }
+        return true;
+    }
 
 }
