@@ -9,10 +9,11 @@ public class CustomButton : CustomUIComponent
 {
     public ThemeSO _theme;
     public Style _style;
-    public UnityEvent _onClick;
 
     private Button _button;
     private TextMeshProUGUI _buttonText;
+
+    private EndingMenu _endingMenu;
     public override void Setup()
     {
         _button = GetComponentInChildren<Button>();
@@ -25,10 +26,5 @@ public class CustomButton : CustomUIComponent
         _button.colors = colorBlock;
 
         _buttonText.color = _theme._buttonGeneric_txt;
-    }
-
-    public void OnClick()
-    {
-        _onClick.Invoke();
     }
 }

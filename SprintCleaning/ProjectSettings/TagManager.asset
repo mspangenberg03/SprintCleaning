@@ -6,6 +6,7 @@ TagManager:
   tags:
   - trackCheckpoint
   - GarbageText
+  - GeneralUI
   layers:
   - Default
   - TransparentFX

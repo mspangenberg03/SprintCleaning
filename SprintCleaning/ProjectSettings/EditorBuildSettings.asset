@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SellingMenu.unity
     guid: d2aa91b08debbff478242dade4828924
+  - enabled: 1
+    path: Assets/Scenes/EndingMenu.unity
+    guid: 9cf8a751c98ca7c49b4362cc6a692f31
   m_configObjects: {}

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2223601578789301178}
-  - component: {fileID: 1868963274615005767}
+  - component: {fileID: 2910129372067291813}
   m_Layer: 5
   m_Name: Text_Body
   m_TagString: Untagged
@@ -37,7 +37,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -100, y: -100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1868963274615005767
+--- !u!114 &2910129372067291813
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46,10 +46,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7013574901488490343}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0de1d52c16f718439c9904a91eaa494, type: 3}
+  m_Script: {fileID: 11500000, guid: 359226db121dfc14f8d335110d0cd8bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _textData: {fileID: 11400000, guid: dcdb66e6450880b479f1417e0560507e, type: 2}
+  _scoreTextUpdated: {fileID: 5815962261373016355}
 --- !u!1 &8158535337913627407
 GameObject:
   m_ObjectHideFlags: 0
@@ -115,7 +116,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: 'Total Score:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -142,8 +143,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 50
-  m_fontSizeBase: 50
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

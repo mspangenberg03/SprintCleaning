@@ -10,7 +10,7 @@ public class Game_Over : MonoBehaviour
     private float _gameOverDelay = 2f;
     private float _gameOverDelayStartTime;
     public bool GameIsOver {private set; get; }
-
+    public GameObject _generalUI;
     public float FractionOfGameOverDelayElapsed => !GameIsOver ? 0 : Mathf.InverseLerp(_gameOverDelayStartTime, _gameOverDelayStartTime + _gameOverDelay, Time.time);
 
     private static Game_Over _instance;
@@ -49,6 +49,7 @@ public class Game_Over : MonoBehaviour
 
 
         yield return new WaitForSeconds(_gameOverDelay);
-        SceneManager.LoadScene("MainMenu");
+        _generalUI.SetActive(false);
+        SceneManager.LoadScene("EndingMenu");
     }
 }
