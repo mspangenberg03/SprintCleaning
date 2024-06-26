@@ -5,10 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class Level_Tracker : MonoBehaviour
 {
-    [SerializeField]
+
     private static bool _unlockLevel2 = false;
     
-    [SerializeField]
+
     private static bool _unlockLevel3 = false;
     // Start is called before the first frame update
     void Awake()

@@ -35,14 +35,12 @@ public class MainMenu : MonoBehaviour
 
     private int index;
 
-    [SerializeField]
-    private bool _unlockLevel2;
+    
 
     [SerializeField]
     private Button _level2Button;
     
-    [SerializeField]
-    private bool _unlockLevel3;
+    
     [SerializeField]
     private Button _level3Button;
     private Level_Tracker _levelCode;

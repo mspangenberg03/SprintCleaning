@@ -170,9 +170,7 @@ public class PlayerMovement : MonoBehaviour
     public void ChangeSpeedMult(float mult){
         _speedMult = mult;
     }
-    public void ChangeLevel(float level){
-        _levelSpeedUp = level;
-    }
+    
 
     #region Lane Changing
     private void UpdateLanePosition()
