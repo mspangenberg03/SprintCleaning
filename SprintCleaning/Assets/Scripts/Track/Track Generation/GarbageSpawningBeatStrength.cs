@@ -28,10 +28,7 @@ public class GarbageSpawningBeatStrength
         if (IsFull())
             throw new System.Exception("already full");
 #endif
-        int index = Random.Range(0, _remainingBeats.Count);
-        beatToSpawnAt = _remainingBeats[index];
-        _remainingBeats.RemoveAt(index);
-
+        beatToSpawnAt = _remainingBeats.TakeRandomElement();
         prefab = GarbagePrefabs[Random.Range(0, GarbagePrefabs.Length)];
     }
 }

@@ -8,16 +8,17 @@ using UnityEngine;
 /// <typeparam name="T">The type of the script on the prefab.</typeparam>
 public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour<T>.IPoolable
 {
-    public static Garbage firstFail;
 
     public interface IPoolable
     {
-        void InitializeUponInstantiated(PoolOfMonoBehaviour<T> pool);
-        void InitializeUponProduced();
+        int DebugID { get; set; }
+        void InitializeUponPrefabInstantiated(PoolOfMonoBehaviour<T> pool);
+        void InitializeUponProducedByPool();
         void OnReturnToPool();
     }
 
 
+    private static int _nextDebugID;
     private GameObject _prefab;
     private Transform _poolFolder;
     private Transform _outOfPoolFolder;
@@ -45,7 +46,7 @@ public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour
         {
             GameObject instantiated = Object.Instantiate(_prefab, position, rotation, _outOfPoolFolder);
             result = instantiated.GetComponentInChildren<T>(); // The script can be on the prefab's root gameObject.
-            result.InitializeUponInstantiated(this);
+            result.InitializeUponPrefabInstantiated(this);
             _rootOfEachPrefabInstance.Add(result, instantiated);
         }
         else
@@ -53,14 +54,15 @@ public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour
             result = _pool.Pop();
 #if UNITY_EDITOR
             if (_rootOfEachPrefabInstance[result].activeSelf)
-                throw new System.Exception("_rootOfEachPrefabInstance[result].activeSelf");
+                throw new System.Exception("_rootOfEachPrefabInstance[result].activeSelf is true");
 #endif
             Transform rootTransform = _rootOfEachPrefabInstance[result].transform;
             rootTransform.parent = _outOfPoolFolder;
             rootTransform.position = position;
             rootTransform.rotation = rotation;
         }
-        result.InitializeUponProduced();
+        result.DebugID = _nextDebugID++;
+        result.InitializeUponProducedByPool();
         GameObject rootGameObject = _rootOfEachPrefabInstance[result];
         rootGameObject.SetActive(true);
         return result;
@@ -74,11 +76,10 @@ public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour
     {
 #if UNITY_EDITOR
         if (toReturn == null)
-            throw new System.ArgumentNullException("toReturn");
+            throw new System.ArgumentNullException("toReturn. is null (not just destroyed): " + (toReturn is null));
         if (_pool.Contains(toReturn))
-            throw new System.InvalidOperationException("toReturn is already in the pool.");
+            throw new System.InvalidOperationException("toReturn is already in the pool. toReturn.DebugID: " + toReturn.DebugID);
 #endif
-
         toReturn.OnReturnToPool();
         _rootOfEachPrefabInstance[toReturn].SetActive(false);
         Transform rootTransform = _rootOfEachPrefabInstance[toReturn].transform;

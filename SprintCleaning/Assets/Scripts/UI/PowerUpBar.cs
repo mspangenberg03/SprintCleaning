@@ -11,6 +11,7 @@ public class PowerUpBar : MonoBehaviour
 
     public void UpdateDisplayedInfo(List<PowerUpBase> heldPowerUps)
     {
+        /*
         for (int i = 0; i < heldPowerUps.Count; i++)
         {
             _PowerUpIcons[i].enabled = true;
@@ -27,5 +28,6 @@ public class PowerUpBar : MonoBehaviour
             _PowerUpIcons[i].enabled = false;
             _durabilities[i].gameObject.SetActive(false);
         }
+        */
     }
 }

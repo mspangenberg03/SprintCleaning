@@ -19,6 +19,8 @@ public class ScoreManager : MonoBehaviour
 
     public int _streakMultiplier = 1;
 
+    public int _powerUpMultiplier = 1;
+
     [field: SerializeField] public int MaxStreakValue { get; private set; }
 
     [SerializeField]
@@ -30,6 +32,8 @@ public class ScoreManager : MonoBehaviour
 
     [SerializeField]
     private StreakBar _streakBar;
+    private GameObject _levelTracker;
+    private Level_Tracker _levelCode;
 
     private static ScoreManager _instance;
     public static ScoreManager Instance
@@ -48,6 +52,12 @@ public class ScoreManager : MonoBehaviour
     {
 
         _instance = this;
+        _levelTracker = GameObject.Find("levelTracker");
+        if(_levelTracker != null)
+            _levelCode = _levelTracker.GetComponent<Level_Tracker>();
+
+        
+        
 
         if (_counts == null)
         {
@@ -57,6 +67,9 @@ public class ScoreManager : MonoBehaviour
         }
 
         _streakBar._current = _streakValue;
+
+        
+        
 
         //#if UNITY_EDITOR
         //        if (_resetInEditorOnAwake)
@@ -77,19 +90,23 @@ public class ScoreManager : MonoBehaviour
     public void AddScoreOnGarbageCollection(int scoreToAdd, int streakValueToAdd)
     {
         CheckStreakMultiplier();
-        _score += (scoreToAdd * _streakMultiplier);
+        int add = scoreToAdd * _streakMultiplier * _powerUpMultiplier;
+        ScoreGainText.Instance.OnScoreGained(add);
+        _score += add;
         _streakValue += streakValueToAdd;
+        _streakValue = System.Math.Min(MaxStreakValue, _streakValue);
         _streakBar._current = _streakValue;
     }
 
     public void DecreaseStreak()
     {
         _streakValue -= _regularStreakDecrease;
+        _streakValue = System.Math.Max(0, _streakValue);
         CheckStreakMultiplier();
         _streakBar._current = _streakValue;
     }
 
-    private void CheckStreakMultiplier()
+    public void CheckStreakMultiplier()
     {
         int priorStreakMultiplier = _streakMultiplier;
 
@@ -101,8 +118,14 @@ public class ScoreManager : MonoBehaviour
                 break;
             }
         }
-        if (_streakValue > _streakThresholds[^1])
+        if (_streakValue > _streakThresholds[^1]){
             _streakMultiplier = _streakThresholds.Length + 1;
+            if(_levelCode != null)
+                _levelCode.UnlockLevel();
+
+            
+        }
+
 
         if (_streakMultiplier == priorStreakMultiplier)
             return;
