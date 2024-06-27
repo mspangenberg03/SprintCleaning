@@ -71,8 +71,10 @@ public class TrackObjectsInstantiator
             else
             {
                 float throwTime = Garbage.FallTime(initialPosition, finalPosition, _prefabToGravity[prefab]);
+                GameObject _player = GameObject.Find("Player");
+                PlayerMovement _playerMovement = _player.GetComponent<PlayerMovement>();
 
-                float timeUntilReachBeat = distanceToReachBeat / PlayerMovement.Settings.BaseForwardsSpeed;
+                float timeUntilReachBeat = distanceToReachBeat / _playerMovement.GetPlayerSpeed();
                 float spawnDelay = timeUntilReachBeat - warningTime - throwTime;
                 if (spawnDelay <= 0)
                     Spawn(prefab, finalPosition, rotation, trackPiece, false, Vector3.negativeInfinity);

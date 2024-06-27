@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerMovementSettings : ScriptableObject
 {
     [field: Header("Forwards Movement")]
-    [field: SerializeField] public float BaseForwardsSpeed { get; private set; } = 10;
+    
     [field: SerializeField] public float MinForwardsSpeed { get; private set; } = 10;
     [field: SerializeField] public float MaxForwardsSpeed { get; private set; } = 30;
     [field: SerializeField] public float ForwardsAcceleration { get; private set; } = 1f; 
