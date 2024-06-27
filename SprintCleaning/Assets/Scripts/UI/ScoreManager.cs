@@ -26,8 +26,6 @@ public class ScoreManager : MonoBehaviour
     [SerializeField]
     private int[] _streakThresholds;
 
-    [SerializeField] private AudioMixer gameAudioMixer;
-
     public int[] StreakThresholds => _streakThresholds;
 
     [SerializeField]
@@ -131,9 +129,9 @@ public class ScoreManager : MonoBehaviour
             return;
 
         float duration = .5f;
-        StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak1Volume", duration, 1));
-        StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak2Volume", duration, _streakMultiplier >= 2 ? 1 : 0));
-        StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak3Volume", duration, _streakMultiplier >= 3 ? 1 : 0));
-        StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak4Volume", duration, _streakMultiplier >= 4 ? 1 : 0));
+        StartCoroutine(FadeMixerGroup.StartFade(GameplayMusic.Instance.GameAudioMixer, "Streak1Volume", duration, 1));
+        StartCoroutine(FadeMixerGroup.StartFade(GameplayMusic.Instance.GameAudioMixer, "Streak2Volume", duration, _streakMultiplier >= 2 ? 1 : 0));
+        StartCoroutine(FadeMixerGroup.StartFade(GameplayMusic.Instance.GameAudioMixer, "Streak3Volume", duration, _streakMultiplier >= 3 ? 1 : 0));
+        StartCoroutine(FadeMixerGroup.StartFade(GameplayMusic.Instance.GameAudioMixer, "Streak4Volume", duration, _streakMultiplier >= 4 ? 1 : 0));
     }
 }
