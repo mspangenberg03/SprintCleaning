@@ -36,8 +36,8 @@ ModelImporter:
       name: Music
       takeName: Music
       internalID: -120949094936031475
-      firstFrame: 0
-      lastFrame: 120
+      firstFrame: 23
+      lastFrame: 96
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

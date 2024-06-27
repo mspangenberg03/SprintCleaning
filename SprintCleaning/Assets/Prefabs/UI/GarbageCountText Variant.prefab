@@ -240,8 +240,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11
-  m_fontSizeBase: 11
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -387,20 +387,43 @@ PrefabInstance:
       propertyPath: m_Name
       value: GarbageCountText Variant
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -8748930238864122016, guid: 8244a8b8f091d074c919c6f389b17371, type: 3}
     m_RemovedGameObjects:
     - {fileID: 8158535337913627407, guid: 8244a8b8f091d074c919c6f389b17371, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2223601578789301178, guid: 8244a8b8f091d074c919c6f389b17371, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8694022060116282059}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7013574901488490343, guid: 8244a8b8f091d074c919c6f389b17371, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -9137130356305776547}
   m_SourcePrefab: {fileID: 100100000, guid: 8244a8b8f091d074c919c6f389b17371, type: 3}
 --- !u!224 &4385598280195619041 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2223601578789301178, guid: 8244a8b8f091d074c919c6f389b17371, type: 3}
   m_PrefabInstance: {fileID: 2451954621353317211}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4850990919206650940 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7013574901488490343, guid: 8244a8b8f091d074c919c6f389b17371, type: 3}
+  m_PrefabInstance: {fileID: 2451954621353317211}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-9137130356305776547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4850990919206650940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7764fd4c3ee7bd4f9b22f373a84261f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _textData: {fileID: 11400000, guid: dcdb66e6450880b479f1417e0560507e, type: 2}
+  _garbageCountText: {fileID: 0}
 --- !u!1001 &5544008649882725051
 PrefabInstance:
   m_ObjectHideFlags: 0
