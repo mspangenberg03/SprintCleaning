@@ -5,11 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class Level_Tracker : MonoBehaviour
 {
-
-    private static bool _unlockLevel2 = false;
+    [SerializeField]
+    private int _unlockedLevels = 1;
     
-
-    private static bool _unlockLevel3 = false;
     // Start is called before the first frame update
     void Awake()
     {
@@ -18,17 +16,15 @@ public class Level_Tracker : MonoBehaviour
 
     public void UnlockLevel(){
         if(SceneManager.GetActiveScene().name == "Level 1"){
-            _unlockLevel2 = true;
+            _unlockedLevels = 2;
         }
         else if (SceneManager.GetActiveScene().name == "Level 2"){
-            _unlockLevel3 = true;
+            _unlockedLevels = 3;
         }
     }
-    public bool Level2Unlocked(){
-        return(_unlockLevel2);
+    public int LevelsUnlocked(){
+        return(_unlockedLevels);
     }
-    public bool Level3Unlocked(){
-        return(_unlockLevel3);
-    }
+    
 
 }

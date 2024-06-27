@@ -38,11 +38,10 @@ public class MainMenu : MonoBehaviour
     
 
     [SerializeField]
-    private Button _level2Button;
+    private Button[] _levelButtons;
     
     
-    [SerializeField]
-    private Button _level3Button;
+    
     private Level_Tracker _levelCode;
 
     private void Awake()
@@ -68,14 +67,13 @@ public class MainMenu : MonoBehaviour
         _resolutionDropdownText.text = _dropdown.options[index].text;
         //ChangeResolution();
         _levelCode = _levelTracker.GetComponent<Level_Tracker>();
-        _level2Button.interactable = false;
-        _level3Button.interactable = false;
-        if(_levelCode.Level2Unlocked()){
-            _level2Button.interactable = true;
+        for(int i = 0; i < _levelButtons.Length; i++){
+            _levelButtons[i].interactable = false;
         }
-        if(_levelCode.Level3Unlocked()){
-            _level3Button.interactable = true;
+        for(int i = 0; i < _levelCode.LevelsUnlocked(); i++){
+            _levelButtons[i].interactable = true;
         }
+
 
 
     }
@@ -85,18 +83,11 @@ public class MainMenu : MonoBehaviour
         _levelSelectPanel.SetActive(true);
         //SceneManager.LoadScene("Level 1");
     }
-    public void StartLevel1()
+    public void StartLevel(int Level)
     {
-        SceneManager.LoadScene("Level 1");
+        SceneManager.LoadScene("Level " + Level);
     }
-    public void StartLevel2()
-    {
-        SceneManager.LoadScene("Level 2");
-    }
-    public void StartLevel3()
-    {
-        SceneManager.LoadScene("Level 3");
-    }
+    
     public void ExitGame()
     {
 #if UNITY_STANDALONE_WIN
