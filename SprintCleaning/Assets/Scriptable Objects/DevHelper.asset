@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _reproduceGameplay: 0
   _dontOverrideControlsWhenReproduceGameplay: 0
+  _timeScale: 1
   <LogAudioTimeAndPlayerProgressAlongTrack>k__BackingField: 0
   <LogUnexpectedTrashCollectionTimings>k__BackingField: 0
   <ImmortalPlayer>k__BackingField: 0

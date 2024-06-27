@@ -53,19 +53,19 @@ public class VectorUtils : MonoBehaviour
         return Vector2.Dot(vector, projectOnto.normalized);
     }
 
-    public static bool TwoPointsAreOnDifferentSidesOfPlane(Vector3 point1, Vector3 point2, Vector3 planePoint, Vector3 planeNormalDirection)
+    public static bool TwoPointsAreOnDifferentSidesOfPlane(Vector3Double point1, Vector3Double point2, Vector3Double planePoint, Vector3Double planeNormalDirection)
     {
         // http://mathonline.wikidot.com/point-normal-form-of-a-plane
         // equation of a plane: ax + by + cz + d = 0
         // where the vector <a, b, c> is normal to the plane
         // and d = ax_0+by_0+cz_0 where <x_0, y_0, z_0> is a point on the plane
 
-        float d = -Vector3.Dot(planePoint, planeNormalDirection);
+        double d = -Vector3Double.Dot(planePoint, planeNormalDirection);
 
         // https://stackoverflow.com/questions/15688232/check-which-side-of-a-plane-points-are-on
-        float value1 = Vector3.Dot(planeNormalDirection, point1) + d;
-        float value2 = Vector3.Dot(planeNormalDirection, point2) + d;
-        return Mathf.Sign(value1) != Mathf.Sign(value2);
+        double value1 = Vector3Double.Dot(planeNormalDirection, point1) + d;
+        double value2 = Vector3Double.Dot(planeNormalDirection, point2) + d;
+        return Math.Sign(value1) != Math.Sign(value2);
 
     }
 

@@ -99,22 +99,25 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
         return p1 + (1 - t) * (1 - t) * (p0 - p1) + t * t * (p2 - p1);
     }
 
-    public (double, double, double) BezierCurveDouble(double t)
+    public Vector3Double BezierCurveDouble(double t)
     {
-        // cast to doubles
-        (double p0x, double p0y, double p0z) = (p0.x, p0.y, p0.z);
-        (double p1x, double p1y, double p1z) = (p1.x, p1.y, p1.z);
-        (double p2x, double p2y, double p2z) = (p2.x, p2.y, p2.z);
-
-        return (
-            p1x + (1 - t) * (1 - t) * (p0x - p1x) + t * t * (p2x - p1x),
-            p1y + (1 - t) * (1 - t) * (p0y - p1y) + t * t * (p2y - p1y),
-            p1z + (1 - t) * (1 - t) * (p0z - p1z) + t * t * (p2z - p1z));
+        Vector3Double p0d = (Vector3Double)p0;
+        Vector3Double p1d = (Vector3Double)p1;
+        Vector3Double p2d = (Vector3Double)p2;
+        return p1d + (1 - t) * (1 - t) * (p0d - p1d) + t * t * (p2d - p1d);
     }
 
     public Vector3 BezierCurveDerivative(float t)
     {
         return 2 * (1 - t) * (p1 - p0) + 2 * t * (p2 - p1);
+    }
+
+    public Vector3Double BezierCurveDerivativeDouble(float t)
+    {
+        Vector3Double p0d = (Vector3Double)p0;
+        Vector3Double p1d = (Vector3Double)p1;
+        Vector3Double p2d = (Vector3Double)p2;
+        return 2 * (1 - t) * (p1d - p0d) + 2 * t * (p2d - p1d);
     }
 
     public Vector3 BezierCurveSecondDerivative()
@@ -203,11 +206,11 @@ public class TrackPiece : MonoBehaviour, PoolOfMonoBehaviour<TrackPiece>.IPoolab
     {
         StoreLane(0);
         double sum = 0;
-        (double x, double y, double z) priorPoint = BezierCurveDouble(0);
+        Vector3Double priorPoint = BezierCurveDouble(0);
         for (int i = 1; i <= steps; i++)
         {
             double t = ((double)i) / steps;
-            (double x, double y, double z) nextPoint = BezierCurveDouble(t);
+            Vector3Double nextPoint = BezierCurveDouble(t);
             (double dx, double dy, double dz) = (nextPoint.x - priorPoint.x, nextPoint.y - priorPoint.y, nextPoint.z - priorPoint.z);
             sum += System.Math.Sqrt(dx * dx + dy * dy + dz * dz);
             priorPoint = nextPoint;

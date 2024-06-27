@@ -29,7 +29,8 @@ public class PlayerMovement : MonoBehaviour
 
     // position & velocity
 
-    private Vector3 _positionOnMidline;
+    private Vector3Double _positionOnMidline; 
+    // ^ Use doubles for this b/c otherwise the player's position eventually becomes unaligned with the lanes.
 
     private float _lanePosition;
     private float _laneChangeSpeed;
@@ -67,8 +68,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        _positionOnMidline = _trackGenerator.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
-        _rigidbody.position = _positionOnMidline;
+        Vector3 initialPosition = _trackGenerator.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
+        _positionOnMidline = (Vector3Double)initialPosition;
+        _rigidbody.position = initialPosition;
         _rigidbody.transform.position = _rigidbody.position;
         _animator.SetFloat("Speed", 2f);
     }
@@ -92,7 +94,7 @@ public class PlayerMovement : MonoBehaviour
         DevHelper.Instance.GameplayReproducer.SaveOrLoadMovementInputs(ref _leftInputDown, ref _rightInputDown, ref _jumpInput);
 
         TrackPiece trackPiece = _trackGenerator.TrackPieces[TARGET_POINT_INDEX];
-        float t = trackPiece.FindTForClosestPointOnMidline(_positionOnMidline);
+        float t = trackPiece.FindTForClosestPointOnMidline((Vector3)_positionOnMidline);
 
         if (DevHelper.Instance.LogAudioTimeAndPlayerProgressAlongTrack)
             Debug.Log("t (meaningless unless near 0 or 1) & audio time (doesn't update constantly): " + t + " " + GameplayMusic.CurrentAudioTime);
@@ -100,8 +102,8 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 midlineVelocity = TrackMidlineVelocity(trackPiece, t);
 
-        Vector3 priorPositionOnMidline = _positionOnMidline; 
-        _positionOnMidline += midlineVelocity * Time.deltaTime;
+        Vector3Double priorPositionOnMidline = _positionOnMidline; 
+        _positionOnMidline += (Vector3Double)(midlineVelocity * Time.deltaTime);
 
         UpdateJumpPosition();
 
@@ -115,14 +117,14 @@ public class PlayerMovement : MonoBehaviour
         Vector3 approximatedPositionAtLanePosition = trackPiece.BezierCurve(t);
         Vector3 offsetForLanePosition = approximatedPositionAtLanePosition - approximatedPositionOnMidline;
 
-        Vector3 currentPosition = _positionOnMidline + offsetForLanePosition + _jumpPosition * Vector3.up;
+        Vector3Double currentPosition = _positionOnMidline + (Vector3Double)offsetForLanePosition + (Vector3Double)(_jumpPosition * Vector3.up);
 
-        _rigidbody.velocity = (currentPosition - _rigidbody.position) / Time.deltaTime;
+        _rigidbody.velocity = (Vector3)((currentPosition - (Vector3Double)_rigidbody.position) / Time.deltaTime);
 
 
         trackPiece.StoreLane(0);
-        Vector3 endPosition = trackPiece.BezierCurve(1f);
-        Vector3 endDirection = trackPiece.BezierCurveDerivative(1f);
+        Vector3Double endPosition = trackPiece.BezierCurveDouble(1f);
+        Vector3Double endDirection = trackPiece.BezierCurveDerivativeDouble(1f);
         endDirection.y = 0;
         if (VectorUtils.TwoPointsAreOnDifferentSidesOfPlane(priorPositionOnMidline, _positionOnMidline, endPosition, endDirection))
         {
@@ -161,7 +163,7 @@ public class PlayerMovement : MonoBehaviour
         // The y position shifts off the track near the transition between track pieces, so correct for that.
         // Only need to deal with the y position offset here because the lane movement deals with x and z drift.
         Vector3 point = trackPiece.BezierCurve(t) + _settings.PlayerVerticalOffset * Vector3.up;
-        float yDifference = point.y - _positionOnMidline.y;
+        float yDifference = (float)(point.y - _positionOnMidline.y);
         result.y += yDifference / Time.deltaTime;
 
         return result;
