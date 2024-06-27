@@ -24,7 +24,9 @@ public class PlayerPowerUpManager : MonoBehaviour
             if (pickupPowerUp.PowerUpInfo._type == _heldPowerUps[i]._type)
             {
                 _heldPowerUps[i]._PowerUpTimer = 0f;
-                Destroy(pickupPowerUp.gameObject);
+
+                ReturnToPool(pickupPowerUp);
+
                 _PowerUpBar.UpdateDisplayedInfo(_heldPowerUps);
                 return;
             }
@@ -43,10 +45,17 @@ public class PlayerPowerUpManager : MonoBehaviour
             _scoreManager._powerUpMultiplier = 2;
         }
         
-        Destroy(pickupPowerUp.gameObject);
-        
+        ReturnToPool(pickupPowerUp);
 
 
+
+    }
+
+    private void ReturnToPool(PickUpPowerUp pickupPowerUp)
+    {
+        Garbage entity = pickupPowerUp.GetComponent<Garbage>();
+        entity.OnTrackPiece.GarbageOnThisTrackPiece.Remove(entity);
+        entity.ReturnToPool();
     }
 
     public bool HasPowerUp(PowerUpType _powerUp)

@@ -8,7 +8,8 @@ public class TrackObjectsInstantiator
     private List<(float time, Vector3 finalPosition, Vector3 initialPosition, Quaternion rotation, TrackPiece trackPiece, GameObject prefab)> _plannedSpawns = new();
     private Dictionary<GameObject, float> _prefabToGravity = new();
 
-    public TrackObjectsInstantiator(Transform poolFolder, Transform outOfPoolFolder, TrackObstaclesGenerator obstaclesGenerator, TrackGarbageGenerator garbageGenerator)
+    public TrackObjectsInstantiator(Transform poolFolder, Transform outOfPoolFolder, TrackObstaclesGenerator obstaclesGenerator, TrackGarbageGenerator garbageGenerator
+        , TrackPowerupsGenerator powerupsGenerator)
     {
         _pools = new DictionaryOfPoolsOfMonoBehaviour<Garbage>(poolFolder, outOfPoolFolder);
 
@@ -21,10 +22,13 @@ public class TrackObjectsInstantiator
             InitializeForPrefab(prefab);
         foreach (GameObject prefab in obstaclesGenerator.WideObstaclePrefabs)
             InitializeForPrefab(prefab);
+        foreach (GameObject prefab in powerupsGenerator.PowerupPrefabs)
+            InitializeForPrefab(prefab);
 
         void InitializeForPrefab(GameObject prefab)
         {
             _pools.CheckAddPoolForPrefab(prefab);
+            Garbage garbage = prefab.GetComponentInChildren<Garbage>();
             _prefabToGravity[prefab] = prefab.GetComponentInChildren<Garbage>().Gravity;
         }
     }
