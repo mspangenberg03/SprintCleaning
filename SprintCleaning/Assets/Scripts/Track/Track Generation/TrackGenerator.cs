@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class TrackGenerator : MonoBehaviour
 {
+    [SerializeField] private bool _spawnPowerups;
     [SerializeField] private int _numTrackPieces = 10;
     [SerializeField] private TrackPiecesGenerator _trackPiecesGenerator;
     [SerializeField] private TrackGarbageGenerator _garbageGenerator;
     [SerializeField] private TrackObstaclesGenerator _obstaclesGenerator;
+    [SerializeField] private TrackPowerupsGenerator _powerupsGenerator;
     [SerializeField] private BuildingsGeneratorInspectorSettings _buildingsGeneratorSettings;
 
     private TrackBuildingsGeneratorOneSide _rightBuildingsGenerator;
@@ -51,8 +53,9 @@ public class TrackGenerator : MonoBehaviour
 
 
         _trackPiecesGenerator.Initialize(trackPiecePoolFolder, trackPieceFolder, TrackPieces, _numTrackPieces);
-        _trackObjectsInstantiator = new TrackObjectsInstantiator(trackObjectPoolFolder, trackObjectFolder, _obstaclesGenerator, _garbageGenerator);
+        _trackObjectsInstantiator = new TrackObjectsInstantiator(trackObjectPoolFolder, trackObjectFolder, _obstaclesGenerator, _garbageGenerator, _powerupsGenerator);
         _obstaclesGenerator.Initialize(_trackObjectsInstantiator);
+        _powerupsGenerator.Initialize(_trackObjectsInstantiator);
         _garbageGenerator.Initialize(_trackObjectsInstantiator);
 
 
@@ -78,6 +81,8 @@ public class TrackGenerator : MonoBehaviour
             bool spawnNone = TrackPieces.Count < 4; // To prevent immediately encountering trash when the run starts.
             _garbageGenerator.AddGarbage(addTrashOn, spawnNone, out var selectedBeatsAndPrefabsAndLanesForGarbage);
             _obstaclesGenerator.AddObstaclesToTrackPiece(addTrashOn, spawnNone, selectedBeatsAndPrefabsAndLanesForGarbage);
+            if (_spawnPowerups)
+                _powerupsGenerator.AddPowerupsToTrackPiece(addTrashOn, spawnNone, selectedBeatsAndPrefabsAndLanesForGarbage);
         }
     }
 

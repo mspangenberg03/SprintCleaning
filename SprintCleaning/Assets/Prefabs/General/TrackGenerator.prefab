@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 310c3ee7b7264a44682df7ac81514824, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _spawnPowerups: 0
   _numTrackPieces: 10
   _trackPiecesGenerator:
     _trackPrefabs:
@@ -108,6 +109,17 @@ MonoBehaviour:
     - {fileID: 1620772654782883020, guid: 038baf3fdc78e424aa92e61b29aa79ee, type: 3}
     <WideObstaclePrefabs>k__BackingField:
     - {fileID: 6174984916426853657, guid: a521367ff84e1214ab6b8a23b54c28ce, type: 3}
+  _powerupsGenerator:
+    _minTimeSeeObjectOnTrack: 1
+    _maxTimeSeeObjectOnTrack: 2
+    _trackObjectsYOffset: 0.5
+    _oddsSpawnImmediately: 1
+    _minPerTrackPiece: 0
+    _maxPerTrackPiece: 1
+    <PowerupPrefabs>k__BackingField:
+    - {fileID: 3618007095663537576, guid: b7e1e94b03ba1d440b00c6f240c937bd, type: 3}
+    - {fileID: 1226523630981635959, guid: ee8be1f4a16064a42b371f4e6d54f39a, type: 3}
+    - {fileID: 1226523630981635959, guid: b37ed9ef9c485a34bb2b89543ef371db, type: 3}
   _buildingsGeneratorSettings:
     <DistanceFromTrackAtMiddleOfWidth>k__BackingField: 2
     <MinDistanceFromTrackAlongWholeWidth>k__BackingField: 1

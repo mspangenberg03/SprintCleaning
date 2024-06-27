@@ -76,7 +76,7 @@ public class PoolOfMonoBehaviour<T> where T : MonoBehaviour, PoolOfMonoBehaviour
     {
 #if UNITY_EDITOR
         if (toReturn == null)
-            throw new System.ArgumentNullException("toReturn");
+            throw new System.ArgumentNullException("toReturn. is null (not just destroyed): " + (toReturn is null));
         if (_pool.Contains(toReturn))
             throw new System.InvalidOperationException("toReturn is already in the pool. toReturn.DebugID: " + toReturn.DebugID);
 #endif
