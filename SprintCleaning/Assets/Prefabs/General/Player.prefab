@@ -109,6 +109,8 @@ MonoBehaviour:
   _rigidbody: {fileID: 6654320705877145291}
   _settings: {fileID: 11400000, guid: a974e26a5660c8944a6ecbfb082b9ae6, type: 2}
   _animator: {fileID: 4465781752102580761}
+  _playerPowerUpManager: {fileID: 0}
+  _baseForwardsSpeed: 16
 --- !u!54 &6654320705877145291
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -150,6 +152,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _numberOfPowerUps: 0
   _PowerUpBar: {fileID: 0}
+  _PlayerMovement: {fileID: 0}
+  _Vaccum: {fileID: 0}
+  _Score: {fileID: 0}
   _heldPowerUps: []
 --- !u!114 &3205953339151722299
 MonoBehaviour:

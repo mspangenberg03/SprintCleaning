@@ -858,6 +858,7 @@ MonoBehaviour:
   _streakValue: 30
   _regularStreakDecrease: 3
   _streakMultiplier: 1
+  _powerUpMultiplier: 1
   <MaxStreakValue>k__BackingField: 150
   _streakThresholds: 320000005000000078000000
   gameAudioMixer: {fileID: 24100000, guid: fedf60293c00229499018b58512fe665, type: 2}
@@ -1141,6 +1142,14 @@ PrefabInstance:
       propertyPath: _PlayerMovement
       value: 
       objectReference: {fileID: 1791975046}
+    - target: {fileID: 7155127644151803059, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+      propertyPath: _levelSpeedUp
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7155127644151803059, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+      propertyPath: _baseForwardsSpeed
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 7155127644151803059, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
       propertyPath: _playerPowerUpManager
       value: 
