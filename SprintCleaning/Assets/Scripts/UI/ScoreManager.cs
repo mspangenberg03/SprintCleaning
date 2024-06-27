@@ -86,12 +86,14 @@ public class ScoreManager : MonoBehaviour
         ScoreGainText.Instance.OnScoreGained(add);
         _score += add;
         _streakValue += streakValueToAdd;
+        _streakValue = System.Math.Min(MaxStreakValue, _streakValue);
         _streakBar._current = _streakValue;
     }
 
     public void DecreaseStreak()
     {
         _streakValue -= _regularStreakDecrease;
+        _streakValue = System.Math.Max(0, _streakValue);
         CheckStreakMultiplier();
         _streakBar._current = _streakValue;
     }
