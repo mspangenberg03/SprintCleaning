@@ -8,7 +8,8 @@ public class TrackObjectsInstantiator
     private List<(float time, Vector3 finalPosition, Vector3 initialPosition, Quaternion rotation, TrackPiece trackPiece, GameObject prefab)> _plannedSpawns = new();
     private Dictionary<GameObject, float> _prefabToGravity = new();
 
-    public TrackObjectsInstantiator(Transform poolFolder, Transform outOfPoolFolder, TrackObstaclesGenerator obstaclesGenerator, TrackGarbageGenerator garbageGenerator)
+    public TrackObjectsInstantiator(Transform poolFolder, Transform outOfPoolFolder, TrackObstaclesGenerator obstaclesGenerator, TrackGarbageGenerator garbageGenerator
+        , TrackPowerupsGenerator powerupsGenerator)
     {
         _pools = new DictionaryOfPoolsOfMonoBehaviour<Garbage>(poolFolder, outOfPoolFolder);
 
@@ -21,10 +22,13 @@ public class TrackObjectsInstantiator
             InitializeForPrefab(prefab);
         foreach (GameObject prefab in obstaclesGenerator.WideObstaclePrefabs)
             InitializeForPrefab(prefab);
+        foreach (GameObject prefab in powerupsGenerator.PowerupPrefabs)
+            InitializeForPrefab(prefab);
 
         void InitializeForPrefab(GameObject prefab)
         {
             _pools.CheckAddPoolForPrefab(prefab);
+            Garbage garbage = prefab.GetComponentInChildren<Garbage>();
             _prefabToGravity[prefab] = prefab.GetComponentInChildren<Garbage>().Gravity;
         }
     }
@@ -71,8 +75,10 @@ public class TrackObjectsInstantiator
             else
             {
                 float throwTime = Garbage.FallTime(initialPosition, finalPosition, _prefabToGravity[prefab]);
+                GameObject _player = GameObject.Find("Player");
+                PlayerMovement _playerMovement = _player.GetComponent<PlayerMovement>();
 
-                float timeUntilReachBeat = distanceToReachBeat / PlayerMovement.Settings.BaseForwardsSpeed;
+                float timeUntilReachBeat = distanceToReachBeat / _playerMovement.GetPlayerSpeed();
                 float spawnDelay = timeUntilReachBeat - warningTime - throwTime;
                 if (spawnDelay <= 0)
                     Spawn(prefab, finalPosition, rotation, trackPiece, false, Vector3.negativeInfinity);

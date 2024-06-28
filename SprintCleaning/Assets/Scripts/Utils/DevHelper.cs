@@ -7,6 +7,7 @@ public class DevHelper : ScriptableObject
 {
     [SerializeField] private bool _reproduceGameplay;
     [SerializeField] private bool _dontOverrideControlsWhenReproduceGameplay;
+    [SerializeField] private float _timeScale = 1;
     [field: SerializeField] public bool LogAudioTimeAndPlayerProgressAlongTrack { get; private set; }
     [field: SerializeField] public bool LogUnexpectedTrashCollectionTimings { get; private set; }
     [field: SerializeField] public bool ImmortalPlayer { get; private set; }
@@ -22,10 +23,11 @@ public class DevHelper : ScriptableObject
                 if (_ref == null)
                 {
                     GameObject prefab = Resources.Load<GameObject>("Dev Helper Ref");
-                    Instantiate(prefab);
-                    _ref = prefab.GetComponent<DevHelperRef>();
+                    _ref = Instantiate(prefab).GetComponent<DevHelperRef>();
                 }
                 _ref.SO.GameplayReproducer = new GameplayReproducer(_ref.SO._reproduceGameplay, _ref.SO._dontOverrideControlsWhenReproduceGameplay);
+                if (_ref.SO._timeScale != 1)
+                    Time.timeScale = _ref.SO._timeScale;
             }
             return _ref.SO;
         }

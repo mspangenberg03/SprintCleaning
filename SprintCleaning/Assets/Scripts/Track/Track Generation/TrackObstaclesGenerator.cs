@@ -23,6 +23,8 @@ public class TrackObstaclesGenerator
     private List<int> _possibleObstacleLanes = new();
     private int _priorTrackPieceLastObstacleBeat = -1;
 
+    private List<(int beat, GameObject prefab, int lane)> _generatedObstacles = new();
+
     private TrackObjectsInstantiator _instantiator;
 
     public void Initialize(TrackObjectsInstantiator instantiator)
@@ -53,9 +55,11 @@ public class TrackObstaclesGenerator
         return result;
     }
 
-    private void GenerateObstacles(TrackPiece trackPiece, int numObstacles, List<(int beat, GameObject prefab, int lane)> selectedBeatsAndPrefabsAndLanesForGarbage)
+    private void GenerateObstacles(TrackPiece trackPiece, int numObstacles, List<(int beat, GameObject prefab, int lane)> selectedBeatsAndPrefabsAndLanes)
     {
-        DecidePossibleObstacleBeats(selectedBeatsAndPrefabsAndLanesForGarbage);
+        _generatedObstacles.Clear();
+
+        DecidePossibleObstacleBeats(selectedBeatsAndPrefabsAndLanes);
 
         int numObstaclesSpawned = 0;
         int currentTrackLastObstacleBeat = -1;
@@ -63,7 +67,7 @@ public class TrackObstaclesGenerator
         {
             int beat = _possibleObstacleBeats.TakeRandomElement();
 
-            DecidePossibleObstacleLanesForBeat(beat, selectedBeatsAndPrefabsAndLanesForGarbage, out bool failed);
+            DecidePossibleObstacleLanesForBeat(beat, selectedBeatsAndPrefabsAndLanes, out bool failed);
             if (failed)
             {
                 // Retry with a different beat
@@ -79,6 +83,8 @@ public class TrackObstaclesGenerator
 
             _instantiator.SpawnOrPlanToThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnObstacleImmediately, Random.Range(_minTimeSeeObjectOnTrack, _maxTimeSeeObjectOnTrack), _trackObjectsYOffset);
 
+            _generatedObstacles.Add((beat, prefab, lane));
+
             numObstaclesSpawned++;
             currentTrackLastObstacleBeat = System.Math.Max(currentTrackLastObstacleBeat, beat);
 
@@ -91,6 +97,9 @@ public class TrackObstaclesGenerator
         // If not it didn't spawn enough obstacles, spawn a bit more next time
         int numObstaclesFailedToSpawn = numObstacles - numObstaclesSpawned;
         _obstaclesLeftover += System.Math.Min(numObstaclesFailedToSpawn, _maxObstaclesCarriedOnWhenFailToSpawn);
+
+        for (int i = 0; i < _generatedObstacles.Count; i++)
+            selectedBeatsAndPrefabsAndLanes.Add(_generatedObstacles[i]);
     }
 
     private void DecidePossibleObstacleBeats(List<(int beat, GameObject prefab, int lane)> selectedBeatsAndPrefabsAndLanesForGarbage)

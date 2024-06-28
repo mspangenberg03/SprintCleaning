@@ -15,6 +15,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     [SerializeField] private GameObject _particle;
 
     [field: SerializeField] public bool Obstacle { get; private set; }
+    [field: SerializeField] public bool Powerup { get; private set; }
 
     public AudioSource _garbageAudio;
 
@@ -43,7 +44,8 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     }
     public void InitializeUponProducedByPool() 
     {
-        _animTrigger.Reset();
+        if (_animTrigger != null)
+            _animTrigger.Reset();
     }
     public void OnReturnToPool() { }
 
@@ -85,80 +87,59 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (!other.gameObject.CompareTag("Player") && !other.gameObject.CompareTag("Vaccum"))
+            return;
+
+        if (Powerup)
+            return;
+
+        GameObject player = other.transform.parent.gameObject;
+        Animator animator = player.GetComponentInChildren<Animator>();
+        _garbageAudio = player.GetComponent<AudioSource>();
+        _garbageAudio.PlayOneShot(impact, 1F);
+        _animTrigger.CheckTriggerAnimation(other);
+        if (!Obstacle)
         {
-            GameObject player = other.transform.parent.gameObject;
-            Animator animator = player.GetComponentInChildren<Animator>();
-            _garbageAudio = player.GetComponent<AudioSource>();
-            _garbageAudio.PlayOneShot(impact, 1F);
-            _animTrigger.CheckTriggerAnimation(other);
-            if (!Obstacle)
-            {
-                GameObject particleObject = Instantiate(_particle, gameObject.transform.position, Quaternion.identity);
-                particleObject.transform.rotation = player.transform.rotation;
-            }
-
-            if (DevHelper.Instance.LogUnexpectedTrashCollectionTimings)
-            {
-                // On my computer, the audio time updates every .02133 seconds. To be precisely synced with the music, it should be
-                // at a .25 second interval
-                double audioTime = GameplayMusic.CurrentAudioTime;
-                if (audioTime % .25 > .022)
-                    Debug.Log("Hit trash at time (+- maybe 20 ms): " + audioTime);
-            }
-
-            bool gameOver = false;
-            if (Obstacle&&!other.gameObject.CompareTag("Vaccum"))
-            {
-                if (!Game_Over.Instance.GameIsOver)
-                    animator.SetTrigger("Hit");
-                player.GetComponent<Game_Over>().GameOver();
-            }
-            else{
-                ScoreManager.Instance.GarbageCollected(_type);
-                player.GetComponent<PlayerGarbageCollection>().TextEdit();
-            }
-
-            ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
-
-            if (!gameOver) // don't destroy it when game over because it looks strange how it disappears after a brief pause
-                ReturnToPool();
-#if UNITY_EDITOR
-            if (!OnTrackPiece.GarbageOnThisTrackPiece.Contains(this))
-                throw new System.Exception("not contained");
-#endif
-            OnTrackPiece.GarbageOnThisTrackPiece.Remove(this);
-#if UNITY_EDITOR
-            if (OnTrackPiece.GarbageOnThisTrackPiece.Contains(this))
-                throw new System.Exception("jhtgfbvc");
-#endif
+            GameObject particleObject = Instantiate(_particle, gameObject.transform.position, Quaternion.identity);
+            particleObject.transform.rotation = player.transform.rotation;
         }
-        else if(other.gameObject.CompareTag("Vaccum")){
-            GameObject player = other.transform.parent.gameObject;
-            Animator animator = player.GetComponentInChildren<Animator>();
-            _garbageAudio = player.GetComponent<AudioSource>();
-            _garbageAudio.PlayOneShot(impact, 1F);
-            _animTrigger.CheckTriggerAnimation(other);
-            if (!Obstacle)
-            {
-                GameObject particleObject = Instantiate(_particle, gameObject.transform.position, Quaternion.identity);
-                particleObject.transform.rotation = player.transform.rotation;
-            }
 
-            if (DevHelper.Instance.LogUnexpectedTrashCollectionTimings)
-            {
-                // On my computer, the audio time updates every .02133 seconds. To be precisely synced with the music, it should be
-                // at a .25 second interval
-                double audioTime = GameplayMusic.CurrentAudioTime;
-                if (audioTime % .25 > .022)
-                    Debug.Log("Hit trash at time (+- maybe 20 ms): " + audioTime);
-            }
-            
+        if (DevHelper.Instance.LogUnexpectedTrashCollectionTimings)
+        {
+            // On my computer, the audio time updates every .02133 seconds. To be precisely synced with the music, it should be
+            // at a .25 second interval
+            double audioTime = GameplayMusic.CurrentAudioTime;
+            if (audioTime % .25 > .022)
+                Debug.Log("Hit trash at time (+- maybe 20 ms): " + audioTime);
+        }
+
+        bool gameOver = false;
+        if (Obstacle&&!other.gameObject.CompareTag("Vaccum"))
+        {
+            if (!Game_Over.Instance.GameIsOver)
+                animator.SetTrigger("Hit");
+            player.GetComponent<Game_Over>().GameOver();
+        }
+        else
+        {
             ScoreManager.Instance.GarbageCollected(_type);
             player.GetComponent<PlayerGarbageCollection>().TextEdit();
-
-            ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
         }
+
+        ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
+
+        if (!gameOver) // don't destroy it when game over because it looks strange how it disappears after a brief pause
+            ReturnToPool();
+#if UNITY_EDITOR
+        if (!OnTrackPiece.GarbageOnThisTrackPiece.Contains(this))
+            throw new System.Exception("not contained");
+#endif
+        OnTrackPiece.GarbageOnThisTrackPiece.Remove(this);
+#if UNITY_EDITOR
+        if (OnTrackPiece.GarbageOnThisTrackPiece.Contains(this))
+            throw new System.Exception("jhtgfbvc");
+#endif
+        
     }
 
     private void OnDestroy()

@@ -5,14 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PlayerMovementSettings", menuName = "PlayerMovementSettings")]
 public class PlayerMovementSettings : ScriptableObject
 {
-    [field: Header("Forwards Movement")]
-    [field: SerializeField] public float BaseForwardsSpeed { get; private set; } = 10;
-    [field: SerializeField] public float MinForwardsSpeed { get; private set; } = 10;
-    [field: SerializeField] public float MaxForwardsSpeed { get; private set; } = 30;
-    [field: SerializeField] public float ForwardsAcceleration { get; private set; } = 1f; 
-    [field: SerializeField] public float ForwardsAccelerationWhileBelowBaseSpeed { get; private set; } = 1f;
-    [field: SerializeField] public float AccelerationPauseAfterGarbageSlowdown { get; private set; } = 3f; // seconds 
-
     [field: Header("Sideways Movement")]
     [field: SerializeField] public float BaseLaneChangeSpeed { get; private set; } = 6;
     [field: SerializeField] public float LaneChangeSpeedupTime { get; private set; } = .05f;

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1363372076950304251}
   - component: {fileID: 4723714752103091541}
   - component: {fileID: 7213048395655017689}
+  - component: {fileID: 3222276115038429289}
   m_Layer: 0
   m_Name: Power Up
   m_TagString: Untagged
@@ -118,7 +119,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9b617b2e06e6c647aa36a75b1ac1d58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <ToolInfo>k__BackingField:
+  <PowerUpInfo>k__BackingField:
     _type: 0
-    _durablity: 3
-    _toolUI: {fileID: 0}
+    _length: 5
+    _PowerUpUI: {fileID: 0}
+--- !u!114 &3222276115038429289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7593384376440917220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b518a3dcd9329ca4b93ada4f59dad38c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animTrigger: {fileID: 0}
+  _type: 0
+  impact: {fileID: 0}
+  _particle: {fileID: 0}
+  <Obstacle>k__BackingField: 0
+  <Powerup>k__BackingField: 1
+  _garbageAudio: {fileID: 0}
+  _score: 0
+  _streakAddValue: 0
+  <Gravity>k__BackingField: 34.5679
