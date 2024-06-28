@@ -158,6 +158,8 @@ public class PlayerMovement : MonoBehaviour
         // Use the 2nd derivative to help reduce the error from discrete timesteps.
         Vector3 derivative = trackPiece.BezierCurveDerivative(t);
         Vector3 secondDerivative = trackPiece.BezierCurveSecondDerivative();
+        if (CurrentForwardsSpeed != _baseForwardsSpeed)
+            throw new System.Exception("jnhgbfvdcx");
         float estimatedTChangeDuringTimestep = CurrentForwardsSpeed * Time.deltaTime / derivative.magnitude;
         Vector3 averageDerivative = derivative + estimatedTChangeDuringTimestep / 2 * secondDerivative;
         Vector3 result = CurrentForwardsSpeed * averageDerivative.normalized;

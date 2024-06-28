@@ -38,7 +38,7 @@ public class GameplayMusic : MonoBehaviour
 
         _instance = this;
         //System.Threading.Thread.MemoryBarrier();
-        AudioStartTime = AudioSettings.dspTime + .5;
+        AudioStartTime = AudioSettings.dspTime + 1.5;
         //System.Threading.Thread.MemoryBarrier();
         for (int i = 0; i < _musicSources.Length; i++)
             _musicSources[i].PlayScheduled(AudioStartTime);

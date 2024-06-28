@@ -27,6 +27,11 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 
     [field: SerializeField] public float Gravity { get; private set; }
 
+    private static double _lastTime;
+    private static double _totalIntervals;
+    private static int _count;
+    private static int _loopCount;
+
     private float _horizontalSpeed;
     private float _verticalSpeed;
     private Vector3 _destinationPosition;
@@ -107,10 +112,28 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         if (DevHelper.Instance.LogUnexpectedTrashCollectionTimings)
         {
             // On my computer, the audio time updates every .02133 seconds. To be precisely synced with the music, it should be
-            // at a .25 second interval
+            // at a .25 second interval (or different depending on the level)
+            System.Threading.Thread.MemoryBarrier();
             double audioTime = GameplayMusic.CurrentAudioTime;
-            if (audioTime % .25 > .022)
-                Debug.Log("Hit trash at time (+- maybe 20 ms): " + audioTime);
+            const double interval = .25 * 120 / 132;
+            //if (audioTime % interval > .022)
+            if (audioTime - _lastTime > 0)
+            {
+                _totalIntervals += audioTime - _lastTime;
+                _count++;
+            }
+            else if (audioTime != 0)
+                _loopCount++;
+            double remainder = audioTime % interval;
+            remainder = System.Math.Min(remainder, interval - remainder);
+            if (remainder > .036)
+            {
+                Debug.Log("Hit trash at time (+- maybe 20 ms): " + audioTime
+                        + ", remainder: " + remainder + ", time since last time: " + (audioTime - _lastTime) + ", average interval: " + _totalIntervals / _count + " total intervals: " + _totalIntervals + " count: " + _count
+                        + ", loop count: " + _loopCount);
+            }
+            //Debug.Log(GameplayMusic.Instance._musicSources[0].timeSamples + " " + GameplayMusic.Instance._musicSources[0].clip.frequency);
+            _lastTime = audioTime;
         }
 
         bool gameOver = false;

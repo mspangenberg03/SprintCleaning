@@ -62,7 +62,7 @@ public class TrackGarbageGenerator
         for (int i = 0; i < _selectedBeatsAndPrefabsAndLanesForGarbage.Count; i++)
         {
             (int beat, GameObject prefab, _) = _selectedBeatsAndPrefabsAndLanesForGarbage[i];
-            int lane = _laneDecider.SelectGarbageLane(beat);
+            int lane = 0;// _laneDecider.SelectGarbageLane(beat);
 
             _selectedBeatsAndPrefabsAndLanesForGarbage[i] = (beat, prefab, lane);
             _instantiator.SpawnOrPlanToThrowObject(prefab, beat, lane, trackPiece, _oddsSpawnImmediately, Random.Range(_minTimeSeeObjectOnTrack, _maxTimeSeeObjectOnTrack), _trackObjectsYOffset);
@@ -72,7 +72,7 @@ public class TrackGarbageGenerator
     private void SelectBeatsAndPrefabsForGarbage(int numTrash)
     {
         _selectedBeatsAndPrefabsAndLanesForGarbage.Clear();
-        for (int i = 0; i < numTrash; i++)
+        for (int i = 0; i < 16; i++)
         {
             // Find the 1st beat strength which isn't full.
             GarbageSpawningBeatStrength beatStrength = null;
