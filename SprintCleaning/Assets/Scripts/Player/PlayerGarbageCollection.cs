@@ -30,22 +30,20 @@ public class PlayerGarbageCollection : MonoBehaviour
     }
     public void TextEdit()
     {
-        //if (_garbageText != null)
-        //{
-        //    string text = "";
-        //    for (int i = 0; i < (int)(GarbageType.Count); i++)
-        //        text += (GarbageType)i + ": " + _playerData._counts[(GarbageType)i] + "\n";
+        if (_garbageText != null)
+        {
+            string text = "";
+            for (int i = 0; i < (int)(GarbageType.Count); i++)
+                text += (GarbageType)i + ": " + _scoreManager._counts[(GarbageType)i] + "\n";
 
-        //    _garbageText.text = text;
-        //}
+            _garbageText.text = text;
+        }
 
         if (_scoreText != null)
         {
             string scoreText = "Score: " + _scoreManager._score;
-            string streakValueText = "StreakValue: " + _scoreManager._streakValue;
-            string streakText = "Streak: " + _scoreManager._streakMultiplier;
 
-            _scoreText.text = scoreText + "\n" + streakValueText + "\n" + streakText;
+            _scoreText.text = scoreText;
         }
     }
 

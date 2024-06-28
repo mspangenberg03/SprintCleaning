@@ -12,16 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ad5393324b16cf45b85131ab9d71d91, type: 3}
   m_Name: Theme_MenuSandard
   m_EditorClassIdentifier: 
-  _headerFirst_bg: {r: 1, g: 0, b: 0, a: 1}
+  _headerFirst_bg: {r: 0.7584905, g: 0.6912281, b: 0.6912281, a: 0.69803923}
   _headerFirst_txt: {r: 0, g: 0, b: 0, a: 1}
-  _bodyFirst_bg: {r: 0.8690045, g: 1, b: 0, a: 1}
+  _bodyFirst_bg: {r: 0.75686276, g: 0.6901961, b: 0.6901961, a: 0.69803923}
   _bodyFirst_txt: {r: 0, g: 0, b: 0, a: 0}
   _bodySecond_bg: {r: 0, g: 0, b: 0, a: 0}
   _bodySecond_txt: {r: 0, g: 0, b: 0, a: 0}
   _descBox_bg: {r: 0, g: 0, b: 0, a: 0}
   _descBox_txt: {r: 0, g: 0, b: 0, a: 0}
-  _buttonGeneric_bg: {r: 0, g: 0, b: 0, a: 0}
-  _buttonGeneric_txt: {r: 0, g: 0, b: 0, a: 0}
-  _footerFirst_bg: {r: 0, g: 0.9498844, b: 1, a: 1}
+  _buttonGeneric_bg: {r: 0.9924528, g: 0.9924528, b: 0.9924528, a: 1}
+  _buttonGeneric_txt: {r: 0, g: 0, b: 0, a: 1}
+  _footerFirst_bg: {r: 0.75686276, g: 0.6901961, b: 0.6901961, a: 0.69803923}
   _footerFirst_txt: {r: 0, g: 0, b: 0, a: 0}
   _disable: {r: 0, g: 0, b: 0, a: 0}

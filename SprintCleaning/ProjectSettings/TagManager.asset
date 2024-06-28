@@ -6,6 +6,7 @@ TagManager:
   tags:
   - trackCheckpoint
   - GarbageText
+  - GeneralUI
   - Vaccum
   layers:
   - Default

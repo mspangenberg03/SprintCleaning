@@ -76,7 +76,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3993401155454205292, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
       propertyPath: _type
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3993401155454205292, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
       propertyPath: impact
