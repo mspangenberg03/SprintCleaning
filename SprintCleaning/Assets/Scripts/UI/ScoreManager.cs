@@ -104,10 +104,12 @@ public class ScoreManager : MonoBehaviour
         _streakValue = System.Math.Max(0, _streakValue);
         
         if(_streakValue == 0){
-            GameObject player = GameObject.Find("Player");
-            Animator animator = player.GetComponentInChildren<Animator>();
-            animator.SetTrigger("Hit");
-            player.GetComponent<Game_Over>().GameOver();
+            if (!Game_Over.Instance.GameIsOver){
+                GameObject player = GameObject.Find("Player");
+                Animator animator = player.GetComponentInChildren<Animator>();
+                animator.SetTrigger("Hit");
+                player.GetComponent<Game_Over>().GameOver();
+            }
         }
         CheckStreakMultiplier();
         _streakBar._current = _streakValue;
