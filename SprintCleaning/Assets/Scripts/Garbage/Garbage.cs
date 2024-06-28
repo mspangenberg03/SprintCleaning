@@ -35,6 +35,9 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     public static List<Garbage> ThrownGarbage { get; private set; } = new();
 
     private Transform Root => transform.parent;
+    
+    [SerializeField] private GameObject _particleSystem;
+    [SerializeField] private float _particleDisableTimer;
 
     public int DebugID { get; set; }
 
@@ -62,6 +65,9 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         _horizontalSpeed = horizontalDistance / FallTime(Root.position, destinationPosition, Gravity);
 
         ThrownGarbage.Add(this);
+        _particleSystem.SetActive(true);
+        
+
     }
 
     public static float FallTime(Vector3 from, Vector3 destinationPosition, float gravity)
@@ -78,6 +84,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         if (nextPosition.y < _destinationPosition.y)
         {
             ThrownGarbage.Remove(this);
+            Invoke("DisableParticles", _particleDisableTimer);
             nextPosition = _destinationPosition;
         }
         Root.position = nextPosition;
@@ -85,6 +92,9 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         _verticalSpeed -= Gravity * Time.deltaTime;
     }
 
+    public void DisableParticles(){
+        _particleSystem.SetActive(false);
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (!other.gameObject.CompareTag("Player") && !other.gameObject.CompareTag("Vaccum"))
