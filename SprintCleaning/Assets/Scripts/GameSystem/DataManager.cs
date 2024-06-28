@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class DataManager : MonoBehaviour
 {
-    [SerializeField]
     public ScoreManager _data;
     public Dictionary<GarbageType, string> _garbageConvert = new Dictionary<GarbageType, string>();
 
