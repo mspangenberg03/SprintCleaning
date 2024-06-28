@@ -47,7 +47,7 @@ public class Level_Tracker : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
-        if(SceneManager.GetActiveScene().buildIndex < _totalNumberOfLevels)
+        if(SceneManager.GetActiveScene().buildIndex <= _totalNumberOfLevels)
             _currentLevel = SceneManager .GetActiveScene().buildIndex;
     }
 
