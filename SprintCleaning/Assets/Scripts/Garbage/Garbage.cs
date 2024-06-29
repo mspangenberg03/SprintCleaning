@@ -12,7 +12,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     [Tooltip("The sound this piece of garbage plays on collect")]
     public AudioClip impact;
 
-    [SerializeField] private GameObject _particle;
+    [SerializeField] private GameObject _particle; // this is for pickup. Other particles are for the streak when garbage is thrown.
 
     [field: SerializeField] public bool Obstacle { get; private set; }
     [field: SerializeField] public bool Powerup { get; private set; }
@@ -27,10 +27,17 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 
     [field: SerializeField] public float Gravity { get; private set; }
 
+    [SerializeField] private ParticleSystem _particleSystem;
+    [SerializeField] private float _particleDisableTimer;
+
+    private ParticleSystem.MainModule _mainModule;
+    private float _disableParticlesAtTime = float.PositiveInfinity;
+    private bool _onGroundButInThrownGarbageListToDisableParticles;
     private float _horizontalSpeed;
     private float _verticalSpeed;
     private Vector3 _destinationPosition;
     private PoolOfMonoBehaviour<Garbage> _pool;
+
     public TrackPiece OnTrackPiece { get; set; }
     public static List<Garbage> ThrownGarbage { get; private set; } = new();
 
@@ -41,15 +48,21 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     public void InitializeUponPrefabInstantiated(PoolOfMonoBehaviour<Garbage> pool)
     {
         _pool = pool;
+        _mainModule = _particleSystem.main;
     }
     public void InitializeUponProducedByPool() 
     {
         if (_animTrigger != null)
             _animTrigger.Reset();
     }
-    public void OnReturnToPool() { }
+    public void OnReturnToPool() 
+    {
+        _particleSystem.gameObject.SetActive(false);
+        _disableParticlesAtTime = float.PositiveInfinity;
+        _onGroundButInThrownGarbageListToDisableParticles = false;
+    }
 
-    public void SetTrajectoryFromCurrentPosition(Vector3 destinationPosition)
+    public void StartBeingThrownTo(Vector3 destinationPosition)
     {
         if (destinationPosition.y > Root.position.y)
         {
@@ -62,6 +75,9 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         _horizontalSpeed = horizontalDistance / FallTime(Root.position, destinationPosition, Gravity);
 
         ThrownGarbage.Add(this);
+        _particleSystem.gameObject.SetActive(true);
+
+        //MoveWhileBeingThrown(true); // for the particles to get the right velocity
     }
 
     public static float FallTime(Vector3 from, Vector3 destinationPosition, float gravity)
@@ -69,15 +85,28 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         return Mathf.Sqrt(2 * (from.y - destinationPosition.y) / gravity);
     }
 
-    public void MoveWhileBeingThrown()
+    public void MoveWhileBeingThrown(bool preventEnd = false)
     {
+        if (_onGroundButInThrownGarbageListToDisableParticles)
+        {
+            if (Time.time >= _disableParticlesAtTime)
+            {
+                ThrownGarbage.Remove(this);
+                _particleSystem.gameObject.SetActive(false);
+            }
+            return;
+        }
+
+
         Vector2 horizontalDirection = (_destinationPosition.To2D() - Root.position.To2D()).normalized;
         Vector3 velocity = (horizontalDirection * _horizontalSpeed).To3D() + Vector3.up * _verticalSpeed;
+        _mainModule.emitterVelocity = velocity;
 
         Vector3 nextPosition = Root.position + velocity * Time.deltaTime;
-        if (nextPosition.y < _destinationPosition.y)
+        if (nextPosition.y < _destinationPosition.y && !preventEnd) // dunno whether the preventEnd is necessary
         {
-            ThrownGarbage.Remove(this);
+            _onGroundButInThrownGarbageListToDisableParticles = true;
+            _disableParticlesAtTime = Time.time + _particleDisableTimer;
             nextPosition = _destinationPosition;
         }
         Root.position = nextPosition;
