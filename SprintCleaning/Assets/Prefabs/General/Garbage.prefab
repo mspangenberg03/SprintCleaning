@@ -199,7 +199,7 @@ MonoBehaviour:
   _score: 1
   _streakAddValue: 3
   <Gravity>k__BackingField: 34.5679
-  _particleSystem: {fileID: 6853005335839480725}
+  _particleSystem: {fileID: 6853005335839480723}
   _particleDisableTimer: 1
 --- !u!1001 &7303363966391747556
 PrefabInstance:
@@ -223,7 +223,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4197362405085976692, guid: 08988f345dbe345889440c6396917623, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4197362405085976692, guid: 08988f345dbe345889440c6396917623, type: 3}
       propertyPath: m_LocalPosition.z
@@ -267,8 +267,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4197362405085976692, guid: 08988f345dbe345889440c6396917623, type: 3}
   m_PrefabInstance: {fileID: 7303363966391747556}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &6853005335839480725 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4197362405085976689, guid: 08988f345dbe345889440c6396917623, type: 3}
+--- !u!198 &6853005335839480723 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 4197362405085976695, guid: 08988f345dbe345889440c6396917623, type: 3}
   m_PrefabInstance: {fileID: 7303363966391747556}
   m_PrefabAsset: {fileID: 0}
