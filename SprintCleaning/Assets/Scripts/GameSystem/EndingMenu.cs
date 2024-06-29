@@ -15,7 +15,7 @@ public class EndingMenu : MonoBehaviour
 
     public void RunAgainButton()
     {
-        SceneManager.LoadScene("Main");
+        SceneManager.LoadScene("Level " + _levelTracker._currentLevel);
     }
 
     public void NextLevelButton()
