@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class ScoreManager : MonoBehaviour
     public int _streakMultiplier = 1;
 
     public int _powerUpMultiplier = 1;
+
+    public int _nextLevelThreshold = 20;
 
     [field: SerializeField] public int MaxStreakValue { get; private set; }
 
@@ -96,6 +99,7 @@ public class ScoreManager : MonoBehaviour
         _streakValue += streakValueToAdd;
         _streakValue = System.Math.Min(MaxStreakValue, _streakValue);
         _streakBar._current = _streakValue;
+        CheckForNextLevel();
     }
 
     public void DecreaseStreak()
@@ -144,5 +148,12 @@ public class ScoreManager : MonoBehaviour
         StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak2Volume", duration, _streakMultiplier >= 2 ? 1 : 0));
         StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak3Volume", duration, _streakMultiplier >= 3 ? 1 : 0));
         StartCoroutine(FadeMixerGroup.StartFade(gameAudioMixer, "Streak4Volume", duration, _streakMultiplier >= 4 ? 1 : 0));
+    }
+
+    private void CheckForNextLevel()
+    {
+        if (_score >= _nextLevelThreshold)
+            _levelCode.UnlockLevel();
+            SceneManager.LoadScene("EndingMenu");
     }
 }
