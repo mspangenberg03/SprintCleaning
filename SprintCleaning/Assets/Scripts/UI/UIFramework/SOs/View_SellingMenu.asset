@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _theme: {fileID: 11400000, guid: ef663b230a3ab7f4198011f2c507619d, type: 2}
   _padding:
-    m_Left: 50
-    m_Right: 50
-    m_Top: 25
-    m_Bottom: 25
+    m_Left: 1
+    m_Right: 1
+    m_Top: 1
+    m_Bottom: 1
   _spacing: 0

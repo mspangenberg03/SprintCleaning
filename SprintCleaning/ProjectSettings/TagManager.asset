@@ -6,12 +6,13 @@ TagManager:
   tags:
   - trackCheckpoint
   - GarbageText
+  - GeneralUI
   - Vaccum
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Post
   - Water
   - UI
   - 
