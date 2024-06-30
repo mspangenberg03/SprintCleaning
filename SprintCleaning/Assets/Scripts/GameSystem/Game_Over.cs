@@ -9,6 +9,8 @@ public class Game_Over : MonoBehaviour
 
     private float _gameOverDelay = 2f;
     private float _gameOverDelayStartTime;
+
+    private float _levelCompleteDelay = 1.5f;
     public bool GameIsOver {private set; get; }
     public bool LevelIsComplete { private set; get; }
     public GameObject _generalUI;
@@ -79,7 +81,7 @@ public class Game_Over : MonoBehaviour
         _playerAnimator.SetTrigger("Cheer");
         _playerAnimator.SetFloat("Speed", 0f);
 
-        yield return new WaitForSeconds(_gameOverDelay);
+        yield return new WaitForSeconds(_levelCompleteDelay);
         _generalUI.SetActive(false);
         SceneManager.LoadScene("EndingMenu");
     }
