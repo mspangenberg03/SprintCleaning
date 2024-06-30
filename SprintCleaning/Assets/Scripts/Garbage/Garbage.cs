@@ -38,6 +38,11 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     private Vector3 _destinationPosition;
     private PoolOfMonoBehaviour<Garbage> _pool;
 
+    private static double _syncDebug_lastTime;
+    private static double _syncDebug_totalIntervals;
+    private static int _syncDebug_count;
+    private static int _syncDebug_loopCount;
+
     public TrackPiece OnTrackPiece { get; set; }
     public static List<Garbage> ThrownGarbage { get; private set; } = new();
 
@@ -139,10 +144,31 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         if (DevHelper.Instance.LogUnexpectedTrashCollectionTimings)
         {
             // On my computer, the audio time updates every .02133 seconds. To be precisely synced with the music, it should be
-            // at a .25 second interval
+            // at a .25 second interval (or different depending on the level)
+            System.Threading.Thread.MemoryBarrier();
             double audioTime = GameplayMusic.CurrentAudioTime;
-            if (audioTime % .25 > .022)
-                Debug.Log("Hit trash at time (+- maybe 20 ms): " + audioTime);
+            const double interval = .25;// * 120 / 132;
+                                        //if (audioTime % interval > .022)
+            if (audioTime - _syncDebug_lastTime > 0)
+            {
+                _syncDebug_totalIntervals += audioTime - _syncDebug_lastTime;
+                _syncDebug_count++;
+            }
+            else if (audioTime != 0)
+                _syncDebug_loopCount++;
+            double remainder = audioTime % interval;
+            remainder = System.Math.Min(remainder, interval - remainder);
+            if (remainder > .036)
+            {
+                Debug.Log("Hit trash at time (+- maybe 20 ms): " + audioTime
+                        + ", remainder (assumes a particular level in the interval const): " + remainder 
+                        + ", time since last time: " + (audioTime - _syncDebug_lastTime) 
+                        + ", average interval: " + _syncDebug_totalIntervals / _syncDebug_count 
+                        + " total intervals: " + _syncDebug_totalIntervals 
+                        + " count: " + _syncDebug_count
+                        + ", loop count: " + _syncDebug_loopCount);
+            }
+            _syncDebug_lastTime = audioTime;
         }
 
         bool gameOver = false;
