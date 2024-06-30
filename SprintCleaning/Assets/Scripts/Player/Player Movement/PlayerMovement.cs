@@ -136,7 +136,6 @@ public class PlayerMovement : MonoBehaviour
             _tiltedUp = false;
             _cameraStraight = true;
         }
-
         Vector3Double priorPositionOnMidline = _positionOnMidline; 
         _positionOnMidline += (Vector3Double)(midlineVelocity * Time.deltaTime);
 
