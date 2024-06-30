@@ -22,7 +22,7 @@ public class ScoreManager : MonoBehaviour
 
     public int _powerUpMultiplier = 1;
 
-    public int _nextLevelThreshold = 20;
+    private Game_Over _gameOver;
 
     [field: SerializeField] public int MaxStreakValue { get; private set; }
 
@@ -69,8 +69,9 @@ public class ScoreManager : MonoBehaviour
 
         _streakBar._current = _streakValue;
 
-        
-        
+        GameObject player = GameObject.Find("Player");
+        _gameOver = player.GetComponent<Game_Over>();
+
 
         //#if UNITY_EDITOR
         //        if (_resetInEditorOnAwake)
@@ -97,11 +98,7 @@ public class ScoreManager : MonoBehaviour
         _streakValue += streakValueToAdd;
         _streakValue = System.Math.Min(MaxStreakValue, _streakValue);
         _streakBar._current = _streakValue;
-#if UNITY_EDITOR
-        if(_levelCode._isLevelCompletedOnScore)
-            CheckForNextLevel();
-#endif
-
+        CheckForNextLevel();
     }
 
     public void DecreaseStreak()
@@ -114,7 +111,7 @@ public class ScoreManager : MonoBehaviour
                 GameObject player = GameObject.Find("Player");
                 Animator animator = player.GetComponentInChildren<Animator>();
                 animator.SetTrigger("Hit");
-                player.GetComponent<Game_Over>().GameOver();
+                _gameOver.GameOver();
             }
         }
         CheckStreakMultiplier();
@@ -135,9 +132,6 @@ public class ScoreManager : MonoBehaviour
         }
         if (_streakValue > _streakThresholds[^1]){
             _streakMultiplier = _streakThresholds.Length + 1;
-            if(_levelCode != null)
-                _levelCode.UnlockLevel();
-            SceneManager.LoadScene("EndingMenu");
         }
 
 
@@ -158,10 +152,24 @@ public class ScoreManager : MonoBehaviour
 
     private void CheckForNextLevel()
     {
-        if (_score >= _nextLevelThreshold)
+#if UNITY_EDITOR
+        if (_levelCode._isLevelCompletedOnScore)
         {
-            _levelCode.UnlockLevel();
-            SceneManager.LoadScene("EndingMenu");
+            if (_score >= _levelCode._nextLevelThreshold)
+            {
+                _levelCode.UnlockLevel();
+                _gameOver.LevelComplete();
+            }
+        }
+#endif
+        if (_streakValue >= MaxStreakValue)
+        {
+            if (_levelCode != null)
+            {
+                _levelCode.UnlockLevel();
+                Debug.Log("Unlocked New Level!");
+            }
+            _gameOver.LevelComplete();
         }
     }
 }

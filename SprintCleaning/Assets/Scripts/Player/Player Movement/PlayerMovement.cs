@@ -176,7 +176,6 @@ public class PlayerMovement : MonoBehaviour
     public float GetPlayerSpeed(){
         return(_baseForwardsSpeed);
     }
-    
 
     #region Lane Changing
     private void UpdateLanePosition()

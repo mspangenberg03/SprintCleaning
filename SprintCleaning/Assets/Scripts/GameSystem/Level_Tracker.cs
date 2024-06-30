@@ -15,6 +15,8 @@ public class Level_Tracker : MonoBehaviour
     private static Level_Tracker _instance;
     public Game_Over _gameOver;
 
+    public int _nextLevelThreshold;
+
     [SerializeField]
     public bool _isLevelCompletedOnScore = false;
 

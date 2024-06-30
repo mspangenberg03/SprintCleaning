@@ -263,7 +263,8 @@ MonoBehaviour:
   _currentLevel: 0
   _totalNumberOfLevels: 3
   _gameOver: {fileID: 0}
-  _isLevelCompletedOnScore: 0
+  _nextLevelThreshold: 20
+  _isLevelCompletedOnScore: 1
 --- !u!4 &83256293
 Transform:
   m_ObjectHideFlags: 0
