@@ -15,4 +15,4 @@ MonoBehaviour:
   _theme: {fileID: 11400000, guid: 287398a482e6b974abcf7e21eac4af99, type: 2}
   _style: 1
   _font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  _size: 50
+  _size: 25

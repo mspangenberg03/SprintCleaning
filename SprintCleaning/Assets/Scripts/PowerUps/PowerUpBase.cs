@@ -25,13 +25,12 @@ public enum PowerUpType
 }
 public enum GarbageType
 {
-    Kick,
-    Hat,
-    Snare,
-    Cymbal,
-    TomLow,
-    TomMed,
-    TomHigh,
+    TrashCan,
+    GlassShard,
+    Coke,
+    Bottle,
+    MilkJug,
+    Banana,
 
     Count
 }
