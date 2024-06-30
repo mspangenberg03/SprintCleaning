@@ -20,6 +20,8 @@ public class GameplayMusic : MonoBehaviour
         }
     }
 
+    public AudioMixer GameAudioMixer => _gameAudioMixer;
+
     public double AudioStartTime { get; private set; }
 
     public static double CurrentAudioTime => ((double)Instance._musicSources[0].timeSamples) / Instance._musicSources[0].clip.frequency;
@@ -28,17 +30,23 @@ public class GameplayMusic : MonoBehaviour
     {
         _ = DevHelper.Instance; // this is just to initialize it before anything uses Random, since this script has the earliest execution order.
 
-        FadeMixerGroup.SetVolume(_gameAudioMixer, "Streak1Volume", 0);
-        FadeMixerGroup.SetVolume(_gameAudioMixer, "Streak2Volume", 0);
-        FadeMixerGroup.SetVolume(_gameAudioMixer, "Streak3Volume", 0);
-        FadeMixerGroup.SetVolume(_gameAudioMixer, "Streak4Volume", 0);
-        ScoreManager.Instance.CheckStreakMultiplier();
-
         _instance = this;
-        //System.Threading.Thread.MemoryBarrier();
         AudioStartTime = AudioSettings.dspTime + .5;
-        //System.Threading.Thread.MemoryBarrier();
         for (int i = 0; i < _musicSources.Length; i++)
             _musicSources[i].PlayScheduled(AudioStartTime);
+    }
+
+    private void Start()
+    {
+        StartCoroutine(FadeMixerGroup.StartFade(_gameAudioMixer, "Streak1Volume", .5f, 1));
+    }
+
+    public void OnGameEnds()
+    {
+        float duration = .5f;
+        StartCoroutine(FadeMixerGroup.StartFade(_gameAudioMixer, "Streak1Volume", duration, 0));
+        StartCoroutine(FadeMixerGroup.StartFade(_gameAudioMixer, "Streak2Volume", duration, 0));
+        StartCoroutine(FadeMixerGroup.StartFade(_gameAudioMixer, "Streak3Volume", duration, 0));
+        StartCoroutine(FadeMixerGroup.StartFade(_gameAudioMixer, "Streak4Volume", duration, 0));
     }
 }

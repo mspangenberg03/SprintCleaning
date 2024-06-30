@@ -94,7 +94,7 @@ public class TrackObjectsInstantiator
         Garbage newGarbage = _pools.Produce(prefab, initialPosition, rotation);
 
         if (thrown)
-            newGarbage.SetTrajectoryFromCurrentPosition(finalPosition);
+            newGarbage.StartBeingThrownTo(finalPosition);
 
         newGarbage.OnTrackPiece = trackPiece;
 #if UNITY_EDITOR
