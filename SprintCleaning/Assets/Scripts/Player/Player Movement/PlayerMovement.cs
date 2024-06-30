@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEditor.Animations;
 
 [DefaultExecutionOrder(-10)]
 public class PlayerMovement : MonoBehaviour
@@ -40,10 +41,11 @@ public class PlayerMovement : MonoBehaviour
     private float _speedMult = 1f;
     [SerializeField]
     Camera _camera;
+    [SerializeField]
     Animator _cameraAnimations;
-    private bool _tiltedDown;
-    private bool _tiltedUp;
-    private bool _cameraStraight;
+    private bool _tiltedDown = false;
+    private bool _tiltedUp = false;
+    private bool _cameraStraight = true;
 
     [SerializeField] private float _baseForwardsSpeed  = 10;
 
@@ -109,30 +111,30 @@ public class PlayerMovement : MonoBehaviour
 
 
         Vector3 midlineVelocity = TrackMidlineVelocity(trackPiece, t);
-        //_camera.transform.SetPositionAndRotation();
-        if (midlineVelocity.y < 0 && !_tiltedDown)
+        if (midlineVelocity.y < 0 && !_tiltedDown && _cameraStraight)
         {
-            Vector3 rot = new Vector3(35, 0, 0);
-            _camera.transform.Rotate(rot);
+            _cameraAnimations.Play("TiltDown");
             _tiltedDown = true;
+            _cameraStraight = false;
+            
         }
-        if (midlineVelocity.y == 0 && _tiltedDown)
+        if (midlineVelocity.y == 0 && _tiltedDown && !_cameraStraight)
         {
-            Vector3 rot = new Vector3(0, 0, 0);
-            _camera.transform.Rotate(rot);
+            _cameraAnimations.Play("TiltUpFromDown");
             _tiltedDown = false;
+            _cameraStraight = true;
         }
-        if (midlineVelocity.y > 0 && !_tiltedUp)
+        if (midlineVelocity.y > 0 && !_tiltedUp && _cameraStraight)
         {
-            Vector3 rot = new Vector3(-35, 0, 0);
-            _camera.transform.Rotate(rot);
+            _cameraAnimations.Play("TiltUp");
             _tiltedUp = true;
+            _cameraStraight = false;
         }
-        if (midlineVelocity.y == 0 && _tiltedUp)
+        if (midlineVelocity.y == 0 && _tiltedUp && !_cameraStraight)
         {
-            Vector3 rot = new Vector3(0, 0, 0);
-            _camera.transform.Rotate(rot);
+            _cameraAnimations.Play("TiltDownFromUp");
             _tiltedUp = false;
+            _cameraStraight = true;
         }
 
         Vector3Double priorPositionOnMidline = _positionOnMidline; 
