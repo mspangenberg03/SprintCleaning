@@ -37,6 +37,7 @@ public static class FadeMixerGroup {
 
     public static void SetVolume(AudioMixer audioMixer, string exposedParam, float newVolume)
     {
+        newVolume = Mathf.Clamp(newVolume, 0.0001f, 1);
         audioMixer.SetFloat(exposedParam, Mathf.Log10(newVolume) * 20);
     }
 }
