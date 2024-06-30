@@ -122,6 +122,9 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         if (Powerup)
             return;
 
+        if (Game_Over.Instance.GameIsOver)
+            return;
+
         GameObject player = other.transform.parent.gameObject;
         Animator animator = player.GetComponentInChildren<Animator>();
         _garbageAudio = player.GetComponent<AudioSource>();
