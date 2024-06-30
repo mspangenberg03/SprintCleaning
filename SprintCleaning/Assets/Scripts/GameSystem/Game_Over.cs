@@ -41,6 +41,10 @@ public class Game_Over : MonoBehaviour
     IEnumerator DelayGameOver()
     {
         GameIsOver = true;
+
+        ScoreManager.Instance.OnGameEnds();
+        GameplayMusic.Instance.OnGameEnds();
+
         _gameOverDelayStartTime = Time.time;
 
         if (!_playerAnimator.GetBool("Idle"))
