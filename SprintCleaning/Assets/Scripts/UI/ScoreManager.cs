@@ -143,4 +143,9 @@ public class ScoreManager : MonoBehaviour
         StartCoroutine(FadeMixerGroup.StartFade(GameplayMusic.Instance.GameAudioMixer, "Streak3Volume", duration, _streakMultiplier >= 3 ? 1 : 0));
         StartCoroutine(FadeMixerGroup.StartFade(GameplayMusic.Instance.GameAudioMixer, "Streak4Volume", duration, _streakMultiplier >= 4 ? 1 : 0));
     }
+
+    public void OnGameEnds()
+    {
+        StopAllCoroutines();
+    }
 }
