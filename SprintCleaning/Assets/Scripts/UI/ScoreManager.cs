@@ -97,7 +97,11 @@ public class ScoreManager : MonoBehaviour
         _streakValue += streakValueToAdd;
         _streakValue = System.Math.Min(MaxStreakValue, _streakValue);
         _streakBar._current = _streakValue;
-        CheckForNextLevel();
+#if UNITY_EDITOR
+        if(_levelCode._isLevelCompletedOnScore)
+            CheckForNextLevel();
+#endif
+
     }
 
     public void DecreaseStreak()
@@ -133,8 +137,7 @@ public class ScoreManager : MonoBehaviour
             _streakMultiplier = _streakThresholds.Length + 1;
             if(_levelCode != null)
                 _levelCode.UnlockLevel();
-
-            
+            SceneManager.LoadScene("EndingMenu");
         }
 
 
@@ -156,7 +159,9 @@ public class ScoreManager : MonoBehaviour
     private void CheckForNextLevel()
     {
         if (_score >= _nextLevelThreshold)
+        {
             _levelCode.UnlockLevel();
             SceneManager.LoadScene("EndingMenu");
+        }
     }
 }

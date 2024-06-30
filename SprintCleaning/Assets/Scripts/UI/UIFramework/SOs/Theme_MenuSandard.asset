@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Theme_MenuSandard
   m_EditorClassIdentifier: 
   _headerFirst_bg: {r: 0.7584905, g: 0.6912281, b: 0.6912281, a: 0.69803923}
-  _headerFirst_txt: {r: 0, g: 0, b: 0, a: 1}
+  _headerFirst_txt: {r: 1, g: 1, b: 1, a: 1}
   _bodyFirst_bg: {r: 0.75686276, g: 0.6901961, b: 0.6901961, a: 0.69803923}
   _bodyFirst_txt: {r: 0, g: 0, b: 0, a: 0}
   _bodySecond_bg: {r: 0, g: 0, b: 0, a: 0}
