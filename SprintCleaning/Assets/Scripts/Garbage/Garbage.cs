@@ -127,7 +127,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         if (Powerup)
             return;
 
-        if (Game_Over.Instance.GameIsOver)
+        if (Game_Over.Instance.GameIsOver || Game_Over.Instance.LevelIsComplete)
             return;
 
         GameObject player = other.transform.parent.gameObject;
@@ -182,9 +182,8 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         {
             ScoreManager.Instance.GarbageCollected(_type);
             player.GetComponent<PlayerGarbageCollection>().TextEdit();
+            ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
         }
-
-        ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
 
         if (!gameOver) // don't destroy it when game over because it looks strange how it disappears after a brief pause
             ReturnToPool();
