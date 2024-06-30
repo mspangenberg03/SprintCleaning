@@ -13,10 +13,6 @@ PrefabInstance:
       value: HalfTurn Left Variant
       objectReference: {fileID: 0}
     - target: {fileID: 3156837290011089349, guid: d53b5818b1507bd41bc5c4e54314dcc9, type: 3}
-      propertyPath: m_LocalScale.x
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3156837290011089349, guid: d53b5818b1507bd41bc5c4e54314dcc9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
