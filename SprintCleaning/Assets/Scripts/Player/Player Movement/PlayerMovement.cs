@@ -131,6 +131,7 @@ public class PlayerMovement : MonoBehaviour
             _cameraAnimations.Play("TiltDown");
             _tiltedDown = true;
             _cameraStraight = false;
+            //Debug.Log("TiltDown played");
             
         }
         if (midlineVelocity.y == 0 && _tiltedDown && !_cameraStraight)
@@ -144,6 +145,7 @@ public class PlayerMovement : MonoBehaviour
             _cameraAnimations.Play("TiltUp");
             _tiltedUp = true;
             _cameraStraight = false;
+           
         }
         if (midlineVelocity.y == 0 && _tiltedUp && !_cameraStraight)
         {
@@ -151,6 +153,7 @@ public class PlayerMovement : MonoBehaviour
             _tiltedUp = false;
             _cameraStraight = true;
         }
+        //Debug.Log(_camera.GetComponent<CinemachineRecomposer>().m_Tilt);
         Vector3Double priorPositionOnMidline = _positionOnMidline; 
         _positionOnMidline += (Vector3Double)(midlineVelocity * Time.deltaTime);
 
