@@ -12,7 +12,9 @@ public class ScoreTextUpdated : CustomText
     public DataManager _dataManager => DataManager.Instance;
     private void Start()
     {
-        int score = _dataManager._data._score;
+        if (_dataManager == null)
+            return;
+        int score = ScoreManager._score;
         _scoreTextUpdated.text = "Total Score: " + score;
     }
 }

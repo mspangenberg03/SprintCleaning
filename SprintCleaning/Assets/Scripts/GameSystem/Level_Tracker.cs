@@ -13,7 +13,6 @@ public class Level_Tracker : MonoBehaviour
     [SerializeField]
     private int _totalNumberOfLevels = 3;
     private static Level_Tracker _instance;
-    public Game_Over _gameOver;
 
     public int _nextLevelThreshold;
 
@@ -27,6 +26,13 @@ public class Level_Tracker : MonoBehaviour
             if (_instance == null)
             {
                 _instance = FindObjectOfType<Level_Tracker>();
+                if (_instance == null)
+                {
+                    GameObject instantiated = Instantiate(Resources.Load<GameObject>("levelTracker"));
+                    _instance = instantiated.GetComponent<Level_Tracker>();
+                    if (_instance == null)
+                        throw new System.Exception();
+                }
             }
             return _instance;
         }
@@ -54,14 +60,8 @@ public class Level_Tracker : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
-        if(SceneManager.GetActiveScene().buildIndex <= _totalNumberOfLevels)
-        {
+        if (SceneManager.GetActiveScene().buildIndex <= _totalNumberOfLevels)
             _currentLevel = SceneManager.GetActiveScene().buildIndex;
-            if(SceneManager.GetActiveScene().buildIndex > 0)
-                _gameOver = FindObjectOfType<Game_Over>();
-        }
-            
-
     }
 
 

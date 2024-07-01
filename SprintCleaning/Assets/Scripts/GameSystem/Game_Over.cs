@@ -7,6 +7,7 @@ public class Game_Over : MonoBehaviour
 {
     [SerializeField] private Animator _playerAnimator;
 
+
     private float _gameOverDelay = 2f;
     private float _gameOverDelayStartTime;
 
@@ -15,6 +16,7 @@ public class Game_Over : MonoBehaviour
     public bool LevelIsComplete { private set; get; }
     public GameObject _generalUI;
     public float FractionOfGameOverDelayElapsed => !GameIsOver && !LevelIsComplete ? 0 : Mathf.InverseLerp(_gameOverDelayStartTime, _gameOverDelayStartTime + _gameOverDelay, Time.time);
+    public static bool RunEndedByLosing { get; private set; }
 
     private static Game_Over _instance;
     public static Game_Over Instance
@@ -29,6 +31,7 @@ public class Game_Over : MonoBehaviour
 
     private void Awake()
     {
+        RunEndedByLosing = false;
         _instance = this;
     }
 
@@ -44,7 +47,7 @@ public class Game_Over : MonoBehaviour
     IEnumerator DelayGameOver()
     {
         GameIsOver = true;
-
+        RunEndedByLosing = true;
         ScoreManager.Instance.OnGameEnds();
         GameplayMusic.Instance.OnGameEnds();
 

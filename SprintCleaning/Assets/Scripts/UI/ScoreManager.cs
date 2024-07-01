@@ -8,10 +8,9 @@ public class ScoreManager : MonoBehaviour
 {
     //[SerializeField] private bool _resetInEditorOnAwake = true;
     //The garbage that the player has in total
-    public Dictionary<GarbageType, int> _counts;
+    public static Dictionary<GarbageType, int> _counts;
 
-    [Tooltip("Total score")]
-    public int _score = 0;
+    public static int _score = 0;
 
     public int _streakValue = 30;
 
@@ -57,10 +56,10 @@ public class ScoreManager : MonoBehaviour
         if(_levelTracker != null)
             _levelCode = _levelTracker.GetComponent<Level_Tracker>();
 
-        
-        
 
-        if (_counts == null)
+
+        _score = 0;
+        //if (_counts == null)
         {
             _counts = new Dictionary<GarbageType, int>();
             for (int i = 0; i < (int)(GarbageType.Count); i++)
@@ -153,7 +152,7 @@ public class ScoreManager : MonoBehaviour
     private void CheckForNextLevel()
     {
 #if UNITY_EDITOR
-        if (_levelCode._isLevelCompletedOnScore)
+        if (_levelCode != null && _levelCode._isLevelCompletedOnScore)
         {
             if (_score >= _levelCode._nextLevelThreshold)
             {
