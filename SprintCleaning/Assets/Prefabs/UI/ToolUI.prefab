@@ -33,7 +33,7 @@ RectTransform:
   m_Father: {fileID: 6852693892888581470}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -2, y: -2}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -281,7 +281,7 @@ RectTransform:
   m_Father: {fileID: 3580940572075821592}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -2, y: -2}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -412,7 +412,7 @@ GameObject:
   - component: {fileID: 8991213923721779040}
   - component: {fileID: 6132711351885811144}
   m_Layer: 5
-  m_Name: ToolBar
+  m_Name: PowerUpBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -489,9 +489,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6831bd9baee7e6a4abed23ee46bb6cc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _toolIcons:
-  - {fileID: 9014283868820547995}
-  - {fileID: 3205872623337899088}
+  _PowerUpIcons: []
   _durabilities:
   - {fileID: 8528531052108705918}
   - {fileID: 2023717333091509345}
@@ -513,7 +511,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7072048699104770234
 RectTransform:
   m_ObjectHideFlags: 0

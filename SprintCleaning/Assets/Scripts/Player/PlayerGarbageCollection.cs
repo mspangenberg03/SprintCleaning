@@ -34,14 +34,14 @@ public class PlayerGarbageCollection : MonoBehaviour
         {
             string text = "";
             for (int i = 0; i < (int)(GarbageType.Count); i++)
-                text += (GarbageType)i + ": " + _scoreManager._counts[(GarbageType)i] + "\n";
+                text += (GarbageType)i + ": " + ScoreManager._counts[(GarbageType)i] + "\n";
 
             _garbageText.text = text;
         }
 
         if (_scoreText != null)
         {
-            string scoreText = "Score: " + _scoreManager._score;
+            string scoreText = "Score: " + ScoreManager._score;
 
             _scoreText.text = scoreText;
         }

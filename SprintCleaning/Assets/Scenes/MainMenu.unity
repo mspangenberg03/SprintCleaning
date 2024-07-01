@@ -230,56 +230,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4587367}
   m_CullTransparentMesh: 1
---- !u!1 &83256291
+--- !u!1 &83256291 stripped
 GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 5292854226234494910, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+  m_PrefabInstance: {fileID: 4618072769011983518}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 83256293}
-  - component: {fileID: 83256292}
-  m_Layer: 0
-  m_Name: levelTracker
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &83256292
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 83256291}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d45a9dd4944e2434b842fc9e92db267b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _unlockedLevels: 1
-  _currentLevel: 0
-  _totalNumberOfLevels: 3
-  _gameOver: {fileID: 0}
-  _nextLevelThreshold: 2
-  _isLevelCompletedOnScore: 0
---- !u!4 &83256293
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 83256291}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 519.9309, y: 391.8, z: -0.4622314}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &171712527
 GameObject:
   m_ObjectHideFlags: 0
@@ -5602,6 +5557,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e53aa923d86cd3343a2bb5884d60e082, type: 3}
+--- !u!1001 &4618072769011983518
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3983253919356188663, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 519.9309
+      objectReference: {fileID: 0}
+    - target: {fileID: 3983253919356188663, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 391.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3983253919356188663, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.4622314
+      objectReference: {fileID: 0}
+    - target: {fileID: 3983253919356188663, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3983253919356188663, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3983253919356188663, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3983253919356188663, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3983253919356188663, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3983253919356188663, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3983253919356188663, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5292854226234494910, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+      propertyPath: m_Name
+      value: levelTracker
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -5611,5 +5623,5 @@ SceneRoots:
   - {fileID: 607905638}
   - {fileID: 1292576773}
   - {fileID: 2114526749}
-  - {fileID: 83256293}
+  - {fileID: 4618072769011983518}
   - {fileID: 2128911469}

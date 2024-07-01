@@ -147,7 +147,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
             // at a .25 second interval (or different depending on the level)
             System.Threading.Thread.MemoryBarrier();
             double audioTime = GameplayMusic.CurrentAudioTime;
-            const double interval = .25;// * 120 / 132;
+            const double interval = .25 * 120 / 144;
                                         //if (audioTime % interval > .022)
             if (audioTime - _syncDebug_lastTime > 0)
             {

@@ -965,7 +965,7 @@ GameObject:
   - component: {fileID: 4195001367928803235}
   m_Layer: 5
   m_Name: GeneralUI
-  m_TagString: Untagged
+  m_TagString: GeneralUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1419,7 +1419,7 @@ MonoBehaviour:
   _streakValue: 30
   _regularStreakDecrease: 3
   _streakMultiplier: 1
+  _powerUpMultiplier: 1
   <MaxStreakValue>k__BackingField: 150
   _streakThresholds: 320000005000000078000000
-  gameAudioMixer: {fileID: 24100000, guid: fedf60293c00229499018b58512fe665, type: 2}
   _streakBar: {fileID: 2229442159456305738}
