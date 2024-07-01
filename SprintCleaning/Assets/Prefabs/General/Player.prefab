@@ -1056,15 +1056,96 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -2639638324218457063, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.6937863
+      objectReference: {fileID: 0}
+    - target: {fileID: -2639638324218457063, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.61165494
+      objectReference: {fileID: 0}
+    - target: {fileID: -2639638324218457063, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.25141934
+      objectReference: {fileID: 0}
+    - target: {fileID: -2639638324218457063, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.28517926
+      objectReference: {fileID: 0}
+    - target: {fileID: -2639638324218457063, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 82.8
+      objectReference: {fileID: 0}
+    - target: {fileID: -2639638324218457063, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -44.69
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
       propertyPath: m_Name
       value: TrashBagRigged
       objectReference: {fileID: 0}
+    - target: {fileID: 8879528566716807029, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8879528566716807029, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 8879528566716807029, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8879528566716807029, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8879528566716807029, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8879528566716807029, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8879528566716807029, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8341274698608593451}
   m_SourcePrefab: {fileID: 100100000, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+--- !u!1 &7035499428530077971 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
+  m_PrefabInstance: {fileID: 7881990553006701634}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &8341274698608593451
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7035499428530077971}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2faa2867788bf1c41a9d08c9dac61bce, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &7703633493507414953 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 13bbd6ca8437e445e98862cb6473c6ab, type: 3}
