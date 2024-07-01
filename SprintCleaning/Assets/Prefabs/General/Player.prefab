@@ -112,6 +112,7 @@ MonoBehaviour:
   _animator: {fileID: 4465781752102580761}
   _playerPowerUpManager: {fileID: 0}
   _baseForwardsSpeed: 16
+  _tForLaneChangeSpeedMatchingForwardsSpeed: 0
 --- !u!54 &6654320705877145291
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -170,9 +171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _garbageText: {fileID: 0}
-  _scoreManager: {fileID: 0}
   _scoreText: {fileID: 0}
-  _streakDecreaseInterval: 1
 --- !u!82 &7357241145098489196
 AudioSource:
   m_ObjectHideFlags: 0

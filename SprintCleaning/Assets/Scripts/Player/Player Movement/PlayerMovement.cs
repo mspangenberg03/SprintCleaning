@@ -40,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
     private float _speedMult = 1f;
 
     [SerializeField] private float _baseForwardsSpeed  = 10;
+    [SerializeField] private float _tForLaneChangeSpeedMatchingForwardsSpeed = 1f;
 
     public float RunningStartTime { get; private set; } = float.NegativeInfinity;
 
@@ -198,7 +199,11 @@ public class PlayerMovement : MonoBehaviour
 
         AccelerateLaneChangeSpeed(_lanePosition);
 
-        float nextLanePosition = _lanePosition + _laneChangeSpeed / _settings.DistanceBetweenLanes * Time.deltaTime;
+        const float forwardsSpeedAtLevel1 = 16f;
+        float laneChangeSpeedMult = _baseForwardsSpeed / forwardsSpeedAtLevel1;
+        laneChangeSpeedMult = Mathf.Lerp(1f, laneChangeSpeedMult, _tForLaneChangeSpeedMatchingForwardsSpeed);
+
+        float nextLanePosition = _lanePosition + laneChangeSpeedMult * _laneChangeSpeed / _settings.DistanceBetweenLanes * Time.deltaTime;
         if (Mathf.Sign(nextLanePosition - _currentTargetLane) != Mathf.Sign(_lanePosition - _currentTargetLane) || _lanePosition == _currentTargetLane)
         {
             // don't overshoot
