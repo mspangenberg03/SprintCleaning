@@ -832,6 +832,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+      propertyPath: _playerAnimator
+      value: 
+      objectReference: {fileID: 6773608403735988639}
+    - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+      propertyPath: _playerMovement
+      value: 
+      objectReference: {fileID: 1791975046}
     - target: {fileID: 6029570124216557578, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1030,6 +1038,11 @@ PrefabInstance:
       addedObject: {fileID: 66157950}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+--- !u!95 &6773608403735988639 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4465781752102580761, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+  m_PrefabInstance: {fileID: 6773608403735988638}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8043883741683208405
 PrefabInstance:
   m_ObjectHideFlags: 0

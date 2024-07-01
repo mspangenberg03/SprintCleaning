@@ -7,7 +7,7 @@ using TMPro;
 public class CustomText : CustomUIComponent
 {
     public TextSO _textData;
-    private TextMeshProUGUI _text;
+    protected TextMeshProUGUI _text;
 
     public override void Setup()
     {

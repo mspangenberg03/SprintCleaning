@@ -15,6 +15,9 @@ public class GarbagePickupAnimationTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (Game_Over.Instance.GameIsOver || Game_Over.Instance.LevelIsComplete)
+            return;
+
         if (other.gameObject.CompareTag("Player"))
         {
             _enterCount++;
