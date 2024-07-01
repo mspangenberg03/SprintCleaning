@@ -959,7 +959,7 @@ MonoBehaviour:
     _end: 1
     _shapeTPower: 1
     _invertBeforePower: 0
-    _color: {r: 0.16785331, g: 0.8679245, b: 0.19131935, a: 1}
+    _color: {r: 0, g: 0.9056604, b: 0.030527871, a: 1}
   _dividers:
   - {fileID: 9066143294908033124}
   - {fileID: 1971967349354631311}
@@ -1429,7 +1429,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _streakValue: 30
-  _streakDecreasePerSec: 3
+  _streakDecreasePerSec: 1.5
+  _streakDecreaseWhenPassGarbage: 5
+  _streakIncreaseScale: 1
   _streakMultiplier: 1
   _powerUpMultiplier: 1
   <MaxStreakValue>k__BackingField: 200

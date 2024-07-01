@@ -12,8 +12,12 @@ public class ScoreManager : MonoBehaviour
     public static int _score = 0;
 
     public int _streakValue = 30;
+    private float _streakDecreaseAccumulator;
+    private float _streakIncreaseAccumulator;
 
     [SerializeField] private float _streakDecreasePerSec = 5;
+    [SerializeField] private float _streakDecreaseWhenPassGarbage = 3;
+    [SerializeField] private float _streakIncreaseScale = 1f;
 
     public int _streakMultiplier = 1;
 
@@ -29,7 +33,6 @@ public class ScoreManager : MonoBehaviour
 
     private GameObject _levelTracker;
     private Level_Tracker _levelCode;
-    private float _streakDecreaseAccumulator;
 
 
     private static ScoreManager _instance;
@@ -73,6 +76,11 @@ public class ScoreManager : MonoBehaviour
         _score = 0;
     }
 
+    public void OnPassGarbage()
+    {
+        _streakDecreaseAccumulator += _streakDecreaseWhenPassGarbage;
+    }
+
     private void Update()
     {
         _streakDecreaseAccumulator += Time.deltaTime * _streakDecreasePerSec;
@@ -104,6 +112,10 @@ public class ScoreManager : MonoBehaviour
 
         if (streakValueToAdd != 0)
         {
+            _streakIncreaseAccumulator += streakValueToAdd * _streakIncreaseScale;
+            streakValueToAdd = (int)_streakIncreaseAccumulator;
+            _streakIncreaseAccumulator -= streakValueToAdd;
+
             _streakValue += streakValueToAdd;
             _streakValue = System.Math.Min(MaxStreakValue, _streakValue);
             OnStreakChanges();

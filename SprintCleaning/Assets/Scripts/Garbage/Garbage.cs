@@ -205,6 +205,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         if (InPool())
             throw new System.Exception("Already in pool");
 #endif
+        ThrownGarbage.Remove(this);
 
         _pool.ReturnToPool(this);
     }
