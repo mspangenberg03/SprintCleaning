@@ -1006,6 +1006,42 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._oddsSpawnImmediately
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._maxTrackPiecesPerRest
+      value: 300000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._minTrackPiecesPerRest
+      value: 300000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._maxGarbageOnTrackPiece
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._minGarbageOnTrackPiece
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._maxTimeSeeObjectOnTrack
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._minTimeSeeObjectOnTrack
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _obstaclesGenerator._maxObstaclesPerTrackPiece
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _obstaclesGenerator._minObstaclesPerTrackPiece
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5132789170982312905, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
       propertyPath: m_Name
       value: GameManager

@@ -945,8 +945,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45e3e9c26798a0942a531342390593e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _current: 0
   _mask: {fileID: 9127048694115277176}
+  _fillImage: {fileID: 2230754422458564001}
+  _mainColor: {r: 0.23921569, g: 0.8666667, b: 0.99215686, a: 1}
+  _lowBarColorTransition:
+    _start: 0.07
+    _end: 0.02
+    _shapeTPower: 3
+    _invertBeforePower: 1
+    _color: {r: 1, g: 0.21176471, b: 0.216012, a: 1}
+  _fullBarColorTransition:
+    _start: 0.99999
+    _end: 1
+    _shapeTPower: 1
+    _invertBeforePower: 0
+    _color: {r: 0, g: 0.9056604, b: 0.030527871, a: 1}
   _dividers:
   - {fileID: 9066143294908033124}
   - {fileID: 1971967349354631311}
@@ -1415,11 +1428,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 373d767207006fe45861e5ba686ffd08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _score: 0
   _streakValue: 30
-  _regularStreakDecrease: 3
+  _streakDecreasePerSec: 1.5
+  _streakDecreaseWhenPassGarbage: 5
+  _streakIncreaseScale: 1
   _streakMultiplier: 1
   _powerUpMultiplier: 1
-  <MaxStreakValue>k__BackingField: 150
+  <MaxStreakValue>k__BackingField: 200
   _streakThresholds: 320000005000000078000000
-  _streakBar: {fileID: 2229442159456305738}

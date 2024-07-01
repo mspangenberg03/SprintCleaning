@@ -1,55 +1,45 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 
-public class PlayerGarbageCollection : MonoBehaviour
+public class PlayerGarbageCollection : MonoBehaviour, IOnScoreChanges
 {
     [SerializeField]
     private TextMeshProUGUI _garbageText;
 
     [SerializeField]
-    private ScoreManager _scoreManager;
-
-    [SerializeField]
     private TextMeshProUGUI _scoreText;
 
-    [SerializeField]
-    private float _streakDecreaseInterval = 1f;
-    private ParticleSystem _particle;
-
-    
-    private void Start()
+    private void Awake()
     {
-        //_scoreManager.Awake();
-        InvokeRepeating(nameof(DecreaseStreak), 1f, _streakDecreaseInterval);
-        _particle = GetComponent<ParticleSystem>();
+        ScoreManager.Instance.AddInformScore(this); // Need to use Instance to construct ScoreManager._counts
+        TextEdit(0);
     }
-    public void TextEdit()
+
+    public void OnScoreChanges(int newScore, int scoreChange)
+    {
+        TextEdit(newScore);
+    }
+
+    private void TextEdit(int score)
     {
         if (_garbageText != null)
         {
             string text = "";
             for (int i = 0; i < (int)(GarbageType.Count); i++)
-                text += (GarbageType)i + ": " + ScoreManager._counts[(GarbageType)i] + "\n";
+                text += (GarbageType)i + ": " + ScoreManager.Instance.Counts[(GarbageType)i] + "\n";
 
             _garbageText.text = text;
         }
 
         if (_scoreText != null)
         {
-            string scoreText = "Score: " + ScoreManager._score;
+            string scoreText = "Score: " + score;
 
             _scoreText.text = scoreText;
         }
     }
 
-    private void DecreaseStreak()
-    {
-        _scoreManager.DecreaseStreak();
-        TextEdit();
-    }
+   
 }

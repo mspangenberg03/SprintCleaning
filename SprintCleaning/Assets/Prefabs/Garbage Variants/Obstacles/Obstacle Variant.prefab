@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: EmissionModule.enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1565051362736613747, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3598271509090607832, guid: c479116ca9a11d94ea78dbd23d1dbf81, type: 3}
       propertyPath: m_Name
       value: Obstacle Variant

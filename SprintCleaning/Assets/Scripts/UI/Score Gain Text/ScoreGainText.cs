@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 
-public class ScoreGainText : MonoBehaviour
+public class ScoreGainText : MonoBehaviour, IOnScoreChanges
 {
     [SerializeField] private Animator _anim;
     [SerializeField] private TMPro.TextMeshProUGUI _text;
@@ -27,14 +27,16 @@ public class ScoreGainText : MonoBehaviour
     {
         _instance = this;
         _showScoreGainedID = Animator.StringToHash("ShowScoreGained");
+
+        ScoreManager.Instance.AddInformScore(this);
     }
 
-    public void OnScoreGained(int scoreGained)
+    public void OnScoreChanges(int newScore, int scoreChange)
     {
         if (!_awaitingAnimationEnd)
-            PlayAnimation(scoreGained);
+            PlayAnimation(scoreChange);
         else
-            _scoresGained.Enqueue(scoreGained);
+            _scoresGained.Enqueue(scoreChange);
     }
 
     public void OnScoreAnimationEnds()
@@ -51,4 +53,6 @@ public class ScoreGainText : MonoBehaviour
         _text.text = "+" + scoreGained;
         _anim.SetTrigger(_showScoreGainedID);
     }
+
+   
 }

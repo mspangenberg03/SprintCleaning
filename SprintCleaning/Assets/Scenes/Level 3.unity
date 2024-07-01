@@ -807,6 +807,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+      propertyPath: _streakIncreaseScale
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+      propertyPath: _streakDecreaseWhenPassGarbage
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+      propertyPath: <MaxStreakValue>k__BackingField
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+      propertyPath: _streakThresholds.Array.data[0]
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+      propertyPath: _streakThresholds.Array.data[1]
+      value: 160
+      objectReference: {fileID: 0}
+    - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+      propertyPath: _streakThresholds.Array.data[2]
+      value: 300
+      objectReference: {fileID: 0}
     - target: {fileID: 6029570124216557578, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -993,6 +1017,10 @@ PrefabInstance:
       propertyPath: _playerPowerUpManager
       value: 
       objectReference: {fileID: 1791975044}
+    - target: {fileID: 7155127644151803059, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+      propertyPath: _tForLaneChangeSpeedMatchingForwardsSpeed
+      value: 0.25
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1045,6 +1073,66 @@ PrefabInstance:
     - target: {fileID: 608179131147895185, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._maxTrackPiecesPerRest
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._minTrackPiecesPerRest
+      value: 1.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._maxGarbageOnTrackPiece
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._minGarbageOnTrackPiece
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._oddsForciblyChangeLane
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _obstaclesGenerator._maxTimeSeeObjectOnTrack
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _obstaclesGenerator._minTimeSeeObjectOnTrack
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._maxGarbageOnRestTrackPiece
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _obstaclesGenerator._maxObstaclesPerTrackPiece
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _obstaclesGenerator._minObstaclesPerTrackPiece
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _obstaclesGenerator._oddsSpawnObstacleImmediately
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._maxConsecutiveBeatsWithLaneChange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _obstaclesGenerator._maxObstaclesCarriedOnWhenFailToSpawn
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._numberOfGarbageCountsToChooseMinAmongst
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _garbageGenerator._numberOfGarbageCountsToChooseMinAmongstOnRest
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5132789170982312905, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
       propertyPath: m_Name
