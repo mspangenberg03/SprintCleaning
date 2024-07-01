@@ -45,8 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _unlockedLevels: 1
-  _currentLevel: -1
+  _currentLevel: 1
   _totalNumberOfLevels: 3
-  _gameOver: {fileID: 0}
   _nextLevelThreshold: 2
   _isLevelCompletedOnScore: 0
