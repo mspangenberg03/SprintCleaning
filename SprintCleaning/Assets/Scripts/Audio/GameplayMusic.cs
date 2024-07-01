@@ -38,7 +38,11 @@ public class GameplayMusic : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(FadeMixerGroup.StartFade(_gameAudioMixer, "Streak1Volume", .5f, 1));
+        float duration = .5f;
+        StartCoroutine(FadeMixerGroup.StartFade(_gameAudioMixer, "Streak1Volume", duration, 1));
+        StartCoroutine(FadeMixerGroup.StartFade(_gameAudioMixer, "Streak2Volume", duration, 1));
+        StartCoroutine(FadeMixerGroup.StartFade(_gameAudioMixer, "Streak3Volume", duration, 1));
+        StartCoroutine(FadeMixerGroup.StartFade(_gameAudioMixer, "Streak4Volume", duration, 1));
     }
 
     public void OnGameEnds()

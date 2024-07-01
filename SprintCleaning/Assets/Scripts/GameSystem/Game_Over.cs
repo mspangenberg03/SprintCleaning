@@ -62,7 +62,7 @@ public class Game_Over : MonoBehaviour
 
         yield return new WaitForSeconds(_gameOverDelay);
         _generalUI.SetActive(false);
-        SceneManager.LoadScene("EndingMenu");
+        //SceneManager.LoadScene("EndingMenu");
     }
 
     public void LevelComplete()
