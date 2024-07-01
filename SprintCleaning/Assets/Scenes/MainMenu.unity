@@ -5605,6 +5605,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4015541555479372978, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+      propertyPath: _unlockedLevels
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4015541555479372978, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
+      propertyPath: _isLevelCompletedOnScore
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5292854226234494910, guid: 160631a835e7dcf43a27284d5600cd0e, type: 3}
       propertyPath: m_Name
       value: levelTracker
