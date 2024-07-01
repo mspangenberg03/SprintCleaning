@@ -1193,6 +1193,42 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _trackPiecesGenerator._trackPrefabs.Array.size
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _trackPiecesGenerator._trackPrefabs.Array.data[1]
+      value: 
+      objectReference: {fileID: 2686778190064355096, guid: d53b5818b1507bd41bc5c4e54314dcc9, type: 3}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _trackPiecesGenerator._trackPrefabs.Array.data[2]
+      value: 
+      objectReference: {fileID: 3596355051874371979, guid: 363e5f71bd3fe1c4e98021cb6ca77ccd, type: 3}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _trackPiecesGenerator._trackPrefabs.Array.data[3]
+      value: 
+      objectReference: {fileID: 5729400511749272319, guid: c6b76ca6a23215842b9b13afa06aa7b3, type: 3}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _trackPiecesGenerator._trackPrefabs.Array.data[4]
+      value: 
+      objectReference: {fileID: 1054745074868401999, guid: be8e83701918dea4f86d8808cfca6f49, type: 3}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _trackPiecesGenerator._trackPrefabs.Array.data[5]
+      value: 
+      objectReference: {fileID: 5788893747427156689, guid: c72b3781d0fd7a945b081e48fa1c38a5, type: 3}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _trackPiecesGenerator._trackPrefabs.Array.data[6]
+      value: 
+      objectReference: {fileID: 7730554633536342540, guid: 04733d1f98bc4de4ea94839e6fa1e91f, type: 3}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _trackPiecesGenerator._trackPrefabs.Array.data[7]
+      value: 
+      objectReference: {fileID: 1641981354471546479, guid: 2c5af1c4aa87bd4429c8b00015ef1c9b, type: 3}
+    - target: {fileID: 1360909279564036929, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
+      propertyPath: _trackPiecesGenerator._trackPrefabs.Array.data[8]
+      value: 
+      objectReference: {fileID: 6221956084416107605, guid: ee67fbf2631f503419efad82417c6a6e, type: 3}
     - target: {fileID: 5132789170982312905, guid: 8f5350506db075b448f9f890bba36d74, type: 3}
       propertyPath: m_Name
       value: GameManager
