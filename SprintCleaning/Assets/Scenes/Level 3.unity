@@ -1017,6 +1017,10 @@ PrefabInstance:
       propertyPath: _playerPowerUpManager
       value: 
       objectReference: {fileID: 1791975044}
+    - target: {fileID: 7155127644151803059, guid: 83213d483a6c83a4396e1c4f90a9b129, type: 3}
+      propertyPath: _tForLaneChangeSpeedMatchingForwardsSpeed
+      value: 0.25
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
