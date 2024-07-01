@@ -41,8 +41,13 @@ public class Level_Tracker : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        DontDestroyOnLoad(transform.gameObject);
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        if (_instance != null)
+            Destroy(gameObject);
+        else
+        {
+            DontDestroyOnLoad(transform.gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
     }
 
     public void UnlockLevel(){

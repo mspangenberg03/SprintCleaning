@@ -30,7 +30,13 @@ public class DataManager : MonoBehaviour
 
     private void Awake()
     {
-        CreateGarbageConvert();
+        if (_instance != null)
+            Destroy(gameObject);
+        else
+        {
+            DontDestroyOnLoad(transform.gameObject);
+            CreateGarbageConvert();
+        }
     }
 
     private void CreateGarbageConvert()
