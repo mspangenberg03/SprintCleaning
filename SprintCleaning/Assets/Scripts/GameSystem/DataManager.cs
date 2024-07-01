@@ -5,12 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class DataManager : MonoBehaviour
 {
-    public ScoreManager _data;
     public Dictionary<GarbageType, string> _garbageConvert = new Dictionary<GarbageType, string>();
 
     public int _level {  get; private set; }
-
-    public Dictionary<GarbageType, int> _counts => _data._counts;
 
     private static DataManager _instance;
     public static DataManager Instance
@@ -20,6 +17,12 @@ public class DataManager : MonoBehaviour
             if (_instance == null)
             {
                 _instance = FindObjectOfType<DataManager>();
+
+                if (_instance == null)
+                {
+                    GameObject instantiated = Instantiate(Resources.Load<GameObject>("DataManager"));
+                    _instance = instantiated.GetComponent<DataManager>();
+                }
             }
             return _instance;
         }
@@ -27,7 +30,6 @@ public class DataManager : MonoBehaviour
 
     private void Awake()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
         CreateGarbageConvert();
     }
 
@@ -39,13 +41,5 @@ public class DataManager : MonoBehaviour
         _garbageConvert.Add(GarbageType.Bottle, "Bottle");
         _garbageConvert.Add(GarbageType.MilkJug, "Milk Jug");
         _garbageConvert.Add(GarbageType.Banana, "Banana");
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
-    {
-        if (SceneManager.GetActiveScene().buildIndex <= Level_Tracker.Instance.LevelsUnlocked())
-        {
-            _data = ScoreManager.Instance;
-        }
     }
 }

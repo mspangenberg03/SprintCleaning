@@ -14,6 +14,11 @@ public class Level_Tracker : MonoBehaviour
     private int _totalNumberOfLevels = 3;
     private static Level_Tracker _instance;
 
+    public int _nextLevelThreshold;
+
+    [SerializeField]
+    public bool _isLevelCompletedOnScore = false;
+
     public static Level_Tracker Instance
     {
         get
@@ -21,6 +26,13 @@ public class Level_Tracker : MonoBehaviour
             if (_instance == null)
             {
                 _instance = FindObjectOfType<Level_Tracker>();
+                if (_instance == null)
+                {
+                    GameObject instantiated = Instantiate(Resources.Load<GameObject>("levelTracker"));
+                    _instance = instantiated.GetComponent<Level_Tracker>();
+                    if (_instance == null)
+                        throw new System.Exception();
+                }
             }
             return _instance;
         }
@@ -34,10 +46,11 @@ public class Level_Tracker : MonoBehaviour
     }
 
     public void UnlockLevel(){
-        if(SceneManager.GetActiveScene().name == "Level 1"){
+        if(SceneManager.GetActiveScene().name == "Level 1" && LevelsUnlocked() < 2){
             _unlockedLevels = 2;
         }
-        else if (SceneManager.GetActiveScene().name == "Level 2"){
+        else if (SceneManager.GetActiveScene().name == "Level 2" && LevelsUnlocked() < 3)
+        {
             _unlockedLevels = 3;
         }
     }
@@ -47,8 +60,8 @@ public class Level_Tracker : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
-        if(SceneManager.GetActiveScene().buildIndex <= _totalNumberOfLevels)
-            _currentLevel = SceneManager .GetActiveScene().buildIndex;
+        if (SceneManager.GetActiveScene().buildIndex <= _totalNumberOfLevels)
+            _currentLevel = SceneManager.GetActiveScene().buildIndex;
     }
 
 

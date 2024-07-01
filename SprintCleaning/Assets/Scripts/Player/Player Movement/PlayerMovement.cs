@@ -48,6 +48,9 @@ public class PlayerMovement : MonoBehaviour
     private bool _cameraStraight = true;
 
     [SerializeField] private float _baseForwardsSpeed  = 10;
+    [SerializeField] private float _tForLaneChangeSpeedMatchingForwardsSpeed = 1f;
+
+    public float RunningStartTime { get; private set; } = float.NegativeInfinity;
 
     private float CurrentForwardsSpeed => _baseForwardsSpeed * (1f - Game_Over.Instance.FractionOfGameOverDelayElapsed) * _speedMult;
 
@@ -55,21 +58,33 @@ public class PlayerMovement : MonoBehaviour
     private bool RightInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow));
     private bool JumpInput => !Game_Over.Instance.GameIsOver && Input.GetKey(KeyCode.Space);
 
+    // Don't use Instance for this b/c some editor code uses this outside playmode. Kinda buggy needing to enter playmode
+    // to be able to use some gizmos
     private static PlayerMovementSettings _settingsStatic;
     public static PlayerMovementSettings Settings 
     {
         get
         {
             if (_settingsStatic == null)
-            {
                 _settingsStatic = FindObjectOfType<PlayerMovement>()._settings;
-            }
             return _settingsStatic;
+        }
+    }
+
+    private static PlayerMovement _instance;
+    public static PlayerMovement Instance
+    {
+        get
+        {
+            if (_instance == null)
+                _instance = FindObjectOfType<PlayerMovement>();
+            return _instance;
         }
     }
 
     private void Awake() 
     {
+        _instance = this;
         _settingsStatic = _settings;
         _trackGenerator = TrackGenerator.Instance;
     }
@@ -95,9 +110,9 @@ public class PlayerMovement : MonoBehaviour
     {
         System.Threading.Thread.MemoryBarrier(); // Just in case. Probably don't need this but it might make dspTime more up to date.
         if (AudioSettings.dspTime < GameplayMusic.Instance.AudioStartTime)
-        {
             return;
-        }
+        if (RunningStartTime == float.NegativeInfinity)
+            RunningStartTime = Time.time;
 
         PollInputsOncePerFrame();
         DevHelper.Instance.GameplayReproducer.StartNextFixedUpdate();
@@ -208,7 +223,6 @@ public class PlayerMovement : MonoBehaviour
     public float GetPlayerSpeed(){
         return(_baseForwardsSpeed);
     }
-    
 
     #region Lane Changing
     private void UpdateLanePosition()
@@ -217,7 +231,11 @@ public class PlayerMovement : MonoBehaviour
 
         AccelerateLaneChangeSpeed(_lanePosition);
 
-        float nextLanePosition = _lanePosition + _laneChangeSpeed / _settings.DistanceBetweenLanes * Time.deltaTime;
+        const float forwardsSpeedAtLevel1 = 16f;
+        float laneChangeSpeedMult = _baseForwardsSpeed / forwardsSpeedAtLevel1;
+        laneChangeSpeedMult = Mathf.Lerp(1f, laneChangeSpeedMult, _tForLaneChangeSpeedMatchingForwardsSpeed);
+
+        float nextLanePosition = _lanePosition + laneChangeSpeedMult * _laneChangeSpeed / _settings.DistanceBetweenLanes * Time.deltaTime;
         if (Mathf.Sign(nextLanePosition - _currentTargetLane) != Mathf.Sign(_lanePosition - _currentTargetLane) || _lanePosition == _currentTargetLane)
         {
             // don't overshoot

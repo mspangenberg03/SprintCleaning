@@ -7,17 +7,17 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     [SerializeField] private GarbagePickupAnimationTrigger _animTrigger;
 
     [Tooltip("The type of tool needed to collect this piece of garbage")]
-    public GarbageType _type;
+    [SerializeField] private GarbageType _type;
 
     [Tooltip("The sound this piece of garbage plays on collect")]
-    public AudioClip impact;
+    [SerializeField] private AudioClip impact;
 
-    [SerializeField] private GameObject _particle; // this is for pickup. Other particles are for the streak when garbage is thrown.
+    [SerializeField] private GameObject _pickupParticlesPrefab;
+
 
     [field: SerializeField] public bool Obstacle { get; private set; }
     [field: SerializeField] public bool Powerup { get; private set; }
 
-    public AudioSource _garbageAudio;
 
     [SerializeField,Tooltip("The score this garbage add")]
     private int _score = 1;
@@ -27,16 +27,23 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 
     [field: SerializeField] public float Gravity { get; private set; }
 
-    [SerializeField] private ParticleSystem _particleSystem;
+    [SerializeField] private ParticleSystem _throwTrailParticleSystem;
     [SerializeField] private float _particleDisableTimer;
 
-    private ParticleSystem.MainModule _mainModule;
+    private ParticleSystem.MainModule _throwParticleSystemMainModule;
     private float _disableParticlesAtTime = float.PositiveInfinity;
     private bool _onGroundButInThrownGarbageListToDisableParticles;
     private float _horizontalSpeed;
     private float _verticalSpeed;
     private Vector3 _destinationPosition;
     private PoolOfMonoBehaviour<Garbage> _pool;
+
+    private static double _syncDebug_lastTime;
+    private static double _syncDebug_totalIntervals;
+    private static int _syncDebug_count;
+    private static int _syncDebug_loopCount;
+
+
 
     public TrackPiece OnTrackPiece { get; set; }
     public static List<Garbage> ThrownGarbage { get; private set; } = new();
@@ -48,7 +55,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     public void InitializeUponPrefabInstantiated(PoolOfMonoBehaviour<Garbage> pool)
     {
         _pool = pool;
-        _mainModule = _particleSystem.main;
+        _throwParticleSystemMainModule = _throwTrailParticleSystem.main;
     }
     public void InitializeUponProducedByPool() 
     {
@@ -57,27 +64,21 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
     }
     public void OnReturnToPool() 
     {
-        _particleSystem.gameObject.SetActive(false);
+        ThrownGarbage.Remove(this);
+        _throwTrailParticleSystem.gameObject.SetActive(false);
         _disableParticlesAtTime = float.PositiveInfinity;
         _onGroundButInThrownGarbageListToDisableParticles = false;
     }
 
     public void StartBeingThrownTo(Vector3 destinationPosition)
     {
-        if (destinationPosition.y > Root.position.y)
-        {
-            throw new System.InvalidOperationException("cannot fall upwards");
-        }
-
         _destinationPosition = destinationPosition;
         float horizontalDistance = (destinationPosition.To2D() - Root.position.To2D()).magnitude;
         _verticalSpeed = 0;
         _horizontalSpeed = horizontalDistance / FallTime(Root.position, destinationPosition, Gravity);
 
         ThrownGarbage.Add(this);
-        _particleSystem.gameObject.SetActive(true);
-
-        //MoveWhileBeingThrown(true); // for the particles to get the right velocity
+        _throwTrailParticleSystem.gameObject.SetActive(true);
     }
 
     public static float FallTime(Vector3 from, Vector3 destinationPosition, float gravity)
@@ -92,7 +93,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
             if (Time.time >= _disableParticlesAtTime)
             {
                 ThrownGarbage.Remove(this);
-                _particleSystem.gameObject.SetActive(false);
+                _throwTrailParticleSystem.gameObject.SetActive(false);
             }
             return;
         }
@@ -100,7 +101,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
 
         Vector2 horizontalDirection = (_destinationPosition.To2D() - Root.position.To2D()).normalized;
         Vector3 velocity = (horizontalDirection * _horizontalSpeed).To3D() + Vector3.up * _verticalSpeed;
-        _mainModule.emitterVelocity = velocity;
+        _throwParticleSystemMainModule.emitterVelocity = velocity;
 
         Vector3 nextPosition = Root.position + velocity * Time.deltaTime;
         if (nextPosition.y < _destinationPosition.y && !preventEnd) // dunno whether the preventEnd is necessary
@@ -122,27 +123,46 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         if (Powerup)
             return;
 
-        if (Game_Over.Instance.GameIsOver)
+        if (Game_Over.Instance.GameIsOver || Game_Over.Instance.LevelIsComplete)
             return;
 
         GameObject player = other.transform.parent.gameObject;
         Animator animator = player.GetComponentInChildren<Animator>();
-        _garbageAudio = player.GetComponent<AudioSource>();
-        _garbageAudio.PlayOneShot(impact, 1F);
+        player.GetComponent<AudioSource>().PlayOneShot(impact, 1F);
         _animTrigger.CheckTriggerAnimation(other);
         if (!Obstacle)
         {
-            GameObject particleObject = Instantiate(_particle, gameObject.transform.position, Quaternion.identity);
+            GameObject particleObject = Instantiate(_pickupParticlesPrefab, gameObject.transform.position, Quaternion.identity);
             particleObject.transform.rotation = player.transform.rotation;
         }
 
         if (DevHelper.Instance.LogUnexpectedTrashCollectionTimings)
         {
             // On my computer, the audio time updates every .02133 seconds. To be precisely synced with the music, it should be
-            // at a .25 second interval
+            // at a .25 second interval (or different depending on the level)
+            System.Threading.Thread.MemoryBarrier();
             double audioTime = GameplayMusic.CurrentAudioTime;
-            if (audioTime % .25 > .022)
-                Debug.Log("Hit trash at time (+- maybe 20 ms): " + audioTime);
+            const double interval = .25 * 120 / 144;
+            if (audioTime - _syncDebug_lastTime > 0)
+            {
+                _syncDebug_totalIntervals += audioTime - _syncDebug_lastTime;
+                _syncDebug_count++;
+            }
+            else if (audioTime != 0)
+                _syncDebug_loopCount++;
+            double remainder = audioTime % interval;
+            remainder = System.Math.Min(remainder, interval - remainder);
+            if (remainder > .036)
+            {
+                Debug.Log("Hit trash at time (+- maybe 20 ms): " + audioTime
+                    + ", remainder (assumes a particular level in the interval const): " + remainder 
+                    + ", time since last time: " + (audioTime - _syncDebug_lastTime) 
+                    + ", average interval: " + _syncDebug_totalIntervals / _syncDebug_count 
+                    + " total intervals: " + _syncDebug_totalIntervals 
+                    + " count: " + _syncDebug_count
+                    + ", loop count: " + _syncDebug_loopCount);
+            }
+            _syncDebug_lastTime = audioTime;
         }
 
         bool gameOver = false;
@@ -155,10 +175,8 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         else
         {
             ScoreManager.Instance.GarbageCollected(_type);
-            player.GetComponent<PlayerGarbageCollection>().TextEdit();
+            ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
         }
-
-        ScoreManager.Instance.AddScoreOnGarbageCollection(_score, _streakAddValue);
 
         if (!gameOver) // don't destroy it when game over because it looks strange how it disappears after a brief pause
             ReturnToPool();
@@ -187,6 +205,7 @@ public class Garbage : MonoBehaviour, PoolOfMonoBehaviour<Garbage>.IPoolable
         if (InPool())
             throw new System.Exception("Already in pool");
 #endif
+        ThrownGarbage.Remove(this);
 
         _pool.ReturnToPool(this);
     }

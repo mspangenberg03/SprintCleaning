@@ -50,25 +50,34 @@ MonoBehaviour:
   _trackPiecesGenerator:
     _trackPrefabs:
     - {fileID: 8436985586966843200, guid: 8bb2a798dd0b81b48a4a239534d025ec, type: 3}
-    - {fileID: 6221956084416107605, guid: ee67fbf2631f503419efad82417c6a6e, type: 3}
-    - {fileID: 8154570279409064104, guid: 63bdb2544d3f2bb44a2618bcb2b0aa69, type: 3}
-    - {fileID: 2007551459213979358, guid: 4bfd1ed85f90b134fad13ebbdeb3b311, type: 3}
-    - {fileID: 8077653236005777457, guid: 61a56f14fd0f90f42bdbb09d3b39ec28, type: 3}
-    - {fileID: 407651357389730200, guid: 55f09af61cf08334099a8f72ac7f4baa, type: 3}
-    - {fileID: 7290087389331728689, guid: 37f2c1bccdd93c148a8ccb365392a385, type: 3}
+    - {fileID: 2686778190064355096, guid: d53b5818b1507bd41bc5c4e54314dcc9, type: 3}
+    - {fileID: 3596355051874371979, guid: 363e5f71bd3fe1c4e98021cb6ca77ccd, type: 3}
+    - {fileID: 5729400511749272319, guid: c6b76ca6a23215842b9b13afa06aa7b3, type: 3}
+    - {fileID: 1054745074868401999, guid: be8e83701918dea4f86d8808cfca6f49, type: 3}
+    - {fileID: 5788893747427156689, guid: c72b3781d0fd7a945b081e48fa1c38a5, type: 3}
+    - {fileID: 7730554633536342540, guid: 04733d1f98bc4de4ea94839e6fa1e91f, type: 3}
     - {fileID: 1641981354471546479, guid: 2c5af1c4aa87bd4429c8b00015ef1c9b, type: 3}
-    - {fileID: 5870286290506024139, guid: 42bb25729c0fb3a4388963f2c84162f3, type: 3}
+    - {fileID: 6221956084416107605, guid: ee67fbf2631f503419efad82417c6a6e, type: 3}
     _oddsDontTurn: 0.5
     _minStraightBetweenTurns: 1
   _garbageGenerator:
-    _minTimeSeeObjectOnTrack: 1
-    _maxTimeSeeObjectOnTrack: 2
-    _trackObjectsYOffset: 0.5
-    _oddsSpawnImmediately: 0.5
-    _minGarbageOnTrackPiece: 4
-    _maxGarbageOnTrackPiece: 10
-    _numberOfGarbageCountsToChooseMinAmongst: 2
     _maxConsecutiveBeatsWithLaneChange: 1
+    _oddsForciblyChangeLane: 0
+    _trackObjectsYOffset: 0.5
+    _minTrackPiecesPerRest: 3
+    _maxTrackPiecesPerRest: 5
+    _minGarbageOnTrackPiece: 7
+    _maxGarbageOnTrackPiece: 11
+    _numberOfGarbageCountsToChooseMinAmongst: 2
+    _minTimeSeeObjectOnTrack: 2
+    _maxTimeSeeObjectOnTrack: 3
+    _oddsSpawnImmediately: 0.25
+    _minGarbageOnRestTrackPiece: 4
+    _maxGarbageOnRestTrackPiece: 5
+    _numberOfGarbageCountsToChooseMinAmongstOnRest: 2
+    _minTimeSeeObjectOnRestTrack: 2
+    _maxTimeSeeObjectOnRestTrack: 3
+    _oddsSpawnImmediatelyOnRest: 0.25
     <BeatStrengths>k__BackingField:
     - <Beats>k__BackingField: 0000000008000000
       <GarbagePrefabs>k__BackingField:
@@ -95,13 +104,14 @@ MonoBehaviour:
       - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
       - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
       - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
+      - {fileID: 7234207939200368456, guid: 8a7970c04e8edff4f9233a3447e1f49b, type: 3}
   _obstaclesGenerator:
     _minTimeSeeObjectOnTrack: 1
     _maxTimeSeeObjectOnTrack: 2
     _trackObjectsYOffset: 0.5
     _oddsSpawnObstacleImmediately: 1
-    _minObstaclesPerTrackPiece: 1
-    _maxObstaclesPerTrackPiece: 11
+    _minObstaclesPerTrackPiece: 3
+    _maxObstaclesPerTrackPiece: 8
     _maxObstaclesCarriedOnWhenFailToSpawn: 1
     _numberOfObstacleCountsToChooseMinAmongst: 1
     _minBeatsBetweenObstacles: 2
