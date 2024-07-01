@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEditor.Animations;
 
 [DefaultExecutionOrder(-10)]
 public class PlayerMovement : MonoBehaviour
@@ -38,6 +39,13 @@ public class PlayerMovement : MonoBehaviour
     private float _jumpPosition;
     private float _jumpSpeed;
     private float _speedMult = 1f;
+    [SerializeField]
+    Camera _camera;
+    [SerializeField]
+    Animator _cameraAnimations;
+    private bool _tiltedDown = false;
+    private bool _tiltedUp = false;
+    private bool _cameraStraight = true;
 
     [SerializeField] private float _baseForwardsSpeed  = 10;
     [SerializeField] private float _tForLaneChangeSpeedMatchingForwardsSpeed = 1f;
@@ -118,7 +126,34 @@ public class PlayerMovement : MonoBehaviour
 
 
         Vector3 midlineVelocity = TrackMidlineVelocity(trackPiece, t);
-
+        if (midlineVelocity.y < 0 && !_tiltedDown && _cameraStraight)
+        {
+            _cameraAnimations.Play("TiltDown");
+            _tiltedDown = true;
+            _cameraStraight = false;
+            //Debug.Log("TiltDown played");
+            
+        }
+        if (midlineVelocity.y == 0 && _tiltedDown && !_cameraStraight)
+        {
+            _cameraAnimations.Play("TiltUpFromDown");
+            _tiltedDown = false;
+            _cameraStraight = true;
+        }
+        if (midlineVelocity.y > 0 && !_tiltedUp && _cameraStraight)
+        {
+            _cameraAnimations.Play("TiltUp");
+            _tiltedUp = true;
+            _cameraStraight = false;
+           
+        }
+        if (midlineVelocity.y == 0 && _tiltedUp && !_cameraStraight)
+        {
+            _cameraAnimations.Play("TiltDownFromUp");
+            _tiltedUp = false;
+            _cameraStraight = true;
+        }
+        //Debug.Log(_camera.GetComponent<CinemachineRecomposer>().m_Tilt);
         Vector3Double priorPositionOnMidline = _positionOnMidline; 
         _positionOnMidline += (Vector3Double)(midlineVelocity * Time.deltaTime);
 

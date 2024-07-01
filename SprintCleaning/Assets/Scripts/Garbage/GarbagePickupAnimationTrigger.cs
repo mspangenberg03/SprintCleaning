@@ -23,8 +23,7 @@ public class GarbagePickupAnimationTrigger : MonoBehaviour
             _enterCount++;
             if (_enterCount != 1)
                 return;
-            GameObject player = other.transform.parent.gameObject;
-            Animator animator = player.GetComponentInChildren<Animator>();
+            Animator animator = PlayerModelAnimatorRef.Instance.Animator;
             if (!_garbage.Obstacle)
                 animator.SetTrigger("PickUp");
         }
@@ -34,8 +33,7 @@ public class GarbagePickupAnimationTrigger : MonoBehaviour
     {
         if (_enterCount != 0)
             return;
-        GameObject player = other.transform.parent.gameObject;
-        Animator animator = player.GetComponentInChildren<Animator>();
+        Animator animator = PlayerModelAnimatorRef.Instance.Animator;
         if (!_garbage.Obstacle)
             animator.SetTrigger("PickUp");
     }
