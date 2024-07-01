@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 
@@ -19,7 +18,7 @@ public class GarbageCountText : CustomText
 
         for(int i = 0; i < _dataManager._garbageConvert.Count; i++)
         {
-            text = text + '\n' + _dataManager._garbageConvert[(GarbageType)i] + ':' + ScoreManager._counts[(GarbageType)i] + '\n';
+            text = text + '\n' + _dataManager._garbageConvert[(GarbageType)i] + ':' + ScoreManager._countsForEndScreen[(GarbageType)i] + '\n';
         }
         _garbageCountText.text = "Garbage Collected" + '\n' + text;
     }

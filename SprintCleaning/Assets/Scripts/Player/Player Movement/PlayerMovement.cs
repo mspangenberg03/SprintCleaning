@@ -41,27 +41,41 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private float _baseForwardsSpeed  = 10;
 
+    public float RunningStartTime { get; private set; } = float.NegativeInfinity;
+
     private float CurrentForwardsSpeed => _baseForwardsSpeed * (1f - Game_Over.Instance.FractionOfGameOverDelayElapsed) * _speedMult;
 
     private bool LeftInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow));
     private bool RightInputDown => !Game_Over.Instance.GameIsOver && (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow));
     private bool JumpInput => !Game_Over.Instance.GameIsOver && Input.GetKey(KeyCode.Space);
 
+    // Don't use Instance for this b/c some editor code uses this outside playmode. Kinda buggy needing to enter playmode
+    // to be able to use some gizmos
     private static PlayerMovementSettings _settingsStatic;
     public static PlayerMovementSettings Settings 
     {
         get
         {
             if (_settingsStatic == null)
-            {
                 _settingsStatic = FindObjectOfType<PlayerMovement>()._settings;
-            }
             return _settingsStatic;
+        }
+    }
+
+    private static PlayerMovement _instance;
+    public static PlayerMovement Instance
+    {
+        get
+        {
+            if (_instance == null)
+                _instance = FindObjectOfType<PlayerMovement>();
+            return _instance;
         }
     }
 
     private void Awake() 
     {
+        _instance = this;
         _settingsStatic = _settings;
         _trackGenerator = TrackGenerator.Instance;
     }
@@ -87,9 +101,9 @@ public class PlayerMovement : MonoBehaviour
     {
         System.Threading.Thread.MemoryBarrier(); // Just in case. Probably don't need this but it might make dspTime more up to date.
         if (AudioSettings.dspTime < GameplayMusic.Instance.AudioStartTime)
-        {
             return;
-        }
+        if (RunningStartTime == float.NegativeInfinity)
+            RunningStartTime = Time.time;
 
         PollInputsOncePerFrame();
         DevHelper.Instance.GameplayReproducer.StartNextFixedUpdate();

@@ -37,7 +37,7 @@ public class TrackObjectsInstantiator
     {
         for (int i = _plannedSpawns.Count - 1; i >= 0; i--)
         {
-            if (Time.fixedTime >= _plannedSpawns[i].time)
+            if (Time.fixedTime - PlayerMovement.Instance.RunningStartTime >= _plannedSpawns[i].time && PlayerMovement.Instance.RunningStartTime != float.NegativeInfinity)
             {
                 (_, Vector3 finalPosition, Vector3 initialPosition, Quaternion rotation, TrackPiece trackPieceFromEarlier, GameObject prefab) = _plannedSpawns[i];
                 _plannedSpawns.RemoveAt(i);
@@ -83,7 +83,13 @@ public class TrackObjectsInstantiator
                 if (spawnDelay <= 0)
                     Spawn(prefab, finalPosition, rotation, trackPiece, false, Vector3.negativeInfinity);
                 else
-                    _plannedSpawns.Insert(0, (Time.fixedTime + spawnDelay, finalPosition, initialPosition, rotation, trackPiece, prefab));
+                {
+                    float timeToSpawnRelativeRunStartTime = Time.fixedTime - PlayerMovement.Instance.RunningStartTime + spawnDelay;
+                    if (PlayerMovement.Instance.RunningStartTime == float.NegativeInfinity)
+                        timeToSpawnRelativeRunStartTime = spawnDelay;
+
+                    _plannedSpawns.Insert(0, (timeToSpawnRelativeRunStartTime, finalPosition, initialPosition, rotation, trackPiece, prefab));
+                }
             }
         }
     }

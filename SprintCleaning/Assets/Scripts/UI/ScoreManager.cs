@@ -6,34 +6,31 @@ using UnityEngine.SceneManagement;
 
 public class ScoreManager : MonoBehaviour
 {
-    //[SerializeField] private bool _resetInEditorOnAwake = true;
     //The garbage that the player has in total
-    public static Dictionary<GarbageType, int> _counts;
+    public static Dictionary<GarbageType, int> _countsForEndScreen;
 
     public static int _score = 0;
 
     public int _streakValue = 30;
 
-    [SerializeField, Tooltip("Value by which streakValue is decreased through the game")]
-    private int _regularStreakDecrease = 5;
+    [SerializeField] private float _streakDecreasePerSec = 5;
 
     public int _streakMultiplier = 1;
 
     public int _powerUpMultiplier = 1;
 
-    private Game_Over _gameOver;
-
     [field: SerializeField] public int MaxStreakValue { get; private set; }
 
-    [SerializeField]
-    private int[] _streakThresholds;
+    [SerializeField] private int[] _streakThresholds;
 
     public int[] StreakThresholds => _streakThresholds;
 
-    [SerializeField]
-    private StreakBar _streakBar;
+    public Dictionary<GarbageType, int> Counts { get; private set; }
+
     private GameObject _levelTracker;
     private Level_Tracker _levelCode;
+    private float _streakDecreaseAccumulator;
+
 
     private static ScoreManager _instance;
     public static ScoreManager Instance
@@ -43,78 +40,114 @@ public class ScoreManager : MonoBehaviour
             if (_instance == null)
             {
                 _instance = FindObjectOfType<ScoreManager>();
+                _instance.Counts = new Dictionary<GarbageType, int>();
+                for (int i = 0; i < (int)(GarbageType.Count); i++)
+                    _instance.Counts.Add((GarbageType)i, 0);
             }
             return _instance;
         }
     }
 
-    public void Awake()
-    {
+    private List<IOnScoreChanges> _informScore = new();
+    private List<IOnStreakChanges> _informStreak = new();
 
+    public void AddInformScore(IOnScoreChanges toInform)
+    {
+        _informScore.Add(toInform);
+        toInform.OnScoreChanges(_score, 0);
+    }
+
+    public void AddInformStreak(IOnStreakChanges toInform)
+    {
+        _informStreak.Add(toInform);
+        toInform.OnStreakChanges(_streakValue);
+    }
+
+    private void Awake()
+    {
         _instance = this;
         _levelTracker = GameObject.Find("levelTracker");
-        if(_levelTracker != null)
+        if (_levelTracker != null)
             _levelCode = _levelTracker.GetComponent<Level_Tracker>();
 
-
-
         _score = 0;
-        //if (_counts == null)
-        {
-            _counts = new Dictionary<GarbageType, int>();
-            for (int i = 0; i < (int)(GarbageType.Count); i++)
-                _counts.Add((GarbageType)i, 0);
-        }
+    }
 
-        _streakBar._current = _streakValue;
+    private void Update()
+    {
+        _streakDecreaseAccumulator += Time.deltaTime * _streakDecreasePerSec;
+        int decrease = (int)_streakDecreaseAccumulator;
+        _streakDecreaseAccumulator -= decrease;
 
-        GameObject player = GameObject.Find("Player");
-        _gameOver = player.GetComponent<Game_Over>();
+        DecreaseStreak(decrease);
+    }
 
-
-        //#if UNITY_EDITOR
-        //        if (_resetInEditorOnAwake)
-        //        {
-        //            for (int i = 0; i < (int)(GarbageType.Count); i++)
-        //            {
-        //                _counts[(GarbageType)i] = 0;
-        //            }
-        //        }
-        //#endif
+    private void OnDestroy()
+    {
+        _countsForEndScreen = Counts; // probably should copy the dictionary or something so not still referencing an object from a destroyed gameObject
     }
 
     public void GarbageCollected(GarbageType garbage)
     {
-        _counts[garbage]++;
+        Counts[garbage]++;
     }
 
     public void AddScoreOnGarbageCollection(int scoreToAdd, int streakValueToAdd)
     {
         CheckStreakMultiplier();
         int add = scoreToAdd * _streakMultiplier * _powerUpMultiplier;
-        ScoreGainText.Instance.OnScoreGained(add);
-        _score += add;
-        _streakValue += streakValueToAdd;
-        _streakValue = System.Math.Min(MaxStreakValue, _streakValue);
-        _streakBar._current = _streakValue;
+        if (add != 0) 
+        {
+            _score += add;
+            OnScoreChanges(add);
+        }
+
+        if (streakValueToAdd != 0)
+        {
+            _streakValue += streakValueToAdd;
+            _streakValue = System.Math.Min(MaxStreakValue, _streakValue);
+            OnStreakChanges();
+        }
+
+
         CheckForNextLevel();
     }
 
-    public void DecreaseStreak()
+    private void OnScoreChanges(int add)
     {
-        _streakValue -= _regularStreakDecrease;
-        _streakValue = System.Math.Max(0, _streakValue);
+        for (int i = 0; i < _informScore.Count; i++)
+            _informScore[i].OnScoreChanges(_score, add);
+    }
+
+    private void OnStreakChanges()
+    {
+        for (int i = 0; i < _informStreak.Count; i++)
+            _informStreak[i].OnStreakChanges(_streakValue);
+    }
+
+    private void DecreaseStreak(int decreaseAmount)
+    {
+        if (decreaseAmount == 0)
+            return;
+
+        if (!Game_Over.Instance.GameIsOver && !Game_Over.Instance.LevelIsComplete)
+        {
+            _streakValue -= decreaseAmount;
+            _streakValue = System.Math.Max(0, _streakValue);
+            OnStreakChanges();
+        }
         
-        if(_streakValue == 0){
-            if (!Game_Over.Instance.GameIsOver){
+        if (_streakValue == 0)
+        {
+            if (!Game_Over.Instance.GameIsOver)
+            {
                 GameObject player = GameObject.Find("Player");
                 Animator animator = player.GetComponentInChildren<Animator>();
                 animator.SetTrigger("Hit");
-                _gameOver.GameOver();
+                Game_Over.Instance.GameOver();
             }
         }
         CheckStreakMultiplier();
-        _streakBar._current = _streakValue;
     }
 
     public void CheckStreakMultiplier()
@@ -137,7 +170,7 @@ public class ScoreManager : MonoBehaviour
         if (_streakMultiplier == priorStreakMultiplier)
             return;
 
-        float duration = .5f;
+        const float duration = .5f;
         StartCoroutine(FadeMixerGroup.StartFade(GameplayMusic.Instance.GameAudioMixer, "Streak1Volume", duration, 1));
         StartCoroutine(FadeMixerGroup.StartFade(GameplayMusic.Instance.GameAudioMixer, "Streak2Volume", duration, _streakMultiplier >= 2 ? 1 : 0));
         StartCoroutine(FadeMixerGroup.StartFade(GameplayMusic.Instance.GameAudioMixer, "Streak3Volume", duration, _streakMultiplier >= 3 ? 1 : 0));
@@ -157,18 +190,15 @@ public class ScoreManager : MonoBehaviour
             if (_score >= _levelCode._nextLevelThreshold)
             {
                 _levelCode.UnlockLevel();
-                _gameOver.LevelComplete();
+                Game_Over.Instance.LevelComplete();
             }
         }
 #endif
         if (_streakValue >= MaxStreakValue)
         {
             if (_levelCode != null)
-            {
                 _levelCode.UnlockLevel();
-                Debug.Log("Unlocked New Level!");
-            }
-            _gameOver.LevelComplete();
+            Game_Over.Instance.LevelComplete();
         }
     }
 }
