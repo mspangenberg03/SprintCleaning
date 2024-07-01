@@ -14,8 +14,6 @@ public class MainMenu : MonoBehaviour
     public const float DEFAULT_VOLUME = .5f;
 
     [SerializeField]
-    private GameObject _levelTracker;
-    [SerializeField]
     private GameObject _mainMenuPanel;
     [SerializeField]
     private GameObject _settingsMenuPanel;
@@ -42,7 +40,7 @@ public class MainMenu : MonoBehaviour
     
     
     
-    private Level_Tracker _levelCode;
+    private Level_Tracker _levelCode => GameObject.FindObjectOfType<Level_Tracker>();
 
     private void Awake()
     {
@@ -66,7 +64,6 @@ public class MainMenu : MonoBehaviour
         _dropdown.value = index;
         _resolutionDropdownText.text = _dropdown.options[index].text;
         //ChangeResolution();
-        _levelCode = _levelTracker.GetComponent<Level_Tracker>();
         Debug.Log("Levels Unlocked " + _levelCode.LevelsUnlocked());
         for (int i = 0; i < _levelButtons.Length; i++){
             _levelButtons[i].interactable = false;
