@@ -695,21 +695,33 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 24100000, guid: edc098a8dc8f9dc41925df41cdfda7a7, type: 2}
     - target: {fileID: 1689196891269624582, guid: cd6b668d70cc97544a7d15d108591a6c, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 6ff8aba6bc1bb8a48b42dc0e3e620985, type: 3}
+    - target: {fileID: 1689196891269624582, guid: cd6b668d70cc97544a7d15d108591a6c, type: 3}
       propertyPath: OutputAudioMixerGroup
       value: 
       objectReference: {fileID: 6527530966266694045, guid: edc098a8dc8f9dc41925df41cdfda7a7, type: 2}
     - target: {fileID: 1968745684343384270, guid: cd6b668d70cc97544a7d15d108591a6c, type: 3}
       propertyPath: m_audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: df15eeac721fd5f578a9b125071db129, type: 3}
+      objectReference: {fileID: 8300000, guid: 57d8d15316686f54280347d3e0f99074, type: 3}
     - target: {fileID: 1968745684343384270, guid: cd6b668d70cc97544a7d15d108591a6c, type: 3}
       propertyPath: OutputAudioMixerGroup
       value: 
       objectReference: {fileID: -7158981778741884760, guid: edc098a8dc8f9dc41925df41cdfda7a7, type: 2}
     - target: {fileID: 3137410918483008144, guid: cd6b668d70cc97544a7d15d108591a6c, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: c06fb7ab4b58e4943a057fcc0db6c0c1, type: 3}
+    - target: {fileID: 3137410918483008144, guid: cd6b668d70cc97544a7d15d108591a6c, type: 3}
       propertyPath: OutputAudioMixerGroup
       value: 
       objectReference: {fileID: 3235310662352330520, guid: edc098a8dc8f9dc41925df41cdfda7a7, type: 2}
+    - target: {fileID: 3149320434749042848, guid: cd6b668d70cc97544a7d15d108591a6c, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 7b8296bc1bda9584cb28d3da0e3e126c, type: 3}
     - target: {fileID: 3149320434749042848, guid: cd6b668d70cc97544a7d15d108591a6c, type: 3}
       propertyPath: OutputAudioMixerGroup
       value: 
