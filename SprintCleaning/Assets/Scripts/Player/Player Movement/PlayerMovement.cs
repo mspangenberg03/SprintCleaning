@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEditor.Animations;
 
 [DefaultExecutionOrder(-10)]
 public class PlayerMovement : MonoBehaviour
