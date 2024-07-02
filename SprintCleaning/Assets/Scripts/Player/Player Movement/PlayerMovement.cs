@@ -14,6 +14,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private PlayerMovementSettings _settings;
     [SerializeField] private Animator _animator;
+    [SerializeField] private GameObject _generalUI;
+    [SerializeField] private GameObject _pauseMenu;
     private float _currentTargetLane;
     private bool _changingLanes;
     
@@ -93,6 +95,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
+        Time.timeScale = 1.0f;
         Vector3 initialPosition = _trackGenerator.TrackPieces[0].EndTransform.position + Vector3.up * _settings.PlayerVerticalOffset;
         _positionOnMidline = (Vector3Double)initialPosition;
         _rigidbody.position = initialPosition;
@@ -108,6 +111,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Time.timeScale = 0f;
+            _pauseMenu.SetActive(true);
+            _pauseMenu.GetComponentInChildren<GarbageCountText>().UpdateData();
+            _generalUI.SetActive(false);
+        }
         System.Threading.Thread.MemoryBarrier(); // Just in case. Probably don't need this but it might make dspTime more up to date.
         if (AudioSettings.dspTime < GameplayMusic.Instance.AudioStartTime)
             return;
