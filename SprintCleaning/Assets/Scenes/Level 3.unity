@@ -818,12 +818,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+      propertyPath: _streakValue
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: _streakIncreaseScale
       value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
+      propertyPath: _streakDecreasePerSec
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: _streakDecreaseWhenPassGarbage
-      value: 20
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: <MaxStreakValue>k__BackingField
@@ -831,15 +839,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: _streakThresholds.Array.data[0]
-      value: 100
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: _streakThresholds.Array.data[1]
-      value: 160
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 821770369518406601, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: _streakThresholds.Array.data[2]
-      value: 300
+      value: 310
       objectReference: {fileID: 0}
     - target: {fileID: 6029570124216557578, guid: 00141bf14369e41499d1f78f6123b9f6, type: 3}
       propertyPath: m_Pivot.x

@@ -17,12 +17,15 @@ public class ScoreManager : MonoBehaviour
 
     [SerializeField] private float _streakDecreasePerSec = 5;
     [SerializeField] private float _streakDecreaseWhenPassGarbage = 3;
+    [SerializeField] private float _minIntervalToPunishPassGarbage = 3;
     [SerializeField] private float _streakIncreaseScale = 1f;
     [SerializeField] private StreakBar _streakBar;
 
     public int _streakMultiplier = 1;
 
     public int _powerUpMultiplier = 1;
+
+    private float _lastPassGarbageTime = float.NegativeInfinity;
 
     [field: SerializeField] public int MaxStreakValue { get; private set; }
 
@@ -79,6 +82,9 @@ public class ScoreManager : MonoBehaviour
 
     public void OnPassGarbage()
     {
+        if (Time.time < _lastPassGarbageTime + _minIntervalToPunishPassGarbage)
+            return;
+        _lastPassGarbageTime = Time.time;
         _streakDecreaseAccumulator += _streakDecreaseWhenPassGarbage;
         _streakBar.OnMissGarbage();
     }
