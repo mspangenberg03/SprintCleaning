@@ -64,14 +64,10 @@ public class MainMenu : MonoBehaviour
         _dropdown.value = index;
         _resolutionDropdownText.text = _dropdown.options[index].text;
         //ChangeResolution();
-        Debug.Log("Levels Unlocked " + _levelCode.LevelsUnlocked());
         for (int i = 0; i < _levelButtons.Length; i++){
             _levelButtons[i].interactable = false;
         }
-        Debug.Log("Levels Unlocked " + _levelCode.LevelsUnlocked());
-        for (int i = 0; i < _levelCode.LevelsUnlocked(); i++){
-            Debug.Log("Levels Unlocked " + _levelCode.LevelsUnlocked());
-            Debug.Log("Level " + (i + 1) + " interactable");
+        for(int i = 0; i < _levelCode.LevelsUnlocked(); i++){
             _levelButtons[i].interactable = true;
         }
 
